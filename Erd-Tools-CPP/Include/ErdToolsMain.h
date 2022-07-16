@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ERDTOOLSMAIN_H
+#define ERDTOOLSMAIN_H
+#include <windows.h>
 #include <thread>
 #include "ErdHook.h"
 #define DEBUG_CONSOLE 1
@@ -19,3 +21,4 @@ public:
 private:
 };
 
+#endif

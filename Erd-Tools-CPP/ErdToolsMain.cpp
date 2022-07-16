@@ -1,6 +1,5 @@
 #include "Include/ErdToolsMain.h"
 
-#include "minhook/src/hde/hde32.h"
 
 ErdToolsMain* main_mod = nullptr;
 

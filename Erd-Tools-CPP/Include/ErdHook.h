@@ -1,8 +1,9 @@
-#pragma once
-#include <Windows.h>
+#ifndef ERDHOOK_H
+#define ERDHOOK_H
 #include <stdexcept>
+#include "ErdTools_globals.h"
+#include "EventMan.h"
 #include "../minhook/include/MinHook.h"
-#include "../Include/ErdTools_globals.h"
 
 struct Signature {
 	const char* signature;
@@ -22,16 +23,18 @@ private:
 	size_t image_size = 0;
 };
 
-
 class ErdHook {
 public:
 	bool create_memory_edits();
 	bool find_needed_signatures();
-	void set_event_flag_hook(uint64_t event_flag_man, uint32_t* event_id, int32_t event_value);
-	set_event_flag* set_event_flag_original;
+	EventMan* event_man;
+	ErdHook() {
+		event_man = new EventMan();
+	}
+
 private:
 	MH_STATUS minhook_active;
 	SigScan signature_class;
-	uint64_t set_event_flag_address;
 };
+#endif
 

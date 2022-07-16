@@ -1,10 +1,10 @@
-#include "ErdToolsMain.h"
+#include "Include/ErdToolsMain.h"
 
-#include "src/hde/hde32.h"
+#include "minhook/src/hde/hde32.h"
 
 ErdToolsMain* main_mod = nullptr;
 
-void CreateModFunctions() {
+void create_hook() {
 
 	using namespace std::chrono_literals;
 
@@ -13,37 +13,28 @@ void CreateModFunctions() {
 
 	main_mod = new ErdToolsMain();
 
-	main_mod->HookEldenRing();
+	main_mod->hook_elden_ring();
 
 	delete main_mod;
 	return;
 };
 
-void ErdToolsMain::HookEldenRing() {
+void ErdToolsMain::hook_elden_ring() {
 	using namespace std::chrono_literals;
 
 	if (DEBUG_CONSOLE) {
 		AllocConsole();
 		FILE* fpstdin = stdin;
-		freopen_s(&fpstdin,"CONOUT$", "w", stdout);
+		freopen("CONOUT$", "w", stdout);
 	}
 
 	hook = ErdHook();
-	if (!hook.CreateMemoryEdits()) {
-		//
+	if (!hook.create_memory_edits()) {
 		return;
 	}
 
 	while (is_mod_active) {
-
 		std::this_thread::sleep_for(5s);
-		/*
-		std::unique_lock<std::mutex> unique_lock(save_request_mutex);
-		save_request_wait.wait(unique_lock, [&] { return save_manager_wake; });
-		if (signal_list_save) {
-			// Save... (no longer needed)
-		};
-		*/
 	}
 
 	return;

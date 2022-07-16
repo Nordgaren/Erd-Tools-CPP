@@ -1,10 +1,10 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
-#include "ErdToolsMain.h"
+#include "Include/ErdToolsMain.h"
 
 std::thread main_mod_thread;
 
-void BeginMod() {
-    main_mod_thread = std::thread(CreateModFunctions);
+void start_erd_tools() {
+    main_mod_thread = std::thread(create_hook);
     return;
 };
 
@@ -23,7 +23,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)erd_tools_start, NULL, 0, NULL);
+        start_erd_tools();
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:

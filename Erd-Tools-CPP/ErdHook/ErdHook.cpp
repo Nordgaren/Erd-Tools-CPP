@@ -1,5 +1,7 @@
 #include "../Include/ErdHook.h"
 
+set_event_flag set_event_flag_original = nullptr;
+
 bool ErdHook::create_memory_edits() {
 	minhook_active = MH_Initialize();
 	if (minhook_active != MH_OK) {
@@ -12,9 +14,8 @@ bool ErdHook::create_memory_edits() {
 		return false;
 	}
 
-
 	DWORD old_protect = 0;
-	if (MH_CreateHook((void*)set_event_flag_address, (LPVOID*)&set_event_flag_hook, nullptr) == MH_OK) {
+	if (MH_CreateHook((void*)set_event_flag_address, (LPVOID*)&set_event_flag_hook, (void**)&set_event_flag_original) == MH_OK) {
 		MH_EnableHook((void*)set_event_flag_address);
 		/*if (VirtualProtect((void*)set_event_flag_address, 8, PAGE_EXECUTE_READWRITE, &old_protect)) {
 			uint8_t call_bytes = 0xE8;

@@ -2,7 +2,7 @@
 #define ERDHOOK_H
 #include <stdexcept>
 #include "ErdTools_globals.h"
-#include "EventMan.h"
+#include "EventMan.h"D
 #include "../minhook/include/MinHook.h"
 
 struct Signature {
@@ -27,10 +27,7 @@ class ErdHook {
 public:
 	bool create_memory_edits();
 	bool find_needed_signatures();
-	EventMan* event_man;
-	ErdHook() {
-		event_man = new EventMan();
-	}
+
 
 private:
 	MH_STATUS minhook_active;

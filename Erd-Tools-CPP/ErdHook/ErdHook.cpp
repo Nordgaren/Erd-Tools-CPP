@@ -13,16 +13,16 @@ bool ErdHook::create_memory_edits() {
 	}
 
 
-	//DWORD old_protect = 0;
-	//if (MH_CreateHook((void*)event_man->set_event_flag_address, (LPVOID*)&EventMan::set_event_flag_hook, nullptr) == MH_OK) {
-	//	MH_EnableHook((void*)event_man->set_event_flag_address);
-	//	/*if (VirtualProtect((void*)set_event_flag_address, 8, PAGE_EXECUTE_READWRITE, &old_protect)) {
-	//		uint8_t call_bytes = 0xE8;
-	//		memcpy((void*)set_event_flag_address, &call_bytes, sizeof(call_bytes));
-	//		VirtualProtect((void*)set_event_flag_address, 8, old_protect, &old_protect);
-	//	}*/
-	//	return true;
-	//}
+	DWORD old_protect = 0;
+	if (MH_CreateHook((void*)set_event_flag_address, (void*)&set_event_flag_hook, (void**)set_event_flag_original) == MH_OK) { //(void**)event_man->set_event_flag_original
+		MH_EnableHook((void*)set_event_flag_address);
+		/*if (VirtualProtect((void*)set_event_flag_address, 8, PAGE_EXECUTE_READWRITE, &old_protect)) {
+			uint8_t call_bytes = 0xE8;
+			memcpy((void*)set_event_flag_address, &call_bytes, sizeof(call_bytes));
+			VirtualProtect((void*)set_event_flag_address, 8, old_protect, &old_protect);
+		}*/
+		return true;
+	}
 
 	return false;
 }
@@ -41,9 +41,9 @@ bool ErdHook::find_needed_signatures() {
 		38,
 		0,
 	};
-	event_man->set_event_flag_address = (uint64_t)signature_class.find_signature(set_event);
+	set_event_flag_address = (uint64_t)signature_class.find_signature(set_event);
 
-	return event_man->set_event_flag_address;
+	return set_event_flag_address;
 }
 
 bool SigScan::get_image_info() {

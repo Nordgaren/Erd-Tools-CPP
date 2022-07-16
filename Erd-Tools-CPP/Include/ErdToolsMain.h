@@ -18,7 +18,6 @@ public:
 		hook = {};
 		is_mod_active = 1;
 	}
-private:
 };
 
 #endif

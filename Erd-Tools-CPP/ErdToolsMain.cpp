@@ -13,7 +13,6 @@ void create_hook() {
 	main_mod = new ErdToolsMain();
 
 	main_mod->hook_elden_ring();
-
 	delete main_mod;
 	return;
 };
@@ -24,7 +23,7 @@ void ErdToolsMain::hook_elden_ring() {
 	if (DEBUG_CONSOLE) {
 		AllocConsole();
 		FILE* fpstdin = stdin;
-		freopen("CONOUT$", "w", stdout);
+		freopen_s(&fpstdin,"CONOUT$", "w", stdout);
 	}
 
 	hook = ErdHook();

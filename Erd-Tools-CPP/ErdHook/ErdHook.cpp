@@ -12,15 +12,9 @@ bool ErdHook::create_memory_edits() {
 		return false;
 	}
 
-
 	DWORD old_protect = 0;
-	if (MH_CreateHook((void*)set_event_flag_address, (void*)&set_event_flag_hook, (void**)set_event_flag_original) == MH_OK) { //(void**)event_man->set_event_flag_original
+	if (MH_CreateHook((void*)set_event_flag_address, (void*)&EventMan::set_event_flag_hook, (void**)&set_event_flag_original) == MH_OK) {
 		MH_EnableHook((void*)set_event_flag_address);
-		/*if (VirtualProtect((void*)set_event_flag_address, 8, PAGE_EXECUTE_READWRITE, &old_protect)) {
-			uint8_t call_bytes = 0xE8;
-			memcpy((void*)set_event_flag_address, &call_bytes, sizeof(call_bytes));
-			VirtualProtect((void*)set_event_flag_address, 8, old_protect, &old_protect);
-		}*/
 		return true;
 	}
 

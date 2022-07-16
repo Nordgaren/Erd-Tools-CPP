@@ -22,13 +22,13 @@ private:
 	size_t image_size = 0;
 };
 
+void set_event_flag_hook(uint64_t event_flag_man, uint32_t* event_id, int32_t event_value);
+void* set_event_flag_original;
 
 class ErdHook {
 public:
 	bool create_memory_edits();
 	bool find_needed_signatures();
-	void set_event_flag_hook(uint64_t event_flag_man, uint32_t* event_id, int32_t event_value);
-	set_event_flag* set_event_flag_original;
 private:
 	MH_STATUS minhook_active;
 	SigScan signature_class;

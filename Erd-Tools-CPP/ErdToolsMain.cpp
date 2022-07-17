@@ -84,7 +84,8 @@ bool ErdToolsMain::ReadINI() {
 	std::string header_segment = "DEBUG";
 	preferences = option_reader.GetBoolean(header_segment, "log_flags_in_console", false) ? static_cast<Preferences>(preferences | log_flags_in_console) : preferences;
 	preferences = option_reader.GetBoolean(header_segment, "enable_map_in_combat", false) ? static_cast<Preferences>(preferences | enable_map_in_combat) : preferences;
-
+	preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<Preferences>(preferences | enable_crafting_in_combat) : preferences;
+	
 	return true;
 }
 
@@ -96,5 +97,9 @@ void ErdToolsMain::InitPreferences() {
 
 	if (preferences & enable_map_in_combat) {
 		hook.debug_hook->EnableMapInCombat();
+	}
+
+	if (preferences & enable_crafting_in_combat) {
+		hook.debug_hook->EnableCraftingInCombat();
 	}
 }

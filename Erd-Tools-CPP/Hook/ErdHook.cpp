@@ -51,7 +51,7 @@ bool ErdHook::FindNeededSignatures() {
 	44,
 	0,
 	};
-	debug_hook->DisableOpenMap = (uint64_t)signature_class.FindSignature(disable_map);
+	debug_hook->DisableOpenMapInCombatLocation = (uint64_t)signature_class.FindSignature(disable_map);
 
 	Signature combat_map = {
 "\xE8\xFF\xFF\xFF\xFF\x84\xC0\x75\xFF\x38\x83\xFF\xFF\xFF\xFF\x75\xFF\x83\xE7\xFE",
@@ -59,9 +59,17 @@ bool ErdHook::FindNeededSignatures() {
 20,
 0,
 	};
-	debug_hook->CombatCloseMap = (uint64_t)signature_class.FindSignature(combat_map);
+	debug_hook->CloseMapInCombatLocation = (uint64_t)signature_class.FindSignature(combat_map);
 
-	return event_hook->EventMan && event_hook->SetEventFlagAddress && event_hook->IsEventFlagAddress && debug_hook->DisableOpenMap && debug_hook->CombatCloseMap;
+	Signature disable_crafting = {
+"\xE8\xDD\xC2\x43\x00\x84\xC0\x0F\x94\xC0",
+"xxxxxxxxxx",
+10,
+0,
+	};
+	debug_hook->DisableCrafingInCombatLocation = (uint64_t)signature_class.FindSignature(disable_crafting);
+
+	return event_hook->EventMan && event_hook->SetEventFlagAddress && event_hook->IsEventFlagAddress && debug_hook->DisableOpenMapInCombatLocation && debug_hook->CloseMapInCombatLocation && debug_hook->DisableCrafingInCombatLocation;
 }
 
 bool SigScan::GetImageInfo() {

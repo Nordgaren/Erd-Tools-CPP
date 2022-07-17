@@ -78,9 +78,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>ErdTools</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>ErdTools</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -155,11 +157,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\DebugMan.h" />
+    <ClInclude Include="Include\DebugHook.h" />
     <ClInclude Include="Include\ErdHook.h" />
     <ClInclude Include="Include\ErdToolsMain.h" />
     <ClInclude Include="Include\ErdTools_globals.h" />
-    <ClInclude Include="Include\EventMan.h" />
+    <ClInclude Include="Include\EventHook.h" />
     <ClInclude Include="INIReader\ini.h" />
     <ClInclude Include="INIReader\INIReader.h" />
     <ClInclude Include="minhook\include\MinHook.h" />
@@ -173,9 +175,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Hook\DebugMan.cpp" />
+    <ClCompile Include="Hook\DebugHook.cpp" />
     <ClCompile Include="Hook\ErdHook.cpp" />
-    <ClCompile Include="Hook\EventMan.cpp" />
+    <ClCompile Include="Hook\EventHook.cpp" />
     <ClCompile Include="ErdToolsMain.cpp" />
     <ClCompile Include="INIReader\ini.cpp" />
     <ClCompile Include="INIReader\INIReader.cpp" />

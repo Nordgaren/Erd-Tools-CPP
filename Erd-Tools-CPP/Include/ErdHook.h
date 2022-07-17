@@ -1,8 +1,8 @@
 #pragma once
 #include <stdexcept>
 #include "ErdTools_globals.h"
-#include "EventMan.h"
-#include "DebugMan.h"
+#include "EventHook.h"
+#include "DebugHook.h"
 #include "../minhook/include/MinHook.h"
 
 struct Signature {
@@ -14,8 +14,8 @@ struct Signature {
 
 class SigScan {
 public:
-	bool get_image_info();
-	void* find_signature(Signature& fnSig);
+	bool GetImageInfo();
+	void* FindSignature(Signature& fnSig);
 
 private:
 	HMODULE module_handle;
@@ -23,20 +23,16 @@ private:
 	size_t image_size = 0;
 };
 
-extern set_event_flag set_event_flag_original;
-extern uint64_t set_event_flag_address;
-extern uint64_t disable_open_map;
-extern uint64_t combat_close_map;
 
 class ErdHook {
 public:
-	bool create_memory_edits();
-	bool find_needed_signatures();
-	EventMan* event_man;
-	DebugMan* debug_man;
+	bool CreateMemoryEdits();
+	bool FindNeededSignatures();
+	EventHook* event_hook;
+	DebugHook* debug_hook;
 	ErdHook() {
-		event_man = new EventMan();
-		debug_man = new DebugMan();
+		event_hook = new EventHook();
+		debug_hook = new DebugHook();
 	}
 private:
 	MH_STATUS minhook_active = MH_UNKNOWN;

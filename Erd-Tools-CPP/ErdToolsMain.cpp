@@ -5,7 +5,7 @@
 
 ErdToolsMain* main_mod = nullptr;
 
-void create_hook() {
+void CreateHook() {
 
 	using namespace std::chrono_literals;
 
@@ -14,11 +14,11 @@ void create_hook() {
 
 	main_mod = new ErdToolsMain();
 
-	main_mod->hook_elden_ring();
+	main_mod->HookEldenRing();
 	delete main_mod;
 };
 
-void ErdToolsMain::enable_debug_console() {
+void ErdToolsMain::EnableDebugConsole() {
 	if (debug_console_enabled) {
 		return;
 	}
@@ -29,19 +29,19 @@ void ErdToolsMain::enable_debug_console() {
 	debug_console_enabled = true;
 }
 
-void ErdToolsMain::hook_elden_ring() {
+void ErdToolsMain::HookEldenRing() {
 	using namespace std::chrono_literals;
 
 	if (DEBUG_CONSOLE) {
-		enable_debug_console();
+		EnableDebugConsole();
 	}
 
 	hook = ErdHook();
-	if (!hook.create_memory_edits()) {
+	if (!hook.CreateMemoryEdits()) {
 		return;
 	}
 
-	setup();
+	Setup();
 
 	while (is_mod_active) {
 		std::this_thread::sleep_for(5s);
@@ -49,15 +49,15 @@ void ErdToolsMain::hook_elden_ring() {
 
 }
 
-void ErdToolsMain::setup() {
-	if (read_ini()) {
-		init_preferences();
+void ErdToolsMain::Setup() {
+	if (ReadINI()) {
+		InitPreferences();
 	} else {
 	//@TODO:Check if communication with debug tools is open and open if it is not and ini doesn't exist.
 	}
 }
 
-bool ErdToolsMain::read_ini() {
+bool ErdToolsMain::ReadINI() {
 	char module_dir[MAX_PATH + 1];
 	HMODULE mod;
 	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
@@ -88,13 +88,13 @@ bool ErdToolsMain::read_ini() {
 	return true;
 }
 
-void ErdToolsMain::init_preferences() {
+void ErdToolsMain::InitPreferences() {
 	if (preferences & log_flags_in_console) {
-		enable_debug_console();
-		hook.event_man->enable_flag_listener();
+		EnableDebugConsole();
+		hook.event_hook->EnableFlagListener();
 	}
 
 	if (preferences & enable_map_in_combat) {
-		hook.debug_man->enable_map_in_combat();
+		hook.debug_hook->EnableMapInCombat();
 	}
 }

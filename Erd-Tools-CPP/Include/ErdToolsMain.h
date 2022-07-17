@@ -5,12 +5,12 @@
 #include "INIReader/INIReader.h"
 #define DEBUG_CONSOLE 0
 
-void create_hook();
+void CreateHook();
 
 class ErdToolsMain {
 public:
-	void enable_debug_console();
-	void hook_elden_ring();
+	void EnableDebugConsole();
+	void HookEldenRing();
 	uint32_t is_mod_active;
 	ErdHook hook;
 	Preferences preferences;
@@ -22,7 +22,7 @@ public:
 ;	}
 private:
 	bool debug_console_enabled = false;
-	void setup();
-	bool read_ini();
-	void init_preferences();
+	void Setup();
+	bool ReadINI();
+	void InitPreferences();
 };

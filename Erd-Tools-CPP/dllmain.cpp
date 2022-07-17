@@ -3,8 +3,8 @@
 
 std::thread main_mod_thread;
 
-void start_erd_tools() {
-    main_mod_thread = std::thread(create_hook);
+void StartErdTools() {
+    main_mod_thread = std::thread(CreateHook);
 };
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -15,7 +15,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        start_erd_tools();
+        StartErdTools();
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:

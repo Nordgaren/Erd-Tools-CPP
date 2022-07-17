@@ -1,5 +1,4 @@
-#ifndef ERDHOOK_H
-#define ERDHOOK_H
+#pragma once
 #include <stdexcept>
 #include "ErdTools_globals.h"
 #include "EventMan.h"
@@ -34,5 +33,4 @@ private:
 	MH_STATUS minhook_active;
 	SigScan signature_class;
 };
-#endif
 

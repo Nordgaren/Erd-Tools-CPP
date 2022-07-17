@@ -14,7 +14,6 @@ void create_hook() {
 
 	main_mod->hook_elden_ring();
 	delete main_mod;
-	return;
 };
 
 void ErdToolsMain::hook_elden_ring() {
@@ -35,5 +34,4 @@ void ErdToolsMain::hook_elden_ring() {
 		std::this_thread::sleep_for(5s);
 	}
 
-	return;
 }

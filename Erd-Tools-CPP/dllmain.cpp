@@ -5,15 +5,7 @@ std::thread main_mod_thread;
 
 void start_erd_tools() {
     main_mod_thread = std::thread(create_hook);
-    return;
 };
-
-
-DWORD WINAPI erd_tools_start(HINSTANCE hModule)
-{
-
-    return 0;
-}
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -24,6 +16,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         start_erd_tools();
+        break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:

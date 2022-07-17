@@ -4,16 +4,14 @@ bool ErdHook::create_memory_edits() {
 	minhook_active = MH_Initialize();
 	if (minhook_active != MH_OK) {
 		throw std::runtime_error("MH_Initialize != MH_OK");
-		return false;
 	}
 
 	if (!find_needed_signatures()) {
 		throw std::runtime_error("Failed to find function signatures");
-		return false;
 	}
 
 	DWORD old_protect = 0;
-	if (MH_CreateHook((void*)set_event_flag_address, (void*)&EventMan::set_event_flag_hook, (void**)&set_event_flag_original) == MH_OK) {
+	if (MH_CreateHook((void*)set_event_flag_address, &EventMan::set_event_flag_hook, (void**)&set_event_flag_original) == MH_OK) {
 		MH_EnableHook((void*)set_event_flag_address);
 		return true;
 	}
@@ -66,21 +64,21 @@ void* SigScan::find_signature(Signature& fnSig) {
 
 	char* pScan = (char*)base_address;
 	char* max_address = pScan + image_size - fnSig.length;
-	INT iMaxLength = 0;
+	SIZE_T iMaxLength = 0;
 
 	while (pScan < max_address) {
 		SIZE_T szLength = 0;
 
-		for (INT i = 0; i < fnSig.length; i++) {
+		for (SIZE_T i = 0; i < fnSig.length; i++) {
 			if (!((pScan[i] == fnSig.signature[i]) || (fnSig.mask[i] == '?'))) break;
 			szLength++;
-		};
+		}
 
 		if (szLength > iMaxLength) iMaxLength = (INT)szLength;
 		if (szLength == fnSig.length) return pScan;
 
 		pScan++;
-	};
+	}
 
 	return nullptr;
 };

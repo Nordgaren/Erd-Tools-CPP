@@ -22,3 +22,14 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 **[Wasted](https://github.com/FrankvdStam)** Rust nerd who gives me pointers for C++.  
 **[TKGP](https://github.com/JKAnderson/)** Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) [Property Hook](https://github.com/JKAnderson/PropertyHook) and [SoulsFormats](https://github.com/JKAnderson/SoulsFormats), which got me into this kind of modding.  
 If I missed your contribution, let me know!  
+
+# Change Log 
+### Beta 0.1
+
+* initial release
+
+* Log flags in a console window when they get changed  
+
+* Enable the map during combat  
+
+* Enable crafting during combat  

@@ -13,11 +13,14 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\ErdHook">
-      <UniqueIdentifier>{27375f4d-3d6f-4524-a5c4-ebe395cf6876}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\minhook">
       <UniqueIdentifier>{e1f0b6ca-176f-4c8e-b4c1-af05f6093a80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\INIReader">
+      <UniqueIdentifier>{acb5edeb-e577-4450-9054-a7f974e4b3d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hook">
+      <UniqueIdentifier>{27375f4d-3d6f-4524-a5c4-ebe395cf6876}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +60,15 @@
     <ClInclude Include="Include\EventMan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="INIReader\INIReader.h">
+      <Filter>Resource Files\INIReader</Filter>
+    </ClInclude>
+    <ClInclude Include="INIReader\ini.h">
+      <Filter>Resource Files\INIReader</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DebugMan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -65,8 +77,8 @@
     <ClCompile Include="ErdToolsMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ErdHook\ErdHook.cpp">
-      <Filter>Source Files\ErdHook</Filter>
+    <ClCompile Include="Hook\ErdHook.cpp">
+      <Filter>Source Files\Hook</Filter>
     </ClCompile>
     <ClCompile Include="minhook\src\buffer.c">
       <Filter>Resource Files\minhook</Filter>
@@ -83,8 +95,17 @@
     <ClCompile Include="minhook\src\trampoline.c">
       <Filter>Resource Files\minhook</Filter>
     </ClCompile>
-    <ClCompile Include="ErdHook\EventMan.cpp">
-      <Filter>Source Files\ErdHook</Filter>
+    <ClCompile Include="Hook\EventMan.cpp">
+      <Filter>Source Files\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="INIReader\INIReader.cpp">
+      <Filter>Resource Files\INIReader</Filter>
+    </ClCompile>
+    <ClCompile Include="INIReader\ini.cpp">
+      <Filter>Resource Files\INIReader</Filter>
+    </ClCompile>
+    <ClCompile Include="Hook\DebugMan.cpp">
+      <Filter>Source Files\Hook</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

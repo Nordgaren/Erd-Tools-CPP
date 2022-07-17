@@ -155,10 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\DebugMan.h" />
     <ClInclude Include="Include\ErdHook.h" />
     <ClInclude Include="Include\ErdToolsMain.h" />
     <ClInclude Include="Include\ErdTools_globals.h" />
     <ClInclude Include="Include\EventMan.h" />
+    <ClInclude Include="INIReader\ini.h" />
+    <ClInclude Include="INIReader\INIReader.h" />
     <ClInclude Include="minhook\include\MinHook.h" />
     <ClInclude Include="minhook\src\buffer.h" />
     <ClInclude Include="minhook\src\hde\hde32.h" />
@@ -170,9 +173,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="ErdHook\ErdHook.cpp" />
-    <ClCompile Include="ErdHook\EventMan.cpp" />
+    <ClCompile Include="Hook\DebugMan.cpp" />
+    <ClCompile Include="Hook\ErdHook.cpp" />
+    <ClCompile Include="Hook\EventMan.cpp" />
     <ClCompile Include="ErdToolsMain.cpp" />
+    <ClCompile Include="INIReader\ini.cpp" />
+    <ClCompile Include="INIReader\INIReader.cpp" />
     <ClCompile Include="minhook\src\buffer.c" />
     <ClCompile Include="minhook\src\hde\hde32.c" />
     <ClCompile Include="minhook\src\hde\hde64.c" />

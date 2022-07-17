@@ -10,18 +10,11 @@ bool ErdHook::create_memory_edits() {
 		throw std::runtime_error("Failed to find function signatures");
 	}
 
-	DWORD old_protect = 0;
-	if (MH_CreateHook((void*)set_event_flag_address, &EventMan::set_event_flag_hook, (void**)&set_event_flag_original) == MH_OK) {
-		MH_EnableHook((void*)set_event_flag_address);
-		return true;
-	}
-
-	return false;
+	return true;
 }
 
 
 bool ErdHook::find_needed_signatures() {
-
 	if (!signature_class.get_image_info()) {
 		//
 		return false;
@@ -35,7 +28,23 @@ bool ErdHook::find_needed_signatures() {
 	};
 	set_event_flag_address = (uint64_t)signature_class.find_signature(set_event);
 
-	return set_event_flag_address;
+	Signature disable_map = {
+	"\x74\xFF\xC7\x45\x38\x58\x02\x00\x00\xC7\x45\x3C\x02\x00\x00\x00\xC7\x45\x40\x01\x00\x00\x00\x48\xFF\xFF\xFF\xFF\xFF\xFF\x48\x89\x45\x48\x48\x8D\x4D\x38\xE8\xFF\xFF\xFF\xFF\xE9",
+	"x?xxxxxxxxxxxxxxxxxxxxxx??????xxxxxxxxx????x",
+	44,
+	0,
+	};
+	disable_open_map = (uint64_t)signature_class.find_signature(disable_map);
+
+	Signature combat_map = {
+"\xE8\xFF\xFF\xFF\xFF\x84\xC0\x75\xFF\x38\x83\xFF\xFF\xFF\xFF\x75\xFF\x83\xE7\xFE",
+"x????xxx?xx????x?xxx",
+20,
+0,
+	};
+	combat_close_map = (uint64_t)signature_class.find_signature(combat_map);
+
+	return set_event_flag_address && disable_open_map && combat_close_map;
 }
 
 bool SigScan::get_image_info() {

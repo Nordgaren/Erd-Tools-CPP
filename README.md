@@ -26,10 +26,10 @@ If I missed your contribution, let me know!
 # Change Log 
 ### Beta 0.1
 
-* initial release
+* Initial release
 
-* Log flags in a console window when they get changed  
+* Can log flags in a console window when they get changed  
 
-* Enable the map during combat  
+* Can enable the map during combat  
 
-* Enable crafting during combat  
+* Can enable crafting during combat  

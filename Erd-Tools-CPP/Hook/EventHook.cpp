@@ -7,19 +7,19 @@
 uint32_t _last_event_id = 0;
 bool _last_event_state = false;
 
-void EventHook::SetEventFlagHook(uint64_t event_man, uint32_t* event_id, bool event_state) {
+void EventHook::SetEventFlagHook(const uint64_t event_man, uint32_t* event_id, bool state) {
 	bool current_state = IsEventFlag(event_man, event_id);
-	SetEventFlagOriginal(event_man, event_id, event_state);
+	SetEventFlagOriginal(event_man, event_id, state);
 	bool new_state = IsEventFlag(event_man, event_id);
 
 	if (current_state == new_state)
 		return;
 
 	_last_event_id = *event_id;
-	_last_event_state = event_state;
+	_last_event_state = state;
 	time_t current_time = time(NULL);
 	std::string date = ctime(&current_time);
-	printf("%s - Event Flag Set: %u %d\n", date.substr(0, date.size() - 1).c_str(),*event_id, event_state);
+	printf("%s - Event Flag Set: %u %d\n", date.substr(0, date.size() - 1).c_str(),*event_id, state);
 }
 
 bool EventHook::EnableFlagListener() {

@@ -11,7 +11,7 @@ void DebugHook::EnableMapInCombat() {
 
 	/* patch map functions */
 	*(unsigned char*)DisableOpenMapInCombatLocation = 0xEB;
-	memcpy((void*)CloseMapInCombatLocation, close_map_patch_bytes, sizeof(close_map_patch_bytes));
+	memcpy((void*)CloseMapInCombatLocation, CLOSE_MAP_PATCH_BYTES, sizeof(CLOSE_MAP_PATCH_BYTES));
 	combat_map_patched = true;
 }
 
@@ -20,7 +20,7 @@ void DebugHook::DisableMapInCombat() {
 		return;
 
 	*(unsigned char*)DisableOpenMapInCombatLocation = 0x74;
-	memcpy((void*)CloseMapInCombatLocation, close_map_original_bytes, sizeof(close_map_patch_bytes));
+	memcpy((void*)CloseMapInCombatLocation, close_map_original_bytes, sizeof(CLOSE_MAP_PATCH_BYTES));
 	combat_map_patched = false;
 }
 
@@ -29,7 +29,7 @@ void DebugHook::EnableCraftingInCombat() {
 	memcpy(disable_crafting_original_bytes, (void*)DisableCrafingInCombatLocation, sizeof(disable_crafting_original_bytes));
 
 	/* patch map functions */
-	memcpy((void*)DisableCrafingInCombatLocation, disable_crafting_patch_bytes, sizeof(disable_crafting_patch_bytes));
+	memcpy((void*)DisableCrafingInCombatLocation, DISABLE_CRAFTING_PATCH_BYTES, sizeof(DISABLE_CRAFTING_PATCH_BYTES));
 	combat_crafting_patched = true;
 }
 

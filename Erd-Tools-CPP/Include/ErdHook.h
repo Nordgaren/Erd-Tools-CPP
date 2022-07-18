@@ -18,9 +18,9 @@ public:
 	void* FindSignature(Signature& fnSig);
 
 private:
-	HMODULE module_handle;
-	void* base_address = nullptr;
-	size_t image_size = 0;
+	HMODULE _moduleHandle;
+	void* _baseAddress = nullptr;
+	size_t _imageSize = 0;
 };
 
 
@@ -28,14 +28,19 @@ class ErdHook {
 public:
 	bool CreateMemoryEdits();
 	bool FindNeededSignatures();
-	EventHook* event_hook;
-	DebugHook* debug_hook;
+	EventHook* EventMan;
+	DebugHook* DebugMan;
 	ErdHook() {
-		event_hook = new EventHook();
-		debug_hook = new DebugHook();
+		EventMan = new EventHook();
+		DebugMan = new DebugHook();
+	}
+
+	~ErdHook() {
+		delete  EventMan;
+		delete  DebugMan;
 	}
 private:
-	MH_STATUS minhook_active = MH_UNKNOWN;
-	SigScan signature_class;
+	MH_STATUS _minhookActive = MH_UNKNOWN;
+	SigScan _signatureClass;
 };
 

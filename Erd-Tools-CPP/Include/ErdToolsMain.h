@@ -11,17 +11,18 @@ class ErdToolsMain {
 public:
 	void EnableDebugConsole();
 	void HookEldenRing();
-	uint32_t is_mod_active;
-	ErdHook hook;
-	Preferences preferences;
+	uint32_t IsModActive;
+	ErdHook Hook;
+	UserPreferences Preferences;
 
 	ErdToolsMain() {
-		is_mod_active = 1;
-		hook = {};
-		preferences = none;
+		IsModActive = 1;
+		Hook = {};
+		Preferences = none;
 ;	}
+
 private:
-	bool debug_console_enabled = false;
+	bool _debugConsoleEnabled = false;
 	void Setup();
 	bool ReadINI();
 	void InitPreferences();

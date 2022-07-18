@@ -3,13 +3,13 @@
 #include <windows.h>
 #include <cstdio>
 
-typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool event_state);
+typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool state);
 typedef bool (*IsEventFlag)(uint64_t event_man, uint32_t* event_id);
 class EventHook {
 public:
 	bool EnableFlagListener();
 	bool DisableFlagListener();
-	static void SetEventFlagHook(uint64_t event_man, uint32_t* event_id, bool event_state);
+	static void SetEventFlagHook(uint64_t event_man, uint32_t* event_id, bool state);
 	static inline SetEventFlag SetEventFlagOriginal = nullptr;
 	static inline IsEventFlag IsEventFlag = nullptr;
 	uint64_t SetEventFlagAddress = 0;

@@ -1,8 +1,8 @@
 #include "../Include/ErdHook.h"
 
 bool ErdHook::CreateMemoryEdits() {
-	minhook_active = MH_Initialize();
-	if (minhook_active != MH_OK) {
+	_minhookActive = MH_Initialize();
+	if (_minhookActive != MH_OK) {
 		throw std::runtime_error("MH_Initialize != MH_OK");
 	}
 
@@ -15,7 +15,7 @@ bool ErdHook::CreateMemoryEdits() {
 
 
 bool ErdHook::FindNeededSignatures() {
-	if (!signature_class.GetImageInfo()) {
+	if (!_signatureClass.GetImageInfo()) {
 		//
 		return false;
 	}
@@ -26,7 +26,7 @@ bool ErdHook::FindNeededSignatures() {
 	15,
 	0,
 	};
-	event_hook->EventMan = (uint64_t)signature_class.FindSignature(event_man);
+	EventMan->EventMan = (uint64_t)_signatureClass.FindSignature(event_man);
 
 	Signature set_event = {
 		"\xFF\xFF\xFF\xFF\xFF\x48\x89\x74\x24\x18\x57\x48\x83\xEC\x30\x48\x8B\xDA\x41\x0F\xB6\xF8\x8B\x12\x48\x8B\xF1\x85\xD2\x0F\x84\xFF\xFF\xFF\xFF\x45\x84\xC0",
@@ -34,7 +34,7 @@ bool ErdHook::FindNeededSignatures() {
 		38,
 		0,
 	};
-	event_hook->SetEventFlagAddress = (uint64_t)signature_class.FindSignature(set_event);
+	EventMan->SetEventFlagAddress = (uint64_t)_signatureClass.FindSignature(set_event);
 
 	Signature is_event = {
 	"\x48\x83\xEC\x28\x8B\x12\x85\xD2",
@@ -42,8 +42,8 @@ bool ErdHook::FindNeededSignatures() {
 	8,
 	0,
 	};
-	event_hook->IsEventFlagAddress = (uint64_t)signature_class.FindSignature(is_event);
-	*(void**)&EventHook::IsEventFlag = (void*)event_hook->IsEventFlagAddress;
+	EventMan->IsEventFlagAddress = (uint64_t)_signatureClass.FindSignature(is_event);
+	*(void**)&EventHook::IsEventFlag = (void*)EventMan->IsEventFlagAddress;
 
 	Signature disable_map = {
 	"\x74\xFF\xC7\x45\x38\x58\x02\x00\x00\xC7\x45\x3C\x02\x00\x00\x00\xC7\x45\x40\x01\x00\x00\x00\x48\xFF\xFF\xFF\xFF\xFF\xFF\x48\x89\x45\x48\x48\x8D\x4D\x38\xE8\xFF\xFF\xFF\xFF\xE9",
@@ -51,7 +51,7 @@ bool ErdHook::FindNeededSignatures() {
 	44,
 	0,
 	};
-	debug_hook->DisableOpenMapInCombatLocation = (uint64_t)signature_class.FindSignature(disable_map);
+	DebugMan->DisableOpenMapInCombatLocation = (uint64_t)_signatureClass.FindSignature(disable_map);
 
 	Signature combat_map = {
 "\xE8\xFF\xFF\xFF\xFF\x84\xC0\x75\xFF\x38\x83\xFF\xFF\xFF\xFF\x75\xFF\x83\xE7\xFE",
@@ -59,7 +59,7 @@ bool ErdHook::FindNeededSignatures() {
 20,
 0,
 	};
-	debug_hook->CloseMapInCombatLocation = (uint64_t)signature_class.FindSignature(combat_map);
+	DebugMan->CloseMapInCombatLocation = (uint64_t)_signatureClass.FindSignature(combat_map);
 
 	Signature disable_crafting = {
 "\xE8\xDD\xC2\x43\x00\x84\xC0\x0F\x94\xC0",
@@ -67,26 +67,26 @@ bool ErdHook::FindNeededSignatures() {
 10,
 0,
 	};
-	debug_hook->DisableCrafingInCombatLocation = (uint64_t)signature_class.FindSignature(disable_crafting);
+	DebugMan->DisableCrafingInCombatLocation = (uint64_t)_signatureClass.FindSignature(disable_crafting);
 
-	return event_hook->EventMan && event_hook->SetEventFlagAddress && event_hook->IsEventFlagAddress && debug_hook->DisableOpenMapInCombatLocation && debug_hook->CloseMapInCombatLocation && debug_hook->DisableCrafingInCombatLocation;
+	return EventMan->EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation && DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation;
 }
 
 bool SigScan::GetImageInfo() {
 
 	bool bSuccess = false;
 
-	module_handle = GetModuleHandleA("eldenring.exe");
-	if (module_handle) {
+	_moduleHandle = GetModuleHandleA("eldenring.exe");
+	if (_moduleHandle) {
 		MEMORY_BASIC_INFORMATION memInfo;
-		if (VirtualQuery((void*)module_handle, &memInfo, sizeof(memInfo)) != 0) {
-			IMAGE_DOS_HEADER* hDos = (IMAGE_DOS_HEADER*)module_handle;
+		if (VirtualQuery((void*)_moduleHandle, &memInfo, sizeof(memInfo)) != 0) {
+			IMAGE_DOS_HEADER* hDos = (IMAGE_DOS_HEADER*)_moduleHandle;
 			IMAGE_NT_HEADERS* hPe = (IMAGE_NT_HEADERS*)((ULONG64)memInfo.AllocationBase + (ULONG64)hDos->e_lfanew);
 
 			if ((hDos->e_magic == IMAGE_DOS_SIGNATURE) && (hPe->Signature == IMAGE_NT_SIGNATURE)) {
 				bSuccess = true;
-				base_address = (void*)memInfo.AllocationBase;
-				image_size = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
+				_baseAddress = (void*)memInfo.AllocationBase;
+				_imageSize = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
 			}
 		}
 	}
@@ -96,8 +96,8 @@ bool SigScan::GetImageInfo() {
 
 void* SigScan::FindSignature(Signature& fnSig) {
 
-	char* pScan = (char*)base_address;
-	char* max_address = pScan + image_size - fnSig.length;
+	char* pScan = (char*)_baseAddress;
+	char* max_address = pScan + _imageSize - fnSig.length;
 	SIZE_T iMaxLength = 0;
 
 	while (pScan < max_address) {

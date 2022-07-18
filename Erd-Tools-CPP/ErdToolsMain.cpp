@@ -19,14 +19,14 @@ void CreateHook() {
 };
 
 void ErdToolsMain::EnableDebugConsole() {
-	if (debug_console_enabled) {
+	if (_debugConsoleEnabled) {
 		return;
 	}
 
 	AllocConsole();
 	FILE* fpstdin = stdin;
 	freopen_s(&fpstdin,"CONOUT$", "w", stdout);
-	debug_console_enabled = true;
+	_debugConsoleEnabled = true;
 }
 
 void ErdToolsMain::HookEldenRing() {
@@ -36,14 +36,14 @@ void ErdToolsMain::HookEldenRing() {
 		EnableDebugConsole();
 	}
 
-	hook = ErdHook();
-	if (!hook.CreateMemoryEdits()) {
+	Hook = ErdHook();
+	if (!Hook.CreateMemoryEdits()) {
 		return;
 	}
 
 	Setup();
 
-	while (is_mod_active) {
+	while (IsModActive) {
 		std::this_thread::sleep_for(5s);
 	}
 
@@ -82,24 +82,24 @@ bool ErdToolsMain::ReadINI() {
 	}
 
 	std::string header_segment = "DEBUG";
-	preferences = option_reader.GetBoolean(header_segment, "log_flags_in_console", false) ? static_cast<Preferences>(preferences | log_flags_in_console) : preferences;
-	preferences = option_reader.GetBoolean(header_segment, "enable_map_in_combat", false) ? static_cast<Preferences>(preferences | enable_map_in_combat) : preferences;
-	preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<Preferences>(preferences | enable_crafting_in_combat) : preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "log_flags_in_console", false) ? static_cast<UserPreferences>(Preferences | log_flags_in_console) : Preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "enable_map_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_map_in_combat) : Preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_crafting_in_combat) : Preferences;
 	
 	return true;
 }
 
 void ErdToolsMain::InitPreferences() {
-	if (preferences & log_flags_in_console) {
+	if (Preferences & log_flags_in_console) {
 		EnableDebugConsole();
-		hook.event_hook->EnableFlagListener();
+		Hook.EventMan->EnableFlagListener();
 	}
 
-	if (preferences & enable_map_in_combat) {
-		hook.debug_hook->EnableMapInCombat();
+	if (Preferences & enable_map_in_combat) {
+		Hook.DebugMan->EnableMapInCombat();
 	}
 
-	if (preferences & enable_crafting_in_combat) {
-		hook.debug_hook->EnableCraftingInCombat();
+	if (Preferences & enable_crafting_in_combat) {
+		Hook.DebugMan->EnableCraftingInCombat();
 	}
 }

@@ -43,7 +43,7 @@ bool ErdHook::FindNeededSignatures() {
 	0,
 	};
 	event_hook->IsEventFlagAddress = (uint64_t)signature_class.FindSignature(is_event);
-	*(void**)&EventHook::IsEventFlag = (LPVOID)event_hook->IsEventFlagAddress;
+	*(void**)&EventHook::IsEventFlag = (void*)event_hook->IsEventFlagAddress;
 
 	Signature disable_map = {
 	"\x74\xFF\xC7\x45\x38\x58\x02\x00\x00\xC7\x45\x3C\x02\x00\x00\x00\xC7\x45\x40\x01\x00\x00\x00\x48\xFF\xFF\xFF\xFF\xFF\xFF\x48\x89\x45\x48\x48\x8D\x4D\x38\xE8\xFF\xFF\xFF\xFF\xE9",

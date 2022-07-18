@@ -16,9 +16,9 @@ public:
 	uint64_t CloseMapInCombatLocation;
 
 private:
-	const unsigned char close_map_patch_bytes[5] = { 0x48, 0x31, 0xC0, 0x90, 0x90 };
+	const unsigned char CLOSE_MAP_PATCH_BYTES[5] = { 0x48, 0x31, 0xC0, 0x90, 0x90 };
 	unsigned char close_map_original_bytes[5];
-	const unsigned char disable_crafting_patch_bytes[5] = { 0xB8, 0x00, 0x00, 0x00, 0x00 };
+	const unsigned char DISABLE_CRAFTING_PATCH_BYTES[5] = { 0xB8, 0x00, 0x00, 0x00, 0x00 };
 	unsigned char disable_crafting_original_bytes[5];
 };
 

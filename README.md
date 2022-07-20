@@ -7,6 +7,9 @@ A tool for runtime modding Elden Ring.
 # WARNING  
 Backup your saves before using this tool, and restore the backups before going online. 
 
+# Permissions
+Feel free to use this in your mod. Just link people here so they can get help if the DLL is failing them.  
+
 ## How To Use 
 install [Elden Ring Mod Loader](https://www.nexusmods.com/eldenring/mods/117) and put this mod and ini file in the mods folder for mod loader. 
 Adjust the ini to your liking an launch the game. You must re-launch the game to change the settings.

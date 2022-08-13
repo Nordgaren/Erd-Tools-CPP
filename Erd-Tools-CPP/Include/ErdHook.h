@@ -1,9 +1,9 @@
 #pragma once
-#include <stdexcept>
+
+#include "Common.h"
 #include "ErdTools_globals.h"
 #include "EventHook.h"
 #include "DebugHook.h"
-#include "../minhook/include/MinHook.h"
 
 struct Signature {
 	const char* signature;
@@ -40,6 +40,7 @@ public:
 		delete  DebugMan;
 	}
 private:
+	static uint64_t GetRelativeOffset(void* pointer, int address_offset, int instruction_size);
 	MH_STATUS _minhookActive = MH_UNKNOWN;
 	SigScan _signatureClass;
 };

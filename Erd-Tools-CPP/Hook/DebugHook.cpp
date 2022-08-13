@@ -1,7 +1,5 @@
 #include "../Include/DebugHook.h"
 
-#include <cstdio>
-
 uint64_t DisableOpenMap = 0;
 uint64_t CombatCloseMap = 0;
 

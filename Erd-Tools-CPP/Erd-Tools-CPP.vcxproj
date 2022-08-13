@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Common.h" />
     <ClInclude Include="Include\DebugHook.h" />
     <ClInclude Include="Include\ErdHook.h" />
     <ClInclude Include="Include\ErdToolsMain.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="minhook\src\hde\table32.h" />
     <ClInclude Include="minhook\src\hde\table64.h" />
     <ClInclude Include="minhook\src\trampoline.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -186,6 +188,9 @@
     <ClCompile Include="minhook\src\hde\hde64.c" />
     <ClCompile Include="minhook\src\hook.c" />
     <ClCompile Include="minhook\src\trampoline.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Erd-Tools-CPP.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

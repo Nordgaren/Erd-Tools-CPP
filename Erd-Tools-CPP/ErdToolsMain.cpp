@@ -1,12 +1,8 @@
 #include "Include/ErdToolsMain.h"
 
-#include <filesystem>
-
-
 ErdToolsMain* main_mod = nullptr;
 
 void CreateHook() {
-
 	using namespace std::chrono_literals;
 
 	// Wait for Elden Ring
@@ -24,8 +20,8 @@ void ErdToolsMain::EnableDebugConsole() {
 	}
 
 	AllocConsole();
-	FILE* fpstdin = stdin;
-	freopen_s(&fpstdin,"CONOUT$", "w", stdout);
+	FILE* fpstdout = stdout;
+	freopen_s(&fpstdout,"CONOUT$", "w", stdout);
 	_debugConsoleEnabled = true;
 }
 

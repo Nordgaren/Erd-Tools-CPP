@@ -1,6 +1,6 @@
 #pragma once
-#include <cstdint>
-#include <string.h>
+
+#include "Common.h"
 
 class DebugHook
 {

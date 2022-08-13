@@ -69,6 +69,12 @@
     <ClInclude Include="Include\DebugHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -107,5 +113,10 @@
     <ClCompile Include="Hook\DebugHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Erd-Tools-CPP.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

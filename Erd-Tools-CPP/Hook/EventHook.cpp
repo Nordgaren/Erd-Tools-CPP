@@ -1,11 +1,6 @@
 #include "../Include/EventHook.h"
 #include "../minhook/include/MinHook.h"
-#include <string>
-#include <time.h>
-
-
-uint32_t _last_event_id = 0;
-bool _last_event_state = false;
+#define MAX_TIME 100
 
 void EventHook::SetEventFlagHook(const uint64_t event_man, uint32_t* event_id, bool state) {
 	bool current_state = IsEventFlag(event_man, event_id);
@@ -15,11 +10,12 @@ void EventHook::SetEventFlagHook(const uint64_t event_man, uint32_t* event_id, b
 	if (current_state == new_state)
 		return;
 
-	_last_event_id = *event_id;
-	_last_event_state = state;
-	time_t current_time = time(NULL);
-	std::string date = ctime(&current_time);
-	printf("%s - Event Flag Set: %u %d\n", date.substr(0, date.size() - 1).c_str(),*event_id, state);
+	const time_t current_time = time(NULL);
+	tm t = tm();
+	localtime_s(&t, &current_time);
+	char time[MAX_TIME];
+	strftime(time, MAX_TIME, "%a, %d %b %Y %r", &t);
+	printf("%s - Event Flag Set: %u %d and the address of event man is %llu\n", time, *event_id, state, *EventMan);
 }
 
 bool EventHook::EnableFlagListener() {

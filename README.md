@@ -27,6 +27,10 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Beta 0.1.2
+
+* Added auto harvest
+
 ### Beta 0.1
 
 * Initial release

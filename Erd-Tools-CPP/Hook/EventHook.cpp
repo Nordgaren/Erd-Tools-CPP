@@ -15,7 +15,7 @@ void EventHook::SetEventFlagHook(const uint64_t event_man, uint32_t* event_id, b
 	localtime_s(&t, &current_time);
 	char time[MAX_TIME];
 	strftime(time, MAX_TIME, "%a, %d %b %Y %r", &t);
-	printf("%s - Event Flag Set: %u %d and the address of event man is %llu\n", time, *event_id, state, *EventMan);
+	printf("%s - Event Flag Set: %u %d\n", time, *event_id, state);
 }
 
 bool EventHook::EnableFlagListener() {
@@ -34,3 +34,4 @@ bool EventHook::DisableFlagListener() {
 
 	return false;
 }
+

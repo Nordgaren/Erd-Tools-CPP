@@ -1,4 +1,6 @@
 #pragma once
+#define DEBUG_CONSOLE 1
+
 #include <cstdint>
 #include <string.h>
 #include <stdexcept>

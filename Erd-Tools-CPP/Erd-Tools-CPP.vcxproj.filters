@@ -75,6 +75,9 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\ParamHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -111,6 +114,9 @@
       <Filter>Resource Files\INIReader</Filter>
     </ClCompile>
     <ClCompile Include="Hook\DebugHook.cpp">
+      <Filter>Source Files\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="ParamHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
   </ItemGroup>

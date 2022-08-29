@@ -51,6 +51,9 @@ void ErdToolsMain::Setup() {
 	} else {
 	//@TODO:Check if communication with debug tools is open and open if it is not and ini doesn't exist.
 	}
+
+	Hook.ParamMan->InitParamTools();
+
 }
 
 bool ErdToolsMain::ReadINI() {
@@ -81,7 +84,12 @@ bool ErdToolsMain::ReadINI() {
 	Preferences = option_reader.GetBoolean(header_segment, "log_flags_in_console", false) ? static_cast<UserPreferences>(Preferences | log_flags_in_console) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "enable_map_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_map_in_combat) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_crafting_in_combat) : Preferences;
-	
+	Preferences = option_reader.GetBoolean(header_segment, "auto_harvest", false) ? static_cast<UserPreferences>(Preferences | enable_auto_harvest) : Preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "auto_harvest", false) ? static_cast<UserPreferences>(Preferences | enable_auto_harvest) : Preferences;
+
+	Hook.ParamMan->_autoHarvestMultiplier = option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
+	Hook.ParamMan->_mapSpeedMultiplier = option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
+
 	return true;
 }
 
@@ -98,4 +106,9 @@ void ErdToolsMain::InitPreferences() {
 	if (Preferences & enable_crafting_in_combat) {
 		Hook.DebugMan->EnableCraftingInCombat();
 	}
+
+	if (Preferences & enable_auto_harvest) {
+		Hook.DebugMan->EnableAutoHarvest();
+	}
+
 }

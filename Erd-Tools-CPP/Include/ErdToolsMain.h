@@ -1,10 +1,8 @@
 #pragma once
 
-#include "TcpServer.h"
 #include "Common.h"
 #include "ErdHook.h"
 
-#define DEBUG_CONSOLE 0
 
 void CreateHook();
 
@@ -14,7 +12,6 @@ public:
 	void HookEldenRing();
 	uint32_t IsModActive;
 	ErdHook Hook;
-	TcpServer Server;
 	UserPreferences Preferences;
 
 	ErdToolsMain() {

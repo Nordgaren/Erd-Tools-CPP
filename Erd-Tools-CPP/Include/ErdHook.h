@@ -37,8 +37,9 @@ public:
 		DebugMan = new DebugHook();
 		ParamMan = new ParamHook();
 	}
-
 	~ErdHook() {
+		printf("ErdHook Destroy'd \n");
+
 		delete  EventMan;
 		delete  DebugMan;
 		delete  ParamMan;

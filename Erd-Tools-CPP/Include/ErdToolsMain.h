@@ -16,7 +16,6 @@ public:
 
 	ErdToolsMain() {
 		IsModActive = 1;
-		Hook = {};
 		Preferences = none;
 ;	}
 

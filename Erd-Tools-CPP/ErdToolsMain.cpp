@@ -11,6 +11,11 @@ void CreateHook() {
 	main_mod = new ErdToolsMain();
 
 	main_mod->HookEldenRing();
+
+	while (main_mod->IsModActive) {
+		std::this_thread::sleep_for(5s);
+	}
+
 	delete main_mod;
 };
 
@@ -32,16 +37,11 @@ void ErdToolsMain::HookEldenRing() {
 		EnableDebugConsole();
 	}
 
-	Hook = ErdHook();
 	if (!Hook.CreateMemoryEdits()) {
 		return;
 	}
-
 	Setup();
 
-	while (IsModActive) {
-		std::this_thread::sleep_for(5s);
-	}
 
 }
 

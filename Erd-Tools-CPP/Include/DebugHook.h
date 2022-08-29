@@ -18,7 +18,13 @@ public:
 	uint64_t DisableCrafingInCombatLocation;
 	uint64_t CloseMapInCombatLocation;
 	uint64_t AutoHarvestLocation = 0;
+	DebugHook() {
 
+	}
+	~DebugHook() {
+		printf("DebugHook Destroy'd \n");
+
+	}
 
 private:
 	const unsigned char CLOSE_MAP_PATCH_BYTES[5] = { 0x48, 0x31, 0xC0, 0x90, 0x90 };

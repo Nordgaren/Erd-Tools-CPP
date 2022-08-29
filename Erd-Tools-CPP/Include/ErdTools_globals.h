@@ -141,7 +141,6 @@ struct MenuCommonParamParamContainer {
 struct ActionButtonParamParamContainer {
     void* pad = nullptr;
     uint32_t entry_id = __UINT32_MAX__;
-    void* pad2 = nullptr;
     ActionButtonParam* param_entry = nullptr;
 };
 

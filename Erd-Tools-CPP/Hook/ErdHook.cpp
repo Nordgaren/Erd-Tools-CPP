@@ -1,7 +1,10 @@
 #include "../Include/ErdHook.h"
 
 bool ErdHook::CreateMemoryEdits() {
+
 	_minhookActive = MH_Initialize();
+
+
 	if (_minhookActive != MH_OK) {
 		throw std::runtime_error("MH_Initialize != MH_OK");
 	}
@@ -10,7 +13,6 @@ bool ErdHook::CreateMemoryEdits() {
 		printf("Find Sig Failed");
 		//throw std::runtime_error("Failed to find function signatures");
 	}
-
 	if constexpr (DEBUG_CONSOLE) debugPrint();
 
 	return true;
@@ -23,8 +25,7 @@ uint64_t ErdHook::GetRelativeOffset(void* pointer, int address_offset, int instr
 	return relativeAddr;
 }
 
-uint64_t* EventHook::EventMan = 0;
-
+uint64_t* EventHook::EventMan = nullptr;
 
 bool ErdHook::FindNeededSignatures() {
 	if (!_signatureClass.GetImageInfo()) {

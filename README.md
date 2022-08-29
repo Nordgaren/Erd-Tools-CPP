@@ -23,10 +23,18 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 **Pav** - Author of one of the CE Tables I use. Talented reverse engineer who is incredibly helpful!   
 **[jamesq7](https://github.com/kh0nsu)** - For helping figure out the cheat for enabling the map during combat and helping with the enable crafting during combat funciton.  
 **[Wasted](https://github.com/FrankvdStam)** - Rust nerd who gives me pointers for C++.  
+**[Tremwil](https://github.com/tremwil)** - Smart person who help me debug dumb mistakes.  
 **[TKGP](https://github.com/JKAnderson/)** - Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) [Property Hook](https://github.com/JKAnderson/PropertyHook) and [SoulsFormats](https://github.com/JKAnderson/SoulsFormats), which got me into this kind of modding.  
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Beta 0.1.2.1
+* Added range multiplier for harvesting materials.  
+
+* Added multiplier for map scroll speed  
+
+* Fixed a bug  
+
 ### Beta 0.1.2
 
 * Added auto harvest

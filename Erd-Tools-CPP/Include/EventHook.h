@@ -13,4 +13,10 @@ public:
 	uint64_t SetEventFlagAddress = 0;
 	uint64_t IsEventFlagAddress = 0;
 	static uint64_t* EventMan;
+	EventHook() {
+
+	}
+	~EventHook() {
+		printf("EventHook Destroy'd \n");
+	}
 };

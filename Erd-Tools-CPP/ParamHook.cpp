@@ -29,26 +29,24 @@ void ParamHook::InitParamTools() {
 
 }
 
-
-void ParamHook::ChangeParams(unsigned entry) {
-
-	ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
-	std::invoke(FindActionButtonParamEntry, &buttonContainer, entry);
-	ActionButtonParam *actionParam = buttonContainer.param_entry;
-
-	if (actionParam != nullptr)
-		actionParam->radius *= _autoHarvestMultiplier;
-}
-
 void ParamHook::EditActionButtonParam() {
 	printf("EditActionButtonParam\n");
 
 	for (unsigned int i = AQCUIRE_MATERIAL_START; i < AQCUIRE_MATERIAL_END; i++) {
+		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
+		std::invoke(FindActionButtonParamEntry, &buttonContainer, i);
+		ActionButtonParam* actionParam = buttonContainer.param_entry;
 
-		MenuCommonParamParamContainer menuContainer = MenuCommonParamParamContainer();
-		std::invoke(main_mod->Hook.ParamMan->GetMenuCommonParamEntry, &menuContainer);
-		menuContainer.param_entry->worldMapCursorSpeed *= _mapSpeedMultiplier;
+		if (actionParam != nullptr)
+			actionParam->radius *= _autoHarvestMultiplier;
 	}
+}
+
+void ParamHook::EditMenuCommonParam() {
+
+	MenuCommonParamParamContainer menuContainer = MenuCommonParamParamContainer();
+	std::invoke(main_mod->Hook.ParamMan->GetMenuCommonParamEntry, &menuContainer);
+	menuContainer.param_entry->worldMapCursorSpeed *= _mapSpeedMultiplier;
 }
 
 uint64_t ParamHook::GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName) {

@@ -1,6 +1,6 @@
 #include "../Include/ErdHook.h"
 #include "../Include/ErdToolsMain.h"
-#define BOSS_ARRAY_LEN 3
+#define BOSS_CHR_ARRAY_LEN 3
 
 extern ErdToolsMain* main_mod;
 
@@ -251,32 +251,28 @@ void ErdHook::debugPrint() {
 
 }
 
-struct ActiveBossBar {
-	ChrIns* chrIns = nullptr;
-};
-
-ActiveBossBar bossBars[BOSS_ARRAY_LEN];
+ChrIns* bossChrInsArray[BOSS_CHR_ARRAY_LEN];
 
 void ErdHook::writePoiseToBossBar() {
 	using namespace std::chrono_literals;
 
 	while (true) {
-		for (int i = 0; i < BOSS_ARRAY_LEN; i++) {
+		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
 			CSFeManImp* feMan = *main_mod->Hook.CSFeMan;
 
 			if (feMan == nullptr) {
-				for (int j = 0; j < BOSS_ARRAY_LEN; j++) {
-					bossBars[j].chrIns = nullptr;
+				for (int j = 0; j < BOSS_CHR_ARRAY_LEN; j++) {
+					bossChrInsArray[j] = nullptr;
 				}
 
 				std::this_thread::sleep_for(5s);
 				continue;
 			}
 
-			if (feMan->bossHpBars[i].chrInsHandle != -1 && bossBars[i].chrIns != nullptr) {
+			if (feMan->bossHpBars[i].chrInsHandle != -1 && bossChrInsArray[i] != nullptr) {
 
-				float stagger = bossBars[i].chrIns->chrModuleBase->staggerModule->staggerMax - bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
-				int staggerInt = (int)bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
+				float stagger = bossChrInsArray[i]->chrModuleBase->staggerModule->staggerMax - bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
+				int staggerInt = (int)bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
 				if (stagger > 0) {
 					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
 					feMan->bossHpBars[i].isHit = true;
@@ -296,10 +292,10 @@ void ErdHook::writePoiseToBossBar() {
 void ErdHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
 
 	//prevent an oops
-	if (bossBarIndex > 2)
+	if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
 		return;
 
-	bossBars[bossBarIndex].chrIns = main_mod->Hook.GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
+	bossChrInsArray[bossBarIndex] = main_mod->Hook.GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
 	main_mod->Hook.EnableBossBarOriginal(entityId, bossBarIndex, displayId);
 
 }

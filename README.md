@@ -40,7 +40,7 @@ If I missed your contribution, let me know!
 
 # Change Log 
 ### Beta 0.1.3
-* Added option to display poise instead of damage numbers on boss bar.  
+* Added option to display poise instead of damage numbers on boss bar. (Experimental)  
 
 ### Beta 0.1.2.1
 * Added range multiplier for harvesting materials.  

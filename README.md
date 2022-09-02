@@ -10,6 +10,16 @@ Backup your saves before using this tool, and restore the backups before going o
 # Permissions
 Feel free to use this in your mod. Just link people here so they can get help if the DLL is failing them.  
 
+# Features 
+All features are adjustable in the ini!  
+
+Open map in combat  
+Crafting in Combat  
+Event Flag log to console window  
+Auto Harvest crafting materials  
+Harvest range multiplier  
+Map scoll speed multiplier  
+
 ## How To Use 
 install [Elden Ring Mod Loader](https://www.nexusmods.com/eldenring/mods/117) and put this mod and ini file in the mods folder for mod loader. 
 Adjust the ini to your liking an launch the game. You must re-launch the game to change the settings.

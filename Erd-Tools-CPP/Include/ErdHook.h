@@ -29,6 +29,7 @@ class ErdHook {
 public:
 	bool CreateMemoryEdits();
 	bool FindNeededSignatures();
+	bool EnablePoiseMeter();
 	EventHook* EventMan;
 	DebugHook* DebugMan;
 	ParamHook* ParamMan;

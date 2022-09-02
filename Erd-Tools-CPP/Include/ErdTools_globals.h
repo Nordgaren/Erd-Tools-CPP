@@ -6,7 +6,8 @@ enum UserPreferences {
 	log_flags_in_console = 1 << 0,
 	enable_map_in_combat = 1 << 1,
 	enable_crafting_in_combat = 1 << 2,
-	enable_auto_harvest = 1 << 3
+    enable_auto_harvest = 1 << 3,
+    enable_boss_poise_meter = 1 << 4
 };
 
 struct ReinforceParamWeapon {

@@ -19,6 +19,7 @@ Event Flag log to console window
 Auto Harvest crafting materials  
 Harvest range multiplier  
 Map scoll speed multiplier  
+Boss Bar Poise Meter  
 
 ## How To Use 
 install [Elden Ring Mod Loader](https://www.nexusmods.com/eldenring/mods/117) and put this mod and ini file in the mods folder for mod loader. 
@@ -38,6 +39,9 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Beta 0.1.3
+* Added option to display poise instead of damage numbers on boss bar.  
+
 ### Beta 0.1.2.1
 * Added range multiplier for harvesting materials.  
 

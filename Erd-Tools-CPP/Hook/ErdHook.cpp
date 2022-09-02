@@ -17,19 +17,6 @@ bool ErdHook::CreateMemoryEdits() {
 		printf("Find Sig Failed\n");
 		//throw std::runtime_error("Failed to find function signatures");
 	}
-	if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBar, (void**)&ErdHook::EnableBossBarOriginal) != MH_OK) {
-		return false;
-	}
-
-	MH_EnableHook((void*)_enableBossBarAddr);
-	*(int*)_applyBossBarDmg = 0x909090C3;
-
-	printf("_applyBossBarDmg\n");
-
-	std::thread t(&ErdHook::writePoiseToBossBar, this);
-	t.detach();
-
-	printf("writePoiseToBossBar\n");
 
 	if constexpr (DEBUG_CONSOLE) debugPrint();
 
@@ -38,14 +25,9 @@ bool ErdHook::CreateMemoryEdits() {
 
 uint64_t ErdHook::GetRelativeOffset(void* pointer, int address_offset, int instruction_size) {
 	uint64_t relativeAddr = (uint64_t)pointer;
-	printf("address_offset %d\n", address_offset);
-	printf("instruction_size %d\n", instruction_size);
 	int offset = *(int*)(relativeAddr + address_offset);
-	printf("offset %d\n", offset);
 
 	relativeAddr += offset + instruction_size;
-	printf("relativeAddr %p\n", relativeAddr);
-
 	return relativeAddr;
 }
 
@@ -181,6 +163,21 @@ bool ErdHook::FindNeededSignatures() {
 		ParamMan->FindActionButtonParamEntry && _enableBossBarAddr && GetChrInsFromEntityIdFunc && CSFeMan && _applyBossBarDmg;
 }
 
+bool ErdHook::EnablePoiseMeter() {
+
+	if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBar, (void**)&ErdHook::EnableBossBarOriginal) != MH_OK) {
+		return false;
+	}
+
+	MH_EnableHook((void*)_enableBossBarAddr);
+	*(int*)_applyBossBarDmg = 0x909090C3;
+
+	std::thread t(&ErdHook::writePoiseToBossBar, this);
+	t.detach();
+
+	return true;
+}
+
 bool SigScan::GetImageInfo() {
 
 	bool bSuccess = false;
@@ -279,12 +276,16 @@ void ErdHook::writePoiseToBossBar() {
 			if (feMan->bossHpBars[i].chrInsHandle != -1 && bossBars[i].chrIns != nullptr) {
 
 				float stagger = bossBars[i].chrIns->chrModuleBase->staggerModule->staggerMax - bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
+				int staggerInt = (int)bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
 				if (stagger > 0) {
-					feMan->bossHpBars[i].currentDisplayDamage = (int)bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
+					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
+					feMan->bossHpBars[i].isHit = true;
+				} else if (feMan->bossHpBars[i].displayTime > 0 && feMan->bossHpBars[i].currentDisplayDamage != staggerInt) {
+					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
 					feMan->bossHpBars[i].isHit = true;
 				}
 
-			}
+			} 
 
 		}
 	}

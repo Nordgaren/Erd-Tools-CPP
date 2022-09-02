@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Common.h"
-typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool state);
-typedef bool (*IsEventFlag)(uint64_t event_man, uint32_t* event_id);
+#include "ErdTools_globals.h"
+
 class EventHook {
 public:
 	bool EnableFlagListener();

@@ -44,9 +44,16 @@ public:
 		delete  DebugMan;
 		delete  ParamMan;
 	}
+	static inline EnableBossBar EnableBossBarOriginal = nullptr;
+	GetChrInsFromEntityId* GetChrInsFromEntityIdFunc = nullptr;
+	CSFeManImp** CSFeMan;
 private:
 	static uint64_t GetRelativeOffset(void* pointer, int address_offset, int instruction_size);
 	void debugPrint();
+	void writePoiseToBossBar();
+	static void enableBossBar(int* entityId, int bossBarIndex, int displayId);
+	uintptr_t _enableBossBarAddr = 0;
+	uintptr_t _applyBossBarDmg = 0;
 	MH_STATUS _minhookActive = MH_UNKNOWN;
 	SigScan _signatureClass;
 };

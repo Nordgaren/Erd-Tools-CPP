@@ -24,10 +24,13 @@ void ErdToolsMain::EnableDebugConsole() {
 		return;
 	}
 
-	AllocConsole();
-	FILE* fpstdout = stdout;
-	freopen_s(&fpstdout,"CONOUT$", "w", stdout);
-	_debugConsoleEnabled = true;
+	if (AllocConsole()) {
+		FILE* fpstdout = stdout;
+		freopen_s(&fpstdout,"CONOUT$", "w", stdout);
+		SetWindowText(GetConsoleWindow(), L"Erd Tools");
+
+		_debugConsoleEnabled = true;
+	}
 }
 
 void ErdToolsMain::HookEldenRing() {

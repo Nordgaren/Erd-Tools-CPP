@@ -1,4 +1,8 @@
 #include "../Include/ErdHook.h"
+#include "../Include/ErdToolsMain.h"
+#define BOSS_ARRAY_LEN 3
+
+extern ErdToolsMain* main_mod;
 
 bool ErdHook::CreateMemoryEdits() {
 
@@ -10,9 +14,23 @@ bool ErdHook::CreateMemoryEdits() {
 	}
 
 	if (!FindNeededSignatures()) {
-		printf("Find Sig Failed");
+		printf("Find Sig Failed\n");
 		//throw std::runtime_error("Failed to find function signatures");
 	}
+	if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBar, (void**)&ErdHook::EnableBossBarOriginal) != MH_OK) {
+		return false;
+	}
+
+	MH_EnableHook((void*)_enableBossBarAddr);
+	*(int*)_applyBossBarDmg = 0x909090C3;
+
+	printf("_applyBossBarDmg\n");
+
+	std::thread t(&ErdHook::writePoiseToBossBar, this);
+	t.detach();
+
+	printf("writePoiseToBossBar\n");
+
 	if constexpr (DEBUG_CONSOLE) debugPrint();
 
 	return true;
@@ -20,8 +38,14 @@ bool ErdHook::CreateMemoryEdits() {
 
 uint64_t ErdHook::GetRelativeOffset(void* pointer, int address_offset, int instruction_size) {
 	uint64_t relativeAddr = (uint64_t)pointer;
+	printf("address_offset %d\n", address_offset);
+	printf("instruction_size %d\n", instruction_size);
 	int offset = *(int*)(relativeAddr + address_offset);
+	printf("offset %d\n", offset);
+
 	relativeAddr += offset + instruction_size;
+	printf("relativeAddr %p\n", relativeAddr);
+
 	return relativeAddr;
 }
 
@@ -127,9 +151,34 @@ bool ErdHook::FindNeededSignatures() {
 	};
 	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)_signatureClass.FindSignature(get_actionbuttonparam_signature);
 
+	Signature enableBossBarSig = {
+		"\x48\x89\x5C\x24\x08\x48\x89\x74\x24\x10\x57\x48\x83\xEC\x20\x48\x8B\xF9\x41\x8B\xF0\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xDA\x48\x85\xC9",
+		"xxxxxxxxxxxxxxxxxxxxxxxx????xxxxx",
+	};
+	void* enableBossBar = _signatureClass.FindSignature(enableBossBarSig);
+	_enableBossBarAddr = (uintptr_t)enableBossBar;
+
+	GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBar, 0x69, 0x6D);
+
+	Signature csFeManImp = {
+		"\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xDA\x48\x85\xC9\x75\xFF\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xC8\x4C\x8D\x05\xFF\xFF\xFF\xFF\xBA\xB4\x00\x00\x00\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xD3\xE8\xFF\xFF\xFF\xFF\x48\x8B\xD8",
+		"xxx????xxxxxx?xxx????x????xxxxxx????xxxxxxxx????x????xxx????xxx????xxx",
+	};
+
+	void* res = _signatureClass.FindSignature(csFeManImp);
+	CSFeMan = (CSFeManImp**)GetRelativeOffset(res, 0x3, 0x7);
+
+	Signature applyBossBarDmgSig = {
+		"\x83\xFA\x02\x77\xFF\x48\x63\xC2\x48\x05\xB9\x02\x00\x00\x48\xC1\xE0\x05\x48\x03\xC1\xEB",
+		"xxxx?xxxxxxxxxxxxxxxxx",
+	};
+
+	_applyBossBarDmg = (uintptr_t)_signatureClass.FindSignature(applyBossBarDmgSig);
+
 	return EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
-	&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc && ParamMan->FindEquipParamProtectorFunc &&
-		ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry && ParamMan->FindActionButtonParamEntry;
+		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
+		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
+		ParamMan->FindActionButtonParamEntry && _enableBossBarAddr && GetChrInsFromEntityIdFunc && CSFeMan && _applyBossBarDmg;
 }
 
 bool SigScan::GetImageInfo() {
@@ -181,22 +230,76 @@ inline uint64_t SigScan::PtrFromOffset(uint64_t offset) {
 }
 
 void ErdHook::debugPrint() {
-	
+
 	printf("Ptrs: \n");
 	printf("EventMan->EventMan: %p\n", EventMan->EventMan);
-	printf("EventMan->SetEventFlagAddress  %p\n", EventMan->SetEventFlagAddress);
-	printf("EventMan->IsEventFlagAddress  %p\n", EventMan->IsEventFlagAddress);
-	printf("DebugMan->DisableOpenMapInCombatLocation  %p\n", DebugMan->DisableOpenMapInCombatLocation);
-	printf("DebugMan->CloseMapInCombatLocation  %p\n", DebugMan->CloseMapInCombatLocation);
+	printf("EventMan->SetEventFlagAddress %p\n", EventMan->SetEventFlagAddress);
+	printf("EventMan->IsEventFlagAddress %p\n", EventMan->IsEventFlagAddress);
+	printf("DebugMan->DisableOpenMapInCombatLocation %p\n", DebugMan->DisableOpenMapInCombatLocation);
+	printf("DebugMan->CloseMapInCombatLocation %p\n", DebugMan->CloseMapInCombatLocation);
 	printf("DebugMan->DisableCrafingInCombatLocation  %p\n", DebugMan->DisableCrafingInCombatLocation);
-	printf("ParamMan->_soloParamRepositoryAddr   %p\n", ParamMan->_soloParamRepositoryAddr);
-	printf("ParamMan->SoloParamRepository   %p\n", ParamMan->SoloParamRepository);
-	printf("ParamMan->FindEquipParamWeaponFunc   %p\n", ParamMan->FindEquipParamWeaponFunc);
-	printf("ParamMan->FindEquipParamProtectorFunc   %p\n", ParamMan->FindEquipParamProtectorFunc);
-	printf("ParamMan->FindEquipParamGoodsFunc   %p\n", ParamMan->FindEquipParamGoodsFunc);
-	printf("ParamMan->FindEquipMtrlSetParamFunc   %p\n", ParamMan->FindEquipMtrlSetParamFunc);
-	printf("ParamMan->GetMenuCommonParamEntry   %p\n", ParamMan->GetMenuCommonParamEntry);
-	printf("ParamMan->FindActionButtonParamEntry   %p\n", ParamMan->FindActionButtonParamEntry);
+	printf("ParamMan->_soloParamRepositoryAddr %p\n", ParamMan->_soloParamRepositoryAddr);
+	printf("ParamMan->SoloParamRepository %p\n", ParamMan->SoloParamRepository);
+	printf("ParamMan->FindEquipParamWeaponFunc %p\n", ParamMan->FindEquipParamWeaponFunc);
+	printf("ParamMan->FindEquipParamProtectorFunc %p\n", ParamMan->FindEquipParamProtectorFunc);
+	printf("ParamMan->FindEquipParamGoodsFunc %p\n", ParamMan->FindEquipParamGoodsFunc);
+	printf("ParamMan->FindEquipMtrlSetParamFunc %p\n", ParamMan->FindEquipMtrlSetParamFunc);
+	printf("ParamMan->GetMenuCommonParamEntry %p\n", ParamMan->GetMenuCommonParamEntry);
+	printf("ParamMan->FindActionButtonParamEntry %p\n", ParamMan->FindActionButtonParamEntry);
+	printf("_enableBossBarAddr %p\n", _enableBossBarAddr);
+	printf("EnableBossBarOriginal %p\n", EnableBossBarOriginal);
+	printf("GetChrInsFromEntityIdFunc %p\n", GetChrInsFromEntityIdFunc);
+	printf("CSFeMan %p\n", CSFeMan);
+	printf("_applyBossBarDmg %p\n", _applyBossBarDmg);
+
+}
+
+struct ActiveBossBar {
+	ChrIns* chrIns = nullptr;
+};
+
+ActiveBossBar bossBars[BOSS_ARRAY_LEN];
+
+void ErdHook::writePoiseToBossBar() {
+	using namespace std::chrono_literals;
+
+	while (true) {
+		for (int i = 0; i < BOSS_ARRAY_LEN; i++) {
+			CSFeManImp* feMan = *main_mod->Hook.CSFeMan;
+
+			if (feMan == nullptr) {
+				for (int j = 0; j < BOSS_ARRAY_LEN; j++) {
+					bossBars[j].chrIns = nullptr;
+				}
+
+				std::this_thread::sleep_for(5s);
+				continue;
+			}
+
+			if (feMan->bossHpBars[i].chrInsHandle != -1 && bossBars[i].chrIns != nullptr) {
+
+				float stagger = bossBars[i].chrIns->chrModuleBase->staggerModule->staggerMax - bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
+				if (stagger > 0) {
+					feMan->bossHpBars[i].currentDisplayDamage = (int)bossBars[i].chrIns->chrModuleBase->staggerModule->stagger;
+					feMan->bossHpBars[i].isHit = true;
+				}
+
+			}
+
+		}
+	}
+
+}
+
+
+void ErdHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
+
+	//prevent an oops
+	if (bossBarIndex > 2)
+		return;
+
+	bossBars[bossBarIndex].chrIns = main_mod->Hook.GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
+	main_mod->Hook.EnableBossBarOriginal(entityId, bossBarIndex, displayId);
 
 }
 

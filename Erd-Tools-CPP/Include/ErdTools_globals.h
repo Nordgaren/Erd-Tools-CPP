@@ -165,6 +165,39 @@ struct EquipParamProtectorParamContainer {
     uint64_t buffer = 0;
 };
 
+struct StaggerModule {
+    uint8_t undefined[0x10];
+    float stagger;
+    float staggerMax;
+    uint8_t undefined2[0x4];
+    float resetTimer;
+};
+
+struct ChrModuleBase {
+    uint8_t undefined[0x40];
+    StaggerModule* staggerModule;
+};
+
+struct ChrIns {
+    uint8_t undefined[0x190];
+    ChrModuleBase* chrModuleBase;
+};
+
+struct BossHpBar {
+    int displayId = -1;
+    uint32_t pad0x4 = 0;
+    long long chrInsHandle = -1;
+    int currentDisplayDamage = 0;
+    int unk0x14 = 0;
+    bool isHit = 0;
+    uint8_t pad0x19[0x3] = { };
+    float displayTime = 0;
+};
+
+struct CSFeManImp {
+    uint8_t undefines[0x5720];
+    BossHpBar bossHpBars[3];
+};
 
 
 typedef void FindEquipParamWeaponEntry(EquipParamWeaponParamContainer*, uint32_t);
@@ -178,3 +211,11 @@ typedef void FindEquipMtrlSetParamEntry(ParamContainer*, uint32_t);
 typedef void GetMenuCommonParamEntry(MenuCommonParamParamContainer*);
 
 typedef void FindActionButtonParamEntry(ActionButtonParamParamContainer*, uint32_t);
+
+typedef void (* EnableBossBar)(int*, int, int);
+
+typedef ChrIns* GetChrInsFromEntityId(int*, uint64_t, uint32_t*);
+
+typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool state);
+
+typedef bool (*IsEventFlag)(uint64_t event_man, uint32_t* event_id);

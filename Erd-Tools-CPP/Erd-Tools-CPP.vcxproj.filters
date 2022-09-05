@@ -78,6 +78,9 @@
     <ClInclude Include="Include\ParamHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\FeHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -117,6 +120,9 @@
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
     <ClCompile Include="Hook\ParamHook.cpp">
+      <Filter>Source Files\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="Hook\FeHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
   </ItemGroup>

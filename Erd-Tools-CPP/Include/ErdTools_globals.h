@@ -6,9 +6,22 @@ enum UserPreferences {
 	log_flags_in_console = 1 << 0,
 	enable_map_in_combat = 1 << 1,
 	enable_crafting_in_combat = 1 << 2,
-    enable_auto_harvest = 1 << 3,
-    enable_boss_poise_meter = 1 << 4,
-    enable_entity_poise_meter = 1 << 5
+    enable_auto_pickup = 1 << 3,
+    enable_lock_pickup = 1 << 4,
+    enable_boss_poise_meter = 1 << 5,
+    enable_entity_poise_meter = 1 << 6
+};
+
+enum LootPreferences {
+    no_loot_changes = 0,
+    pickup_materials = 1 << 0,
+    pickup_items = 1 << 1,
+    pickup_corpse_loot = 1 << 2,
+    pickup_lost_runes = 1 << 3,
+    lock_materials = 1 << 4,
+    lock_items = 1 << 5,
+    lock_corpse_loot = 1 << 6,
+    lock_lost_runes = 1 << 7,
 };
 
 struct ReinforceParamWeapon {
@@ -181,7 +194,7 @@ struct ChrModuleBag {
 
 struct ChrIns {
     uint8_t undefined[0x8];
-    long long handle;
+    unsigned long long handle;
     uint8_t undefined2[0x180];
     ChrModuleBag* chrModuleBase;
 };
@@ -198,7 +211,7 @@ struct ChrDamageModule {
 struct BossHpBar {
     int displayId = -1;
     uint32_t pad0x4 = 0;
-    long long chrInsHandle = -1;
+    unsigned long long bossHandle = -1;
     int currentDisplayDamage = 0;
     int unk0x14 = 0;
     bool isHit = 0;
@@ -208,7 +221,7 @@ struct BossHpBar {
 static_assert(sizeof(BossHpBar) == 0x20);
 
 struct EntityHpBar {
-    long long handle = -1;
+    long long entityHandle = -1;
     uint32_t unk[6];
     char unkChar1;
     char unkChar2;
@@ -238,6 +251,7 @@ struct WorldChrMan {
 };
 
 
+
 typedef void FindEquipParamWeaponEntry(EquipParamWeaponParamContainer*, uint32_t);
 
 typedef void FindEquipParamProtectorEntry(EquipParamProtectorParamContainer*, uint32_t);
@@ -254,8 +268,10 @@ typedef void (*EnableBossBar)(int*, int, int);
 
 typedef ChrIns* GetChrInsFromEntityId(int*, uint64_t, uint32_t*);
 
-typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool state);
+typedef void (*SetEventFlag)(uint64_t, uint32_t*, bool);
 
-typedef bool (*IsEventFlag)(uint64_t event_man, uint32_t* event_id);
+typedef bool (*IsEventFlag)(uint64_t, uint32_t* );
 
-typedef void (*HandleDamage)(ChrDamageModule* chrModuleBase, int damage, char param_3, char param_4, uint32_t param_5, bool param_6);
+typedef void (*HandleDamage)(ChrDamageModule*, int, char, char, uint32_t, bool);
+
+typedef bool (*ExecActionButtonParam)(uintptr_t, int entryId);

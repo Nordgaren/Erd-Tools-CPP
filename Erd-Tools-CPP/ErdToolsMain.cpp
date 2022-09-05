@@ -56,6 +56,7 @@ void ErdToolsMain::Setup() {
 	}
 
 	Hook.ParamMan->InitParamTools();
+	Hook.FeMan->EnableLootPrefs();
 
 }
 
@@ -87,12 +88,27 @@ bool ErdToolsMain::ReadINI() {
 	Preferences = option_reader.GetBoolean(header_segment, "log_flags_in_console", false) ? static_cast<UserPreferences>(Preferences | log_flags_in_console) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "enable_map_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_map_in_combat) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_crafting_in_combat) : Preferences;
-	Preferences = option_reader.GetBoolean(header_segment, "auto_harvest", false) ? static_cast<UserPreferences>(Preferences | enable_auto_harvest) : Preferences;
+
+	header_segment = "FRONTEND";
 	Preferences = option_reader.GetBoolean(header_segment, "boss_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_boss_poise_meter) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "entity_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_entity_poise_meter) : Preferences;
 
+	LootPreferences lootPrefs = no_loot_changes;
+	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_materials", false) ? static_cast<LootPreferences>(lootPrefs | pickup_materials) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_items", false) ? static_cast<LootPreferences>(lootPrefs | pickup_items) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_corpse_loot", false) ? static_cast<LootPreferences>(lootPrefs | pickup_corpse_loot) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_lost_runes", false) ? static_cast<LootPreferences>(lootPrefs | pickup_lost_runes) : lootPrefs;
+
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_materials", false) ? static_cast<LootPreferences>(lootPrefs | lock_materials) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_items", false) ? static_cast<LootPreferences>(lootPrefs | lock_items) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_corpse_loot", false) ? static_cast<LootPreferences>(lootPrefs | lock_corpse_loot) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_runes", false) ? static_cast<LootPreferences>(lootPrefs | lock_lost_runes) : lootPrefs;
+	Hook.FeMan->LootPrefs = lootPrefs;
+
+	header_segment = "PARAM";
 	Hook.ParamMan->_autoHarvestMultiplier = option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
 	Hook.ParamMan->_mapSpeedMultiplier = option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
+
 
 	return true;
 }
@@ -111,16 +127,16 @@ void ErdToolsMain::InitPreferences() {
 		Hook.DebugMan->EnableCraftingInCombat();
 	}
 
-	if (Preferences & enable_auto_harvest) {
+	if (Preferences & enable_auto_pickup) {
 		Hook.DebugMan->EnableAutoHarvest();
 	}
 
 	if (Preferences & enable_boss_poise_meter) {
-		Hook.EnableBossPoiseMeter();
+		Hook.FeMan->EnableBossPoiseMeter();
 	}
 
 	if (Preferences & enable_entity_poise_meter) {
-		Hook.EnableEntityPoiseMeter();
+		Hook.FeMan->EnableEntityPoiseMeter();
 	}
 
 }

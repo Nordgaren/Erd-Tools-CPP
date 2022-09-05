@@ -1,7 +1,6 @@
 #include "../Include/ErdHook.h"
 #include "../Include/ErdToolsMain.h"
-#define BOSS_CHR_ARRAY_LEN 3
-#define ENTITY_CHR_ARRAY_LEN 8
+
 
 extern ErdToolsMain* main_mod;
 
@@ -139,9 +138,9 @@ bool ErdHook::FindNeededSignatures() {
 		"xxxxxxxxxxxxxxxxxxxxxxxx????xxxxx",
 	};
 	void* enableBossBar = _signatureClass.FindSignature(enableBossBarSig);
-	_enableBossBarAddr = (uintptr_t)enableBossBar;
+	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBar;
 
-	GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBar, 0x69, 0x6D);
+	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBar, 0x69, 0x6D);
 
 	Signature csFeManImp = {
 		"\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xDA\x48\x85\xC9\x75\xFF\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xC8\x4C\x8D\x05\xFF\xFF\xFF\xFF\xBA\xB4\x00\x00\x00\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xD3\xE8\xFF\xFF\xFF\xFF\x48\x8B\xD8",
@@ -149,27 +148,27 @@ bool ErdHook::FindNeededSignatures() {
 	};
 
 	void* res = _signatureClass.FindSignature(csFeManImp);
-	CSFeMan = (CSFeManImp**)GetRelativeOffset(res, 0x3, 0x7);
+	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(res, 0x3, 0x7);
 
 	Signature applyBossBarDmgSig = {
 		"\x83\xFA\x02\x77\xFF\x48\x63\xC2\x48\x05\xB9\x02\x00\x00\x48\xC1\xE0\x05\x48\x03\xC1\xEB",
 		"xxxx?xxxxxxxxxxxxxxxxx",
 	};
 
-	_applyBossBarDmg = (uintptr_t)_signatureClass.FindSignature(applyBossBarDmgSig);
+	FeMan->_applyBossBarDmg = (uintptr_t)_signatureClass.FindSignature(applyBossBarDmgSig);
 
 	Signature handleDamage = {
 		"\x48\x8B\xC4\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x83\xEC\x60\x48\xC7\x40\xC8\xFE\xFF\xFF\xFF\x48\x89\x58\x08",
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	};
 
-	_handleDmg = (uintptr_t)_signatureClass.FindSignature(handleDamage);
+	FeMan->_handleDmg = (uintptr_t)_signatureClass.FindSignature(handleDamage);
 
 	Signature applyEntityBarDmgSig = {
 	"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x48\x89\x7C\x24\x20\x41\x56\x48\x83\xEC\x20\x48\x8B\xDA\x45\x33\xF6\x41\x8B\xE9\x41\x8B\xF0\x45\x8B\xD6\x44\x8B\xC3\x41\x8B\xD6\x48\x8B\xF9\x41\xB9\xFF\xFF\xFF\xFF",
 	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 	};
-	_applyEntityBarDmg = (uintptr_t)_signatureClass.FindSignature(applyEntityBarDmgSig);
+	FeMan->_applyEntityBarDmg = (uintptr_t)_signatureClass.FindSignature(applyEntityBarDmgSig);
 
 
 	Signature worldChrManSig = {
@@ -178,41 +177,20 @@ bool ErdHook::FindNeededSignatures() {
 	};
 	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(_signatureClass.FindSignature(worldChrManSig), 0x3, 0x7);
 
+	Signature executeActionButtonParamSig = {
+		"\x48\x89\x5C\x24\x08\x57\x48\x81\xEC\x90\x00\x00\x00\x48\x8B\x84\x24\xE0\x00\x00\x00\x41\x0F\xB6\xD9\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xFA\x0F\x29\xB4\x24\x80\x00\x00\x00",
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxx",
+	};
+	void* executeActionButtonParam = _signatureClass.FindSignature(executeActionButtonParamSig);
+	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParam;
+	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParam, 0x1C, 0x20);
+	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParam, 0x43, 0x47);
+
 	return EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
-		ParamMan->FindActionButtonParamEntry && _enableBossBarAddr && GetChrInsFromEntityIdFunc && CSFeMan && _applyBossBarDmg && _handleDmg && _applyEntityBarDmg
-		&& WorldChrManIns;
-}
-
-bool ErdHook::EnableBossPoiseMeter() {
-
-	if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBar, (void**)&ErdHook::EnableBossBarOriginal) != MH_OK) {
-		return false;
-	}
-
-	MH_EnableHook((void*)_enableBossBarAddr);
-	*(int*)_applyBossBarDmg = 0x909090C3;
-
-	std::thread t(&ErdHook::writePoiseToBossBar, this);
-	t.detach();
-
-	return true;
-}
-
-bool ErdHook::EnableEntityPoiseMeter() {
-
-	if (MH_CreateHook((void*)_handleDmg, &handleDamage, (void**)&ErdHook::HandleDamageOriginal) != MH_OK) {
-		return false;
-	}
-
-	MH_EnableHook((void*)_handleDmg);
-	*(int*)_applyEntityBarDmg = 0x909090C3;
-
-	std::thread t(&ErdHook::writePoiseToEntityBar, this);
-	t.detach();
-
-	return true;
+		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
+		&& WorldChrManIns && FeMan->_executeActionButtonParamProxy && FeMan->executeActionButtonParam && FeMan->_actionButtonParamImp;
 }
 
 bool SigScan::GetImageInfo() {
@@ -266,12 +244,18 @@ inline uint64_t SigScan::PtrFromOffset(uint64_t offset) {
 void ErdHook::debugPrint() {
 
 	printf("Ptrs: \n");
+	printf("Hook\n");
+	printf("WorldChrMan: %p\n", WorldChrManIns);
+	printf("\nEventMan\n");
 	printf("EventMan->EventMan: %p\n", EventMan->EventMan);
 	printf("EventMan->SetEventFlagAddress %p\n", EventMan->SetEventFlagAddress);
 	printf("EventMan->IsEventFlagAddress %p\n", EventMan->IsEventFlagAddress);
+	printf("\nDebugMan\n");
 	printf("DebugMan->DisableOpenMapInCombatLocation %p\n", DebugMan->DisableOpenMapInCombatLocation);
 	printf("DebugMan->CloseMapInCombatLocation %p\n", DebugMan->CloseMapInCombatLocation);
-	printf("DebugMan->DisableCrafingInCombatLocation  %p\n", DebugMan->DisableCrafingInCombatLocation);
+	printf("DebugMan->DisableCrafingInCombatLocation %p\n", DebugMan->DisableCrafingInCombatLocation);
+	printf("DebugMan->AutoHarvestLocation %p\n", DebugMan->AutoHarvestLocation);
+	printf("\nParamMan\n");
 	printf("ParamMan->_soloParamRepositoryAddr %p\n", ParamMan->_soloParamRepositoryAddr);
 	printf("ParamMan->SoloParamRepository %p\n", ParamMan->SoloParamRepository);
 	printf("ParamMan->FindEquipParamWeaponFunc %p\n", ParamMan->FindEquipParamWeaponFunc);
@@ -280,124 +264,14 @@ void ErdHook::debugPrint() {
 	printf("ParamMan->FindEquipMtrlSetParamFunc %p\n", ParamMan->FindEquipMtrlSetParamFunc);
 	printf("ParamMan->GetMenuCommonParamEntry %p\n", ParamMan->GetMenuCommonParamEntry);
 	printf("ParamMan->FindActionButtonParamEntry %p\n", ParamMan->FindActionButtonParamEntry);
-	printf("_enableBossBarAddr %p\n", _enableBossBarAddr);
-	printf("EnableBossBarOriginal %p\n", EnableBossBarOriginal);
-	printf("GetChrInsFromEntityIdFunc %p\n", GetChrInsFromEntityIdFunc);
-	printf("CSFeMan %p\n", CSFeMan);
-	printf("_applyBossBarDmg %p\n", _applyBossBarDmg);
-	printf("_handleDmg %p\n", _handleDmg);
-	printf("_applyEntityBarDmg %p\n", _applyEntityBarDmg);
+	printf("\nFeMan:\n");
+	printf("_enableBossBarAddr %p\n", FeMan->_enableBossBarAddr);
+	printf("EnableBossBarOriginal %p\n", FeMan->EnableBossBarOriginal);
+	printf("GetChrInsFromEntityIdFunc %p\n", FeMan->GetChrInsFromEntityIdFunc);
+	printf("CSFeMan %p\n", FeMan->CSFeMan);
+	printf("_applyBossBarDmg %p\n", FeMan->_applyBossBarDmg);
+	printf("_handleDmg %p\n", FeMan->_handleDmg);
+	printf("_applyEntityBarDmg %p\n", FeMan->_applyEntityBarDmg);
+	printf("_executeActionButtonParam %p\n", FeMan->_executeActionButtonParamProxy);
 
 }
-
-ChrIns* bossChrInsArray[BOSS_CHR_ARRAY_LEN];
-
-void ErdHook::writePoiseToBossBar() {
-	using namespace std::chrono_literals;
-
-	while (true) {
-		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
-			CSFeManImp* feMan = *main_mod->Hook.CSFeMan;
-
-			if (feMan == nullptr) {
-				for (int j = 0; j < BOSS_CHR_ARRAY_LEN; j++) {
-					bossChrInsArray[j] = nullptr;
-				}
-
-				std::this_thread::sleep_for(5s);
-				continue;
-			}
-
-			if (feMan->bossHpBars[i].chrInsHandle != -1 && bossChrInsArray[i] != nullptr) {
-
-				float stagger = bossChrInsArray[i]->chrModuleBase->staggerModule->staggerMax - bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
-				int staggerInt = (int)bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
-				if (stagger > 0) {
-					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
-					feMan->bossHpBars[i].isHit = true;
-				} else if (feMan->bossHpBars[i].displayTime > 0 && feMan->bossHpBars[i].currentDisplayDamage != staggerInt) {
-					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
-					feMan->bossHpBars[i].isHit = true;
-				}
-			} 
-		}
-	}
-
-}
-
-void ErdHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
-
-	//prevent an oops
-	if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
-		return;
-
-	bossChrInsArray[bossBarIndex] = main_mod->Hook.GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
-	main_mod->Hook.EnableBossBarOriginal(entityId, bossBarIndex, displayId);
-
-}
-
-EntityHpBarSlots entityPoiseArray[ENTITY_CHR_ARRAY_LEN];
-
-void ErdHook::writePoiseToEntityBar() {
-	using namespace std::chrono_literals;
-
-	while (true) {
-		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
-			CSFeManImp* feMan = *main_mod->Hook.CSFeMan;
-
-			if (feMan == nullptr) {
-				for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
-					entityPoiseArray[j].handle = -1;
-					entityPoiseArray[j].chrIns = nullptr;
-				}
-
-				std::this_thread::sleep_for(5s);
-				continue;
-			}
-
-			if (entityPoiseArray[i].handle != -1) {
-				feMan->entityHpBars[i].handle = entityPoiseArray[i].handle;
-				float stagger = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->staggerMax - entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
-				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
-				if (stagger > 0) {
-					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
-				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerInt) {
-					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
-					entityPoiseArray[i].handle = -1;
-					entityPoiseArray[i].chrIns = nullptr;
-				}
-
-			}
-
-		}
-	}
-
-}
-
-
-void ErdHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6)
-{
-
-	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) {
-		bool found = false;
-		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-			if (entityPoiseArray[i].handle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-				if (entityPoiseArray[i].handle == -1) {
-					entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
-					entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-				}
-			}
-		}
-		
-	}
-	
-	main_mod->Hook.HandleDamageOriginal(chrDamageModule, damage, param_3, param_4, param_5, param_6);
-
-}
-

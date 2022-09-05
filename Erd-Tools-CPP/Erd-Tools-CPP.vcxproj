@@ -163,6 +163,7 @@
     <ClInclude Include="Include\ErdToolsMain.h" />
     <ClInclude Include="Include\ErdTools_globals.h" />
     <ClInclude Include="Include\EventHook.h" />
+    <ClInclude Include="Include\FeHook.h" />
     <ClInclude Include="Include\ParamHook.h" />
     <ClInclude Include="INIReader\ini.h" />
     <ClInclude Include="INIReader\INIReader.h" />
@@ -178,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Hook\FeHook.cpp" />
     <ClCompile Include="Hook\DebugHook.cpp" />
     <ClCompile Include="Hook\ErdHook.cpp" />
     <ClCompile Include="Hook\EventHook.cpp" />

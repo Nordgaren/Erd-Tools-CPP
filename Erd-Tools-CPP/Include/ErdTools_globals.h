@@ -7,7 +7,8 @@ enum UserPreferences {
 	enable_map_in_combat = 1 << 1,
 	enable_crafting_in_combat = 1 << 2,
     enable_auto_harvest = 1 << 3,
-    enable_boss_poise_meter = 1 << 4
+    enable_boss_poise_meter = 1 << 4,
+    enable_entity_poise_meter = 1 << 5
 };
 
 struct ReinforceParamWeapon {
@@ -145,7 +146,6 @@ struct ActionButtonParamParamContainer {
     ActionButtonParam* param_entry = nullptr;
 };
 
-
 struct EquipParamWeaponParamContainer {
     uint32_t EquipParamWeaponEntryId = __UINT32_MAX__;
     EquipParamWeapon* EquipParamWeaponEntry = nullptr;
@@ -174,14 +174,25 @@ struct StaggerModule {
     float resetTimer;
 };
 
-struct ChrModuleBase {
+struct ChrModuleBag {
     uint8_t undefined[0x40];
     StaggerModule* staggerModule;
 };
 
 struct ChrIns {
-    uint8_t undefined[0x190];
-    ChrModuleBase* chrModuleBase;
+    uint8_t undefined[0x8];
+    long long handle;
+    uint8_t undefined2[0x180];
+    ChrModuleBag* chrModuleBase;
+};
+
+struct ChrModuleBase {
+    uint8_t undefined[0x8];
+    ChrIns* owningChrIns;
+};
+
+struct ChrDamageModule {
+    ChrModuleBase chrModuleBase;
 };
 
 struct BossHpBar {
@@ -194,10 +205,36 @@ struct BossHpBar {
     uint8_t pad0x19[0x3] = { };
     float displayTime = 0;
 };
+static_assert(sizeof(BossHpBar) == 0x20);
+
+struct EntityHpBar {
+    long long handle = -1;
+    uint32_t unk[6];
+    char unkChar1;
+    char unkChar2;
+    uint16_t unkShort3;
+    int currentDisplayDamage = -1;
+    int previousHp = 0;
+    float timeDisplayed;
+    float totalTimeDisplayed;
+    int uni2[3];
+};
+static_assert(sizeof(EntityHpBar) == 0x40);
 
 struct CSFeManImp {
-    uint8_t undefines[0x5720];
+    uint8_t undefines[0x5520];
+    EntityHpBar entityHpBars[8];
     BossHpBar bossHpBars[3];
+};
+
+struct EntityHpBarSlots {
+    long long handle = -1;
+    ChrIns* chrIns = nullptr;
+};
+
+struct WorldChrMan {
+    char unk[0xB658];
+    ChrIns** playerArray[0x4];
 };
 
 
@@ -213,10 +250,12 @@ typedef void GetMenuCommonParamEntry(MenuCommonParamParamContainer*);
 
 typedef void FindActionButtonParamEntry(ActionButtonParamParamContainer*, uint32_t);
 
-typedef void (* EnableBossBar)(int*, int, int);
+typedef void (*EnableBossBar)(int*, int, int);
 
 typedef ChrIns* GetChrInsFromEntityId(int*, uint64_t, uint32_t*);
 
 typedef void (*SetEventFlag)(uint64_t event_man, uint32_t* event_id, bool state);
 
 typedef bool (*IsEventFlag)(uint64_t event_man, uint32_t* event_id);
+
+typedef void (*HandleDamage)(ChrDamageModule* chrModuleBase, int damage, char param_3, char param_4, uint32_t param_5, bool param_6);

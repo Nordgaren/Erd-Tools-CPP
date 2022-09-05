@@ -116,7 +116,7 @@
     <ClCompile Include="Hook\DebugHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
-    <ClCompile Include="ParamHook.cpp">
+    <ClCompile Include="Hook\ParamHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
   </ItemGroup>

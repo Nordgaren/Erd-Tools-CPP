@@ -89,6 +89,7 @@ bool ErdToolsMain::ReadINI() {
 	Preferences = option_reader.GetBoolean(header_segment, "enable_crafting_in_combat", false) ? static_cast<UserPreferences>(Preferences | enable_crafting_in_combat) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "auto_harvest", false) ? static_cast<UserPreferences>(Preferences | enable_auto_harvest) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "boss_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_boss_poise_meter) : Preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "entity_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_entity_poise_meter) : Preferences;
 
 	Hook.ParamMan->_autoHarvestMultiplier = option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
 	Hook.ParamMan->_mapSpeedMultiplier = option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
@@ -115,7 +116,11 @@ void ErdToolsMain::InitPreferences() {
 	}
 
 	if (Preferences & enable_boss_poise_meter) {
-		Hook.EnablePoiseMeter();
+		Hook.EnableBossPoiseMeter();
+	}
+
+	if (Preferences & enable_entity_poise_meter) {
+		Hook.EnableEntityPoiseMeter();
 	}
 
 }

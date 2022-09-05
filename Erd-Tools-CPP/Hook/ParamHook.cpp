@@ -1,6 +1,6 @@
-#include "Include/ParamHook.h"
+#include "../Include/ParamHook.h"
 
-#include "Include/ErdToolsMain.h"
+#include "../Include/ErdToolsMain.h"
 
 #define AQCUIRE_MATERIAL_START 7800
 #define AQCUIRE_MATERIAL_END 7879
@@ -30,7 +30,6 @@ void ParamHook::InitParamTools() {
 }
 
 void ParamHook::EditActionButtonParam() {
-	printf("EditActionButtonParam\n");
 
 	for (unsigned int i = AQCUIRE_MATERIAL_START; i < AQCUIRE_MATERIAL_END; i++) {
 		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
@@ -56,7 +55,7 @@ uint64_t ParamHook::GetParamResCapByName(uint64_t soloParamRepository, std::wstr
 		if (*param > 0) {
 			uint64_t paramContainer = *(uint64_t*)(soloParamRepository + paramOffset + 0x88);
 			wchar_t* containerName = (wchar_t*)(paramContainer + 0x18);
-			//small string optimization? fsstring?!?!
+			//small string optimization? fbstring?!?!
 			if (*(uint32_t*)(paramContainer + 0x28) >= 8) {
 				containerName = (wchar_t*)(*(uint64_t*)containerName);
 			}

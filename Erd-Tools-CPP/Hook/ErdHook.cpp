@@ -1,6 +1,7 @@
 #include "../Include/ErdHook.h"
 #include "../Include/ErdToolsMain.h"
 #define BOSS_CHR_ARRAY_LEN 3
+#define ENTITY_CHR_ARRAY_LEN 8
 
 extern ErdToolsMain* main_mod;
 
@@ -157,13 +158,34 @@ bool ErdHook::FindNeededSignatures() {
 
 	_applyBossBarDmg = (uintptr_t)_signatureClass.FindSignature(applyBossBarDmgSig);
 
+	Signature handleDamage = {
+		"\x48\x8B\xC4\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x83\xEC\x60\x48\xC7\x40\xC8\xFE\xFF\xFF\xFF\x48\x89\x58\x08",
+		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	};
+
+	_handleDmg = (uintptr_t)_signatureClass.FindSignature(handleDamage);
+
+	Signature applyEntityBarDmgSig = {
+	"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x48\x89\x7C\x24\x20\x41\x56\x48\x83\xEC\x20\x48\x8B\xDA\x45\x33\xF6\x41\x8B\xE9\x41\x8B\xF0\x45\x8B\xD6\x44\x8B\xC3\x41\x8B\xD6\x48\x8B\xF9\x41\xB9\xFF\xFF\xFF\xFF",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	};
+	_applyEntityBarDmg = (uintptr_t)_signatureClass.FindSignature(applyEntityBarDmgSig);
+
+
+	Signature worldChrManSig = {
+			"\x48\x8B\x05\xFF\xFF\xFF\xFF\x48\x85\xC0\x74\x0F\x48\x39\x88",
+			"xxx????xxxxxxxx",
+	};
+	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(_signatureClass.FindSignature(worldChrManSig), 0x3, 0x7);
+
 	return EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
-		ParamMan->FindActionButtonParamEntry && _enableBossBarAddr && GetChrInsFromEntityIdFunc && CSFeMan && _applyBossBarDmg;
+		ParamMan->FindActionButtonParamEntry && _enableBossBarAddr && GetChrInsFromEntityIdFunc && CSFeMan && _applyBossBarDmg && _handleDmg && _applyEntityBarDmg
+		&& WorldChrManIns;
 }
 
-bool ErdHook::EnablePoiseMeter() {
+bool ErdHook::EnableBossPoiseMeter() {
 
 	if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBar, (void**)&ErdHook::EnableBossBarOriginal) != MH_OK) {
 		return false;
@@ -173,6 +195,21 @@ bool ErdHook::EnablePoiseMeter() {
 	*(int*)_applyBossBarDmg = 0x909090C3;
 
 	std::thread t(&ErdHook::writePoiseToBossBar, this);
+	t.detach();
+
+	return true;
+}
+
+bool ErdHook::EnableEntityPoiseMeter() {
+
+	if (MH_CreateHook((void*)_handleDmg, &handleDamage, (void**)&ErdHook::HandleDamageOriginal) != MH_OK) {
+		return false;
+	}
+
+	MH_EnableHook((void*)_handleDmg);
+	*(int*)_applyEntityBarDmg = 0x909090C3;
+
+	std::thread t(&ErdHook::writePoiseToEntityBar, this);
 	t.detach();
 
 	return true;
@@ -248,6 +285,8 @@ void ErdHook::debugPrint() {
 	printf("GetChrInsFromEntityIdFunc %p\n", GetChrInsFromEntityIdFunc);
 	printf("CSFeMan %p\n", CSFeMan);
 	printf("_applyBossBarDmg %p\n", _applyBossBarDmg);
+	printf("_handleDmg %p\n", _handleDmg);
+	printf("_applyEntityBarDmg %p\n", _applyEntityBarDmg);
 
 }
 
@@ -280,14 +319,11 @@ void ErdHook::writePoiseToBossBar() {
 					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
 					feMan->bossHpBars[i].isHit = true;
 				}
-
 			} 
-
 		}
 	}
 
 }
-
 
 void ErdHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
 
@@ -297,6 +333,71 @@ void ErdHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
 
 	bossChrInsArray[bossBarIndex] = main_mod->Hook.GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
 	main_mod->Hook.EnableBossBarOriginal(entityId, bossBarIndex, displayId);
+
+}
+
+EntityHpBarSlots entityPoiseArray[ENTITY_CHR_ARRAY_LEN];
+
+void ErdHook::writePoiseToEntityBar() {
+	using namespace std::chrono_literals;
+
+	while (true) {
+		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
+			CSFeManImp* feMan = *main_mod->Hook.CSFeMan;
+
+			if (feMan == nullptr) {
+				for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
+					entityPoiseArray[j].handle = -1;
+					entityPoiseArray[j].chrIns = nullptr;
+				}
+
+				std::this_thread::sleep_for(5s);
+				continue;
+			}
+
+			if (entityPoiseArray[i].handle != -1) {
+				feMan->entityHpBars[i].handle = entityPoiseArray[i].handle;
+				float stagger = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->staggerMax - entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
+				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
+				if (stagger > 0) {
+					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
+				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerInt) {
+					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
+					entityPoiseArray[i].handle = -1;
+					entityPoiseArray[i].chrIns = nullptr;
+				}
+
+			}
+
+		}
+	}
+
+}
+
+
+void ErdHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6)
+{
+
+	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) {
+		bool found = false;
+		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
+			if (entityPoiseArray[i].handle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
+				if (entityPoiseArray[i].handle == -1) {
+					entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
+					entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
+				}
+			}
+		}
+		
+	}
+	
+	main_mod->Hook.HandleDamageOriginal(chrDamageModule, damage, param_3, param_4, param_5, param_6);
 
 }
 

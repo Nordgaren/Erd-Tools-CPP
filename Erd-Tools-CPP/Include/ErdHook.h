@@ -29,7 +29,8 @@ class ErdHook {
 public:
 	bool CreateMemoryEdits();
 	bool FindNeededSignatures();
-	bool EnablePoiseMeter();
+	bool EnableBossPoiseMeter();
+	bool EnableEntityPoiseMeter();
 	EventHook* EventMan;
 	DebugHook* DebugMan;
 	ParamHook* ParamMan;
@@ -46,15 +47,22 @@ public:
 		delete  ParamMan;
 	}
 	static inline EnableBossBar EnableBossBarOriginal = nullptr;
+	static inline HandleDamage HandleDamageOriginal = nullptr;
 	GetChrInsFromEntityId* GetChrInsFromEntityIdFunc = nullptr;
 	CSFeManImp** CSFeMan;
+	WorldChrMan** WorldChrManIns = nullptr;
 private:
 	static uint64_t GetRelativeOffset(void* pointer, int address_offset, int instruction_size);
 	void debugPrint();
 	void writePoiseToBossBar();
 	static void enableBossBar(int* entityId, int bossBarIndex, int displayId);
+	void writePoiseToEntityBar();
+	static void handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5,
+	                         bool param_6);
 	uintptr_t _enableBossBarAddr = 0;
 	uintptr_t _applyBossBarDmg = 0;
+	uintptr_t _applyEntityBarDmg = 0;
+	uintptr_t _handleDmg = 0;
 	MH_STATUS _minhookActive = MH_UNKNOWN;
 	SigScan _signatureClass;
 };

@@ -5,12 +5,12 @@
 ; Thank you tremwil(https://github.com/tremwil) for the suggestion and the help writing the asm wrapper. 
 
 
-EXTERN ExecActionButtonParamFunc :PROC
-EXTERNDEF ExecuteActionButtonParamProxy :QWORD
+EXTERN CheckExecActionButtonParamFilters :PROC
+EXTERNDEF ExecuteActionButtonParamProxyReturn :QWORD
 .code
 ALIGN 16
 
-ExecActionButtonParamWrapper PROC
+ExecActionButtonParamProxyWrapper PROC
 push rcx
 push rdx
 push r8
@@ -21,7 +21,7 @@ movaps xmmword ptr [rsp+20h],XMM1
 movaps xmmword ptr [rsp+30h],XMM2
 
 mov rcx,rdx
-call ExecActionButtonParamFunc
+call CheckExecActionButtonParamFilters
 cmp al,-1
 jz normal_flow
 add rsp, 58h
@@ -41,9 +41,9 @@ pop r8
 pop rdx
 pop rcx
 xor rax,rax
-jmp [ExecuteActionButtonParamProxy]
+jmp [ExecuteActionButtonParamProxyReturn]
 
 
-ExecActionButtonParamWrapper ENDP
+ExecActionButtonParamProxyWrapper ENDP
 
 END

@@ -4,8 +4,8 @@
 #define ENTITY_CHR_ARRAY_LEN 8
 
 extern ErdToolsMain* main_mod;
-extern "C" int ExecActionButtonParamWrapper();
-extern "C" uint64_t ExecuteActionButtonParamProxy = 0;
+extern "C" int ExecActionButtonParamProxyWrapper();
+extern "C" uint64_t ExecuteActionButtonParamProxyReturn = 0;
 
 bool FeHook::EnableBossPoiseMeter() {
 
@@ -39,7 +39,7 @@ bool FeHook::EnableEntityPoiseMeter() {
 
 bool FeHook::EnableLootChangeHook() {
 
-	if (MH_CreateHook((void*)_executeActionButtonParamProxy, &ExecActionButtonParamWrapper, (void**)&ExecuteActionButtonParamProxy) != MH_OK) {
+	if (MH_CreateHook((void*)_executeActionButtonParamProxy, &ExecActionButtonParamProxyWrapper, (void**)&ExecuteActionButtonParamProxyReturn) != MH_OK) {
 		return false;
 	}
 
@@ -160,7 +160,8 @@ void FeHook::writePoiseToEntityBar() {
 				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
 
-				if (staggerModule->staggerMax == -1) {
+				if (staggerModule->staggerMax == (float)-1) {
+					//@TODO: Regular health bar for things with no poise
 					continue;
 				}
 
@@ -224,7 +225,7 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 
 
 
-extern "C" int ExecActionButtonParamFunc(int entryId) {
+extern "C" int CheckExecActionButtonParamFilters(int entryId) {
 
 	std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
 	if (!lockList.empty() && (*main_mod->Hook.SoundIns)->soundCombatStruct->isInCombat && std::binary_search(lockList.begin(), lockList.end(), entryId)) {

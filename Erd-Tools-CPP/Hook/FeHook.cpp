@@ -160,7 +160,7 @@ void FeHook::writePoiseToEntityBar() {
 				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
 
-				if ((int)staggerModule->staggerMax == -1) {
+				if (staggerModule->staggerMax == -1.0f) {
 					//@TODO: Regular health bar for things with no poise
 					continue;
 				}

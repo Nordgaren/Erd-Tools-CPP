@@ -177,6 +177,13 @@ bool ErdHook::FindNeededSignatures() {
 	};
 	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(_signatureClass.FindSignature(worldChrManSig), 0x3, 0x7);
 
+
+	Signature csSoundSig = {
+			"\x48\x8B\x05\xFF\xFF\xFF\xFF\x48\x85\xC0\xFF\xFF\x83\xCD\x02\x83\xB8\xFF\xFF\xFF\xFF\x00\x89\x6C\x24\xFF\x0F\x95\xC1",
+			"xxx????xxx??xxxxx????xxxx?xxx",
+	};
+	SoundIns = (CSSound**)GetRelativeOffset(_signatureClass.FindSignature(csSoundSig), 0x3, 0x7);
+
 	Signature executeActionButtonParamSig = {
 		"\x48\x89\x5C\x24\x08\x57\x48\x81\xEC\x90\x00\x00\x00\x48\x8B\x84\x24\xE0\x00\x00\x00\x41\x0F\xB6\xD9\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xFA\x0F\x29\xB4\x24\x80\x00\x00\x00",
 		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxx",
@@ -190,7 +197,7 @@ bool ErdHook::FindNeededSignatures() {
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
 		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
-		&& WorldChrManIns && FeMan->_executeActionButtonParamProxy && FeMan->executeActionButtonParam && FeMan->_actionButtonParamImp;
+		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy && FeMan->executeActionButtonParam && FeMan->_actionButtonParamImp;
 }
 
 bool SigScan::GetImageInfo() {

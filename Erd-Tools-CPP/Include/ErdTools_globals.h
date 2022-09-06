@@ -252,6 +252,15 @@ struct WorldChrMan {
     ChrIns** playerArray[0x4];
 };
 
+struct SoundCombatStruct {
+    uint8_t undefined[0x4];
+    uint8_t isInCombat;
+};
+
+struct CSSound {
+    uint8_t undefined[0x2B8];
+    SoundCombatStruct *soundCombatStruct;
+};
 
 
 typedef void FindEquipParamWeaponEntry(EquipParamWeaponParamContainer*, uint32_t);

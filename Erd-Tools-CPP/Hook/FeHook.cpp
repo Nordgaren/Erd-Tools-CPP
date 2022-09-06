@@ -69,16 +69,16 @@ void FeHook::EnableLootPrefs() {
 	std::sort(autoPickupList.begin(), autoPickupList.end());
 
 	if (LootPrefs & lock_materials) {
-		lockPickupList.insert(autoPickupList.end(),
+		lockPickupList.insert(lockPickupList.end(),
 			{ 7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822, 7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
 				7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874, 7875, 7876, 7877, 7878 });
 	}
 	if (LootPrefs & lock_items) {
-		lockPickupList.insert(autoPickupList.end(),
+		lockPickupList.insert(lockPickupList.end(),
 			{ 4000, 4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4350, 6361, 9532 });
 	}
 	if (LootPrefs & lock_corpse_loot) {
-		lockPickupList.insert(autoPickupList.end(),
+		lockPickupList.insert(lockPickupList.end(),
 			{ 4000, 4110 });
 	}
 	if (LootPrefs & lock_lost_runes) {
@@ -217,17 +217,14 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 extern "C" int ExecActionButtonParamFunc(int entryId) {
 
 	std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
-	printf("Lock\n");
-	if (!lockList.empty() && std::binary_search(lockList.begin(), lockList.end(), entryId)) {
+	if (!lockList.empty() && (*main_mod->Hook.SoundIns)->soundCombatStruct.isInCombat && std::binary_search(lockList.begin(), lockList.end(), entryId)) {
 		return 0;
 	}
 
-	printf("Pickup\n");
 	std::vector<int> pickupList = main_mod->Hook.FeMan->autoPickupList;
 	if (!pickupList.empty() && std::binary_search(pickupList.begin(), pickupList.end(), entryId)) {
 		return 1;
 	}
 
-	printf("Main\n");
 	return -1;
 }

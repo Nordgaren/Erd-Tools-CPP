@@ -35,6 +35,7 @@ public:
 	ParamHook* ParamMan;
 	FeHook* FeMan;
 	WorldChrMan** WorldChrManIns = nullptr;
+	CSSound** SoundIns = nullptr;
 
 	ErdHook() {
 		EventMan = new EventHook();

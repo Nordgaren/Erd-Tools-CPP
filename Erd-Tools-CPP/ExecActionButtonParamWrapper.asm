@@ -1,11 +1,10 @@
-COMMENT @
-	It has to be done this way, because the calling convention used in this call uses XMM0-2 and then the normal calling convention of rcx, rdx, r9, etc.
-	Problem is that, in a __vectorcall, the compiler wants to use XMM0-2, and then r9 and then it starts putting parameters on the stack. __fastcall does not
-	seem to want to use XMM registers at all for a call, and everything gets misaligned. The result is that nothing has a prompt to use or pickup.
+; It has to be done this way, because the calling convention used in this call uses XMM0-2 and then the normal calling convention of rcx, rdx, r9, etc.
+; Problem is that, in a __vectorcall, the compiler wants to use XMM0-2, and then r9 and then it starts putting parameters on the stack. __fastcall does not
+; seem to want to use XMM registers at all for a call, and everything gets misaligned. The result is that nothing has a prompt to use or pickup.
 
-	Thank you tremwil(https://github.com/tremwil) for the suggestion and the help writing the asm wrapper. It's bad because I am bad, 
-	not cause tremwil told me to write it this way (just fyi :fatcat:).
-@
+; Thank you tremwil(https://github.com/tremwil) for the suggestion and the help writing the asm wrapper. It's bad because I am bad, 
+; not cause tremwil told me to write it this way (just fyi :fatcat:).
+
 
 EXTERN ExecActionButtonParamFunc :PROC
 EXTERNDEF ExecuteActionButtonParamProxy :QWORD

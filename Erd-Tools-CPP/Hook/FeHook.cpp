@@ -51,7 +51,7 @@ bool FeHook::EnableLootChangeHook() {
 void FeHook::EnableLootPrefs() {
 
 	if (LootPrefs & pickup_materials) {
-		autoPickupList.insert(autoPickupList.end(), 
+		autoPickupList.insert(autoPickupList.end(),
 			{ 7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822, 7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
 				7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874, 7875, 7876, 7877, 7878 });
 	}
@@ -157,12 +157,13 @@ void FeHook::writePoiseToEntityBar() {
 			}
 
 			if (entityPoiseArray[i].handle != -1) {
+				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
-				float stagger = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->staggerMax - entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
+				float stagger = staggerModule->staggerMax - staggerModule->stagger;
 				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
 				if (stagger > 0) {
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
-				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerInt) {
+				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerModule->staggerMax) {
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
 					entityPoiseArray[i].handle = -1;
 					entityPoiseArray[i].chrIns = nullptr;
@@ -188,12 +189,16 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 			}
 		}
 
-		if (!found) {
-			for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-				if (entityPoiseArray[i].handle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
-					found = true;
+		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
+			if (entityPoiseArray[i].handle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
+				if (found) {
+					entityPoiseArray[i].handle = -1;
+					entityPoiseArray[i].chrIns = nullptr;
 					break;
 				}
+
+				found = true;
+				break;
 			}
 		}
 

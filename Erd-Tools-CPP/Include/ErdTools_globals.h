@@ -199,6 +199,8 @@ struct ChrIns {
     unsigned long long handle;
     uint8_t undefined2[0x180];
     ChrModuleBag* chrModuleBase;
+    uint8_t undefined3[0x508];
+    unsigned long long targetHandle;
 };
 
 struct ChrModuleBase {
@@ -223,7 +225,7 @@ struct BossHpBar {
 static_assert(sizeof(BossHpBar) == 0x20);
 
 struct EntityHpBar {
-    long long entityHandle = -1;
+    unsigned long long entityHandle = -1;
     uint32_t unk[6];
     char unkChar1;
     char unkChar2;

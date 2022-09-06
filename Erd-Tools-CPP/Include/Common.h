@@ -13,3 +13,5 @@
 #include <filesystem>
 #include <vector>
 #include <algorithm>
+#include <intrin.h>
+#include <xmmintrin.h>

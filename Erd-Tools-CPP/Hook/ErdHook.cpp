@@ -184,7 +184,7 @@ bool ErdHook::FindNeededSignatures() {
 	void* executeActionButtonParam = _signatureClass.FindSignature(executeActionButtonParamSig);
 	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParam;
 	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParam, 0x1C, 0x20);
-	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParam, 0x43, 0x47);
+	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParam, 0xBD, 0xC1);
 
 	return EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
@@ -265,13 +265,15 @@ void ErdHook::debugPrint() {
 	printf("ParamMan->GetMenuCommonParamEntry %p\n", ParamMan->GetMenuCommonParamEntry);
 	printf("ParamMan->FindActionButtonParamEntry %p\n", ParamMan->FindActionButtonParamEntry);
 	printf("\nFeMan:\n");
-	printf("_enableBossBarAddr %p\n", FeMan->_enableBossBarAddr);
-	printf("EnableBossBarOriginal %p\n", FeMan->EnableBossBarOriginal);
-	printf("GetChrInsFromEntityIdFunc %p\n", FeMan->GetChrInsFromEntityIdFunc);
-	printf("CSFeMan %p\n", FeMan->CSFeMan);
-	printf("_applyBossBarDmg %p\n", FeMan->_applyBossBarDmg);
-	printf("_handleDmg %p\n", FeMan->_handleDmg);
-	printf("_applyEntityBarDmg %p\n", FeMan->_applyEntityBarDmg);
-	printf("_executeActionButtonParam %p\n", FeMan->_executeActionButtonParamProxy);
+	printf("FeMan->_enableBossBarAddr %p\n", FeMan->_enableBossBarAddr);
+	printf("FeMan->EnableBossBarOriginal %p\n", FeMan->EnableBossBarOriginal);
+	printf("FeMan->GetChrInsFromEntityIdFunc %p\n", FeMan->GetChrInsFromEntityIdFunc);
+	printf("FeMan->CSFeMan %p\n", FeMan->CSFeMan);
+	printf("FeMan->_applyBossBarDmg %p\n", FeMan->_applyBossBarDmg);
+	printf("FeMan->_handleDmg %p\n", FeMan->_handleDmg);
+	printf("FeMan->_applyEntityBarDmg %p\n", FeMan->_applyEntityBarDmg);
+	printf("FeMan->_executeActionButtonParamProxy %p\n", FeMan->_executeActionButtonParamProxy);
+	printf("FeMan->executeActionButtonParam %p\n", FeMan->executeActionButtonParam);
+	printf("FeMan->_actionButtonParamImp %p\n", FeMan->_actionButtonParamImp);
 
 }

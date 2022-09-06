@@ -4,6 +4,8 @@
 #define ENTITY_CHR_ARRAY_LEN 8
 
 extern ErdToolsMain* main_mod;
+extern "C" int ExecActionButtonParamWrapper();
+extern "C" uint64_t ExecuteActionButtonParamProxy = 0;
 
 bool FeHook::EnableBossPoiseMeter() {
 
@@ -37,7 +39,7 @@ bool FeHook::EnableEntityPoiseMeter() {
 
 bool FeHook::EnableLootChangeHook() {
 
-	if (MH_CreateHook((void*)_executeActionButtonParamProxy, &handleDamage, nullptr) != MH_OK) {
+	if (MH_CreateHook((void*)_executeActionButtonParamProxy, &ExecActionButtonParamWrapper, (void**)&ExecuteActionButtonParamProxy) != MH_OK) {
 		return false;
 	}
 
@@ -85,7 +87,7 @@ void FeHook::EnableLootPrefs() {
 	std::sort(lockPickupList.begin(), lockPickupList.end());
 
 	if (!autoPickupList.empty() || !lockPickupList.empty()) {
-		
+		EnableLootChangeHook();
 	}
 }
 
@@ -210,18 +212,22 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 
 }
 
-bool FeHook::execActionButtonParam(uintptr_t actionButtonRegionSystemImp, int entryId) {
+
+
+extern "C" int ExecActionButtonParamFunc(int entryId) {
 
 	std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
-	if (!lockList.empty() && std::binary_search(lockList.begin(), lockList.end(), 15)) {
-		return false;
+	printf("Lock\n");
+	if (!lockList.empty() && std::binary_search(lockList.begin(), lockList.end(), entryId)) {
+		return 0;
 	}
 
+	printf("Pickup\n");
 	std::vector<int> pickupList = main_mod->Hook.FeMan->autoPickupList;
-	if (!pickupList.empty() && std::binary_search(pickupList.begin(), pickupList.end(), 15)) {
-		return true;
+	if (!pickupList.empty() && std::binary_search(pickupList.begin(), pickupList.end(), entryId)) {
+		return 1;
 	}
 
-	return main_mod->Hook.FeMan->executeActionButtonParam(main_mod->Hook.FeMan->_actionButtonParamImp, entryId);
+	printf("Main\n");
+	return -1;
 }
-

@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Hook">
       <UniqueIdentifier>{27375f4d-3d6f-4524-a5c4-ebe395cf6876}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ASM">
+      <UniqueIdentifier>{8903ab88-ac3b-418c-8c25-b70cca7b9f89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\ErdToolsMain.h">
@@ -130,5 +133,10 @@
     <ResourceCompile Include="Erd-Tools-CPP.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="ExecActionButtonParamWrapper.asm">
+      <Filter>ASM</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

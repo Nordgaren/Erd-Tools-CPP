@@ -1,6 +1,8 @@
 #pragma once
 #include "Common.h"
 #include "ErdTools_globals.h"
+
+
 class FeHook
 {
 public:
@@ -20,14 +22,14 @@ public:
 	uintptr_t _executeActionButtonParamProxy = 0;
 	ExecActionButtonParam executeActionButtonParam = 0;
 	uintptr_t _actionButtonParamImp = 0;
+	//static int ExecActionButtonParam(int entryId);
+	std::vector<int> autoPickupList;
+	std::vector<int> lockPickupList;
 
 private:
 	static void enableBossBar(int* entityId, int bossBarIndex, int displayId);
 	static void handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6);
-	static bool execActionButtonParam(uintptr_t actionButtonRegionSystemImp, int entryId);
 	void writePoiseToBossBar();
 	void writePoiseToEntityBar();
-	std::vector<int> autoPickupList;
-	std::vector<int> lockPickupList;
 };
 

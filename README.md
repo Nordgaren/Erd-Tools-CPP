@@ -39,6 +39,13 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Beta 0.1.4
+* Added poise to entity health bar damage numbers (Experimental like boss bar)  
+
+* Added the ability to select a few categories for auto loot.  
+
+* Added loot lockout in combat with the same categories as auto loot. These items will not even display to you when in combat, so you can't pick them up.  
+
 ### Beta 0.1.3
 * Added option to display poise instead of damage numbers on boss bar. (Experimental)  
 

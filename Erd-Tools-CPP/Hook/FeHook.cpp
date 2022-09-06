@@ -159,6 +159,11 @@ void FeHook::writePoiseToEntityBar() {
 			if (entityPoiseArray[i].handle != -1) {
 				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
+
+				if (staggerModule->staggerMax == -1) {
+					continue;
+				}
+
 				float stagger = staggerModule->staggerMax - staggerModule->stagger;
 				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
 				if (stagger > 0) {

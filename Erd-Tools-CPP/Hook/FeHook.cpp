@@ -97,6 +97,9 @@ void FeHook::writePoiseToBossBar() {
 	using namespace std::chrono_literals;
 
 	while (true) {
+
+		std::this_thread::sleep_for(1ms);
+
 		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
 			CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
 
@@ -145,7 +148,7 @@ void FeHook::writePoiseToEntityBar() {
 	while (true) {
 		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-			std::this_thread::sleep_for(.5s);
+			std::this_thread::sleep_for(1ms);
 
 			CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
 
@@ -175,7 +178,7 @@ void FeHook::writePoiseToEntityBar() {
 				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerModule->staggerMax) {
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
 
-					if (feMan->entityHpBars[i].entityHandle == entityPoiseArray[i].chrIns->targetHandle) {
+					if (feMan->entityHpBars[i].entityHandle == (*(*main_mod->Hook.WorldChrManIns)->playerArray[0])->targetHandle) {
 						feMan->entityHpBars[i].totalTimeDisplayed = 0;
 						continue;
 					}
@@ -212,12 +215,14 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 					break;
 				}
 
-				//entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
-				//entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-				//if (chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger < chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->staggerMax)
-				//	(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;
+				(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
+				entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
+				entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
 
-			
+				if (chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger < chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->staggerMax)
+					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;
+
+
 				found = true;
 				break;
 			}
@@ -225,13 +230,13 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 
 		if (!found) {
 			for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-				if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == -1) {
+				if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == -1ull) {
 
 					entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
 					entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-	/*				(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
+					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
 					if (chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger < chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->staggerMax)
-						(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;*/
+						(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;
 
 					break;
 				}

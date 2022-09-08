@@ -245,7 +245,7 @@ struct CSFeManImp {
 };
 
 struct EntityHpBarSlots {
-    long long handle = -1;
+    unsigned long long handle = -1;
     ChrIns* chrIns = nullptr;
 };
 

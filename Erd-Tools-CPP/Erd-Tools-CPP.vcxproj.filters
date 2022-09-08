@@ -135,7 +135,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="ExecActionButtonParamWrapper.asm">
+    <MASM Include="ASM\ExecActionButtonParamWrapper.asm">
       <Filter>ASM</Filter>
     </MASM>
   </ItemGroup>

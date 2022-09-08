@@ -57,7 +57,7 @@ void FeHook::EnableLootPrefs() {
 	}
 	if (LootPrefs & pickup_items) {
 		autoPickupList.insert(autoPickupList.end(),
-			{ 4000, 4110 ,4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4350, 6361 });
+			{ 4000, 4110 ,4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350, 6361 });
 	}
 	if (LootPrefs & pickup_corpse_loot) {
 		autoPickupList.insert(autoPickupList.end(),
@@ -75,7 +75,7 @@ void FeHook::EnableLootPrefs() {
 	}
 	if (LootPrefs & lock_items) {
 		lockPickupList.insert(lockPickupList.end(),
-			{ 4000, 4110 ,4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4350, 6361 });
+			{ 4000, 4110 ,4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350, 6361 });
 	}
 	if (LootPrefs & lock_corpse_loot) {
 		lockPickupList.insert(lockPickupList.end(),
@@ -146,27 +146,27 @@ void FeHook::writePoiseToEntityBar() {
 	using namespace std::chrono_literals;
 
 	while (true) {
-		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-			std::this_thread::sleep_for(1ms);
+		std::this_thread::sleep_for(1ms);
+		CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
 
-			CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
-
-			if (feMan == nullptr) {
-				for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
-					entityPoiseArray[j].handle = -1;
-					entityPoiseArray[j].chrIns = nullptr;
-				}
-
-				std::this_thread::sleep_for(5s);
-				continue;
+		if (feMan == nullptr) {
+			for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
+				entityPoiseArray[j].handle = __UINT64_MAX__;
+				entityPoiseArray[j].chrIns = nullptr;
 			}
 
-			if (entityPoiseArray[i].handle != -1) {
+			std::this_thread::sleep_for(5s);
+			continue;
+		}
+
+		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
+
+			if (entityPoiseArray[i].handle != __UINT64_MAX__) {
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
 				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
 				if (staggerModule->staggerMax == -1.0f) {
-					entityPoiseArray[i].handle = -1;
+					entityPoiseArray[i].handle = -1ull;
 					entityPoiseArray[i].chrIns = nullptr;
 					continue;
 				}
@@ -174,29 +174,23 @@ void FeHook::writePoiseToEntityBar() {
 				float stagger = staggerModule->staggerMax - staggerModule->stagger;
 				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
 				if (stagger > 0) {
+					feMan->entityHpBars[i].totalTimeDisplayed = 0.0f;
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
 				} else if (feMan->entityHpBars[i].currentDisplayDamage != staggerModule->staggerMax) {
+					feMan->entityHpBars[i].totalTimeDisplayed = 0.0f;
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
-
-					if (feMan->entityHpBars[i].entityHandle == (*(*main_mod->Hook.WorldChrManIns)->playerArray[0])->targetHandle) {
-						feMan->entityHpBars[i].totalTimeDisplayed = 0;
-						continue;
-					}
-
 					entityPoiseArray[i].handle = -1;
 					entityPoiseArray[i].chrIns = nullptr;
 				}
-
 			}
-
 		}
+
 	}
 
 }
 
 
-void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6)
-{
+void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6) {
 
 	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) {
 		bool found = false;
@@ -208,36 +202,29 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 		}
 
 		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-			if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
+			if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == chrDamageModule->chrModuleBase.owningChrIns->handle)
 				if (found) {
-					entityPoiseArray[i].handle = -1;
+					entityPoiseArray[i].handle = __UINT64_MAX__;
 					entityPoiseArray[i].chrIns = nullptr;
+					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = __UINT64_MAX__;
+					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = 0;
 					break;
 				}
 
-				(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-				entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
-				entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-
-				if (chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger < chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->staggerMax)
-					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;
-
-
-				found = true;
-				break;
-			}
+			(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
+			entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
+			entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
+			found = true;
+			break;
 		}
 
 		if (!found) {
 			for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; ++i) {
-				if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == -1ull) {
+				if ((*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle == __UINT64_MAX__) {
 
+					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
 					entityPoiseArray[i].chrIns = chrDamageModule->chrModuleBase.owningChrIns;
 					entityPoiseArray[i].handle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-					(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].entityHandle = chrDamageModule->chrModuleBase.owningChrIns->handle;
-					if (chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger < chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->staggerMax)
-						(*main_mod->Hook.FeMan->CSFeMan)->entityHpBars[i].currentDisplayDamage = (int)chrDamageModule->chrModuleBase.owningChrIns->chrModuleBase->staggerModule->stagger;
-
 					break;
 				}
 			}
@@ -248,8 +235,6 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 	main_mod->Hook.FeMan->HandleDamageOriginal(chrDamageModule, damage, param_3, param_4, param_5, param_6);
 
 }
-
-
 
 extern "C" int CheckExecActionButtonParamFilters(int entryId) {
 

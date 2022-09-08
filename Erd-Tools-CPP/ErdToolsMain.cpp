@@ -102,7 +102,9 @@ bool ErdToolsMain::ReadINI() {
 	lootPrefs = option_reader.GetBoolean(header_segment, "lock_materials", false) ? static_cast<LootPreferences>(lootPrefs | lock_materials) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "lock_items", false) ? static_cast<LootPreferences>(lootPrefs | lock_items) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "lock_corpse_loot", false) ? static_cast<LootPreferences>(lootPrefs | lock_corpse_loot) : lootPrefs;
-	lootPrefs = option_reader.GetBoolean(header_segment, "lock_runes", false) ? static_cast<LootPreferences>(lootPrefs | lock_lost_runes) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_lost_runes", false) ? static_cast<LootPreferences>(lootPrefs | lock_lost_runes) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_grace_unlocks", false) ? static_cast<LootPreferences>(lootPrefs | lock_grace_unlocks) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "lock_grace_resting", false) ? static_cast<LootPreferences>(lootPrefs | lock_grace_resting) : lootPrefs;
 	Hook.FeMan->LootPrefs = lootPrefs;
 
 	header_segment = "PARAM";

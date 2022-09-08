@@ -84,6 +84,12 @@ void FeHook::EnableLootPrefs() {
 	if (LootPrefs & lock_lost_runes) {
 		lockPickupList.push_back(1000);
 	}
+	if (LootPrefs & lock_grace_unlocks) {
+		lockPickupList.push_back(6100);
+	}
+	if (LootPrefs & lock_grace_resting) {
+		lockPickupList.push_back(6101);
+	}
 	std::sort(lockPickupList.begin(), lockPickupList.end());
 
 	if (!autoPickupList.empty() || !lockPickupList.empty()) {

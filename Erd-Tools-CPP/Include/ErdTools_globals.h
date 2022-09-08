@@ -24,6 +24,8 @@ enum LootPreferences {
     lock_items = 1 << 5,
     lock_corpse_loot = 1 << 6,
     lock_lost_runes = 1 << 7,
+    lock_grace_unlocks = 1 << 8,
+    lock_grace_resting = 1 << 9,
 };
 
 struct ReinforceParamWeapon {

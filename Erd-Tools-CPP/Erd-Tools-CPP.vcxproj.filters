@@ -84,6 +84,9 @@
     <ClInclude Include="Include\FeHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\SignatureScanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="Hook\FeHook.cpp">
       <Filter>Source Files\Hook</Filter>
+    </ClCompile>
+    <ClCompile Include="Hook\SignatureScanner.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

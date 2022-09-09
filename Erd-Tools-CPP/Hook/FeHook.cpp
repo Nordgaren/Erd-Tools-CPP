@@ -241,7 +241,7 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 
 }
 
-extern "C" int CheckExecActionButtonParamFilters(int entryId) {
+extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSystemImp, int entryId) {
 
 	std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
 	if (!lockList.empty() && (*main_mod->Hook.SoundIns)->soundCombatStruct->isInCombat && std::binary_search(lockList.begin(), lockList.end(), entryId)) {

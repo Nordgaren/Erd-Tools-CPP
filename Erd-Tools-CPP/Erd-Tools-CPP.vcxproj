@@ -166,6 +166,7 @@
     <ClInclude Include="Include\EventHook.h" />
     <ClInclude Include="Include\FeHook.h" />
     <ClInclude Include="Include\ParamHook.h" />
+    <ClInclude Include="Include\SignatureScanner.h" />
     <ClInclude Include="INIReader\ini.h" />
     <ClInclude Include="INIReader\INIReader.h" />
     <ClInclude Include="minhook\include\MinHook.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Hook\ErdHook.cpp" />
     <ClCompile Include="Hook\EventHook.cpp" />
     <ClCompile Include="ErdToolsMain.cpp" />
+    <ClCompile Include="Hook\SignatureScanner.cpp" />
     <ClCompile Include="INIReader\ini.cpp" />
     <ClCompile Include="INIReader\INIReader.cpp" />
     <ClCompile Include="minhook\src\buffer.c" />

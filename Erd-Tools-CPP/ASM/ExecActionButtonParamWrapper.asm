@@ -11,6 +11,7 @@ EXTERNDEF ExecuteActionButtonParamProxyReturn :QWORD
 ALIGN 16
 
 ExecActionButtonParamProxyWrapper PROC
+; RCX = CSActionButtonRegionSystemImp* RDX = entryId
 push rcx
 push rdx
 push r8
@@ -20,7 +21,6 @@ movaps xmmword ptr [rsp+10h],XMM0
 movaps xmmword ptr [rsp+20h],XMM1
 movaps xmmword ptr [rsp+30h],XMM2
 
-mov rcx,rdx
 call CheckExecActionButtonParamFilters
 movaps XMM0,xmmword ptr [rsp-10h]
 movaps XMM1,xmmword ptr [rsp-20h]
@@ -35,7 +35,6 @@ jz normal_flow
 ret
 
 normal_flow:
-xor rax,rax
 jmp [ExecuteActionButtonParamProxyReturn]
 
 ExecActionButtonParamProxyWrapper ENDP

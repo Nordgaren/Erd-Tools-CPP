@@ -16,7 +16,7 @@ bool FeHook::EnableBossPoiseMeter() {
 	MH_EnableHook((void*)_enableBossBarAddr);
 	*(int*)_applyBossBarDmg = 0x909090C3;
 
-	std::thread t(&FeHook::writePoiseToBossBar, this);
+	std::thread t(&FeHook::writePoiseToBossBar);
 	t.detach();
 
 	return true;
@@ -141,7 +141,7 @@ void FeHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
 		return;
 
 	bossChrInsArray[bossBarIndex] = main_mod->Hook.FeMan->GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
-	main_mod->Hook.FeMan->EnableBossBarOriginal(entityId, bossBarIndex, displayId);
+	EnableBossBarOriginal(entityId, bossBarIndex, displayId);
 
 }
 
@@ -153,7 +153,7 @@ void FeHook::writePoiseToEntityBar() {
 	while (true) {
 
 		std::this_thread::sleep_for(1ms);
-		CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
+		CSFeManImp* feMan = *CSFeMan;
 
 		if (feMan == nullptr) {
 			for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
@@ -237,7 +237,7 @@ void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char par
 
 	}
 
-	main_mod->Hook.FeMan->HandleDamageOriginal(chrDamageModule, damage, param_3, param_4, param_5, param_6);
+	HandleDamageOriginal(chrDamageModule, damage, param_3, param_4, param_5, param_6);
 
 }
 

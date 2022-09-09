@@ -29,7 +29,7 @@ public:
 private:
 	static void enableBossBar(int* entityId, int bossBarIndex, int displayId);
 	static void handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6);
-	void writePoiseToBossBar();
+	static void writePoiseToBossBar();
 	void writePoiseToEntityBar();
 };
 

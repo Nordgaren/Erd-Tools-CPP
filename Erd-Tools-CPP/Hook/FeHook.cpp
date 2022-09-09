@@ -78,8 +78,7 @@ void FeHook::EnableLootPrefs() {
 			{ 4000, 4110 ,4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350, 6361, 9532 });
 	}
 	if (LootPrefs & lock_corpse_loot) {
-		lockPickupList.insert(lockPickupList.end(),
-			{ 4100 });
+		lockPickupList.push_back(4100);
 	}
 	if (LootPrefs & lock_lost_runes) {
 		lockPickupList.push_back(1000);

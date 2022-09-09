@@ -14,12 +14,14 @@ Feel free to use this in your mod. Just link people here so they can get help if
 All features are adjustable in the ini!  
 
 Open map in combat  
-Crafting in Combat  
+Crafting in combat  
 Event Flag log to console window  
-Auto Harvest crafting materials  
+Auto pickup items when in range   
+Lock interactions in combat  
 Harvest range multiplier  
 Map scoll speed multiplier  
 Boss Bar Poise Meter  
+Entity Bar Poise Meter
 
 ## How To Use 
 install [Elden Ring Mod Loader](https://www.nexusmods.com/eldenring/mods/117) and put this mod and ini file in the mods folder for mod loader. 
@@ -39,6 +41,11 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1
+* Worked out bugs involving CPU usage.  
+
+* Expanded loot lockout to interaction lockout, including touching graces and sitting at them in combat (not just when an enemy is near them, now.)  
+
 ### Beta 0.1.4
 * Added poise to entity health bar damage numbers (Experimental like boss bar)  
 

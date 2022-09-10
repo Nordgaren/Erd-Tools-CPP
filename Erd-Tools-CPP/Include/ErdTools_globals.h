@@ -1,7 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <intrin.h>
-#include <xmmintrin.h>
 
 enum UserPreferences {
 	none = 0,
@@ -288,8 +286,5 @@ typedef void (*SetEventFlag)(uint64_t, uint32_t*, bool);
 typedef bool (*IsEventFlag)(uint64_t, uint32_t* );
 
 typedef void (*HandleDamage)(ChrDamageModule*, int, char, char, uint32_t, bool);
-
-typedef bool (__vectorcall*ExecActionButtonParam)(uintptr_t actionButtonManImp, int entryId, uint64_t param_6, char param_7, char param_8, uint8_t param_9, uint8_t param_10, int param_11, uint32_t* param_12,
-    __m128 param_1, __m128 param_2, __m128 param_3);
 
 typedef bool(*ExecActionButtonParamProxy)(uintptr_t actionButtonManImp, int entryId);

@@ -24,14 +24,6 @@ bool ErdHook::CreateMemoryEdits() {
 	return true;
 }
 
-uint64_t ErdHook::GetRelativeOffset(void* pointer, int address_offset, int instruction_size) {
-	uint64_t relativeAddr = (uint64_t)pointer;
-	int offset = *(int*)(relativeAddr + address_offset);
-
-	relativeAddr += offset + instruction_size;
-	return relativeAddr;
-}
-
 uint64_t* EventHook::EventMan = nullptr;
 
 bool ErdHook::FindNeededSignatures() {
@@ -41,7 +33,8 @@ bool ErdHook::FindNeededSignatures() {
 	}
 
 	Signature event_man = Signature("48 8B 3D ?? ?? ?? ?? 48 85 FF ?? ?? 32 C0 E9");
-	EventHook::EventMan = (uint64_t*)GetRelativeOffset(event_man.Scan(&EldenRingData), 0x3, 0x7);
+	event_man.Scan(&EldenRingData);
+	EventHook::EventMan = (uint64_t*)event_man.GetRelativeOffset(0x3, 0x7);
 
 	Signature set_event = Signature("?? ?? ?? ?? ?? 48 89 74 24 18 57 48 83 EC 30 48 8B DA 41 0F B6 F8 8B 12 48 8B F1 85 D2 0F 84 ?? ?? ?? ?? 45 84 C0");
 	EventMan->SetEventFlagAddress = (uint64_t)set_event.Scan(&EldenRingData);
@@ -60,7 +53,8 @@ bool ErdHook::FindNeededSignatures() {
 	DebugMan->DisableCrafingInCombatLocation = (uint64_t)disable_crafting.Scan(&EldenRingData);
 
 	Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
-	ParamMan->SoloParamRepository = GetRelativeOffset((void*)soloParamRepositorySig.Scan(&EldenRingData), 3, 7);
+	soloParamRepositorySig.Scan(&EldenRingData),
+	ParamMan->SoloParamRepository = soloParamRepositorySig.GetRelativeOffset( 0x3, 0x7);
 
 	Signature find_equipparamweapon_signature = Signature("40 57 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 8B");
 	ParamMan->FindEquipParamWeaponFunc = (FindEquipParamWeaponEntry*)find_equipparamweapon_signature.Scan(&EldenRingData);
@@ -85,12 +79,13 @@ bool ErdHook::FindNeededSignatures() {
 	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)get_actionbuttonparam_signature.Scan(&EldenRingData);
 
 	Signature enableBossBarSig = Signature("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");
-	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan(&EldenRingData);;
-	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBarSig.ScanResult, 0x69, 0x6D);
+	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan(&EldenRingData);
+	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)enableBossBarSig.GetRelativeOffset( 0x69, 0x6D);
 
 	Signature csFeManImp = Signature("48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 "
 		"8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 48 8B D8");
-	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(csFeManImp.Scan(&EldenRingData), 0x3, 0x7);
+	csFeManImp.Scan(&EldenRingData);
+	FeMan->CSFeMan = (CSFeManImp**)csFeManImp.GetRelativeOffset(0x3, 0x7);
 
 	Signature applyBossBarDmgSig = Signature("83 FA 02 77 ?? 48 63 C2 48 05 B9 02 00 00 48 C1 E0 05 48 03 C1 EB");
 	FeMan->_applyBossBarDmg = (uintptr_t)applyBossBarDmgSig.Scan(&EldenRingData);
@@ -102,21 +97,22 @@ bool ErdHook::FindNeededSignatures() {
 	FeMan->_applyEntityBarDmg = (uintptr_t)applyEntityBarDmgSig.Scan(&EldenRingData);
 
 	Signature worldChrManSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 74 0F 48 39 88");
-	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(worldChrManSig.Scan(&EldenRingData), 0x3, 0x7);
+	worldChrManSig.Scan(&EldenRingData);
+	WorldChrManIns = (WorldChrMan**)worldChrManSig.GetRelativeOffset(0x3, 0x7);
 
 	Signature csSoundSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 ?? ?? 83 CD 02 83 B8 ?? ?? ?? ?? 00 89 6C 24 ?? 0F 95 C1");
-	SoundIns = (CSSound**)GetRelativeOffset(csSoundSig.Scan(&EldenRingData), 0x3, 0x7);
+	csSoundSig.Scan(&EldenRingData);
+	SoundIns = (CSSound**)csSoundSig.GetRelativeOffset(0x3, 0x7);
 
 	Signature executeActionButtonParamSig = Signature("48 89 5C 24 08 57 48 81 EC 90 00 00 00 48 8B 84 24 E0 00 00 00 41 0F B6 D9 48 8B 0D ?? ?? ?? ?? 8B FA 0F 29 B4 24 80 00 00 00");
 	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan(&EldenRingData);
-	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0x1C, 0x20);
-	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0xBD, 0xC1);
+	FeMan->_actionButtonParamImp = executeActionButtonParamSig.GetRelativeOffset(0x1C, 0x20);
 
 	return EventMan && EventMan->SetEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->SoloParamRepository && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
 		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
-		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy && FeMan->executeActionButtonParam && FeMan->_actionButtonParamImp;
+		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy&& FeMan->_actionButtonParamImp;
 }
 
 //bool SigScan::GetImageInfo() {
@@ -172,6 +168,7 @@ void ErdHook::debugPrint() {
 	printf("Ptrs: \n");
 	printf("Hook\n");
 	printf("WorldChrMan: %p\n", WorldChrManIns);
+	printf("CSSound: %p\n", SoundIns);
 	printf("\nEventMan\n");
 	printf("EventMan->EventMan: %p\n", EventMan->EventMan);
 	printf("EventMan->SetEventFlagAddress %p\n", EventMan->SetEventFlagAddress);
@@ -195,7 +192,6 @@ void ErdHook::debugPrint() {
 	printf("FeMan->_handleDmg %p\n", FeMan->_handleDmg);
 	printf("FeMan->_applyEntityBarDmg %p\n", FeMan->_applyEntityBarDmg);
 	printf("FeMan->_executeActionButtonParamProxy %p\n", FeMan->_executeActionButtonParamProxy);
-	printf("FeMan->executeActionButtonParam %p\n", FeMan->executeActionButtonParam);
 	printf("FeMan->_actionButtonParamImp %p\n", FeMan->_actionButtonParamImp);
 
 }

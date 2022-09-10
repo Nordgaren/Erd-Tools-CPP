@@ -20,7 +20,6 @@ public:
 	uintptr_t _applyEntityBarDmg = 0;
 	uintptr_t _handleDmg = 0;
 	uintptr_t _executeActionButtonParamProxy = 0;
-	ExecActionButtonParam executeActionButtonParam = 0;
 	uintptr_t _actionButtonParamImp = 0;
 	//static int ExecActionButtonParam(int entryId);
 	std::vector<int> autoPickupList;

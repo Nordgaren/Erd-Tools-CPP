@@ -1,8 +1,8 @@
 #include "..\Include\Signature.h"
 
-ModuleData::ModuleData(std::string module) {
+ModuleData::ModuleData(const char *module) {
 
-    ModuleHandle = GetModuleHandleA(module.c_str());
+    ModuleHandle = GetModuleHandleA(module);
 
     if (ModuleHandle) {
         MEMORY_BASIC_INFORMATION memInfo;
@@ -25,9 +25,9 @@ ModuleData::ModuleData(std::string module) {
 
 };
 
-Signature::Signature(char* sig, int offset) : _offset(offset) {
+Signature::Signature(const char* sig, int offset) : _offset(offset) {
 
-    for (char* c = sig; *c; c++) {
+    for (char* c = (char*)sig; *c; c++) {
         if (c[0] == ' ') continue;
 
         if (c[0] == '?') {
@@ -80,6 +80,19 @@ void* Signature::Scan(ModuleData *moduleData) {
     return nullptr;
 
 };
+
+uint64_t Signature::GetRelativeOffset(int address_offset, int instruction_size) {
+    if (!ScanResult) {
+        throw std::runtime_error("Cannot get Relative Addr before scan.");
+    }
+
+    uint64_t relativeAddr = (uint64_t)ScanResult;
+    int offset = *(int*)(relativeAddr + address_offset);
+
+    relativeAddr += offset + instruction_size;
+    return relativeAddr;
+}
+
 
 int Signature::hex2num(char h) {
     if (h >= '0' && h <= '9') return h - '0';

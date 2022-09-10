@@ -13,7 +13,7 @@ struct ExecutableSection {
 };
 
 struct ModuleData {
-    ModuleData(std::string module);
+    ModuleData(const char *module);
     HMODULE ModuleHandle = nullptr;
     void* BaseAddress = nullptr;
     size_t ImageSize = 0;
@@ -21,8 +21,9 @@ struct ModuleData {
 };
 
 struct Signature {
-    explicit Signature(char* sig, int offset = 0);
+    explicit Signature(const char* sig, int offset = 0);
     void* Scan(ModuleData *moduleData);
+    uint64_t GetRelativeOffset(int address_offset, int instruction_size);
     void* ScanResult = nullptr;
 private:
     std::vector<uint8_t> _bytes = {};

@@ -290,3 +290,9 @@ typedef bool (*IsEventFlag)(uint64_t, uint32_t* );
 typedef void (*HandleDamage)(ChrDamageModule*, int, char, char, uint32_t, bool);
 
 typedef bool(*ExecActionButtonParamProxy)(uintptr_t actionButtonManImp, int entryId);
+
+typedef bool(*FeManCtor)(CSFeManImp*, uintptr_t, uintptr_t);
+
+typedef bool(*EnemyInsDtor)(ChrIns*, uintptr_t);
+
+typedef void (*UpdateUIBarStructs)(uintptr_t, uintptr_t);

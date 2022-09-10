@@ -112,11 +112,20 @@ bool ErdHook::FindNeededSignatures() {
 	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan(&EldenRingData);
 	FeMan->_actionButtonParamImp = executeActionButtonParamSig.GetRelativeOffset(0x1C, 0x20);
 
+	Signature enemyInsDtor = Signature("48 89 5C 24 08 57 48 83 EC 20 8B DA 48 8B F9 E8 ?? ?? ?? ?? F6 C3 01 74 ?? BA D0 05 00 00");
+	FeMan->_enemyInsDtor = (uintptr_t)enemyInsDtor.Scan(&EldenRingData);
+
+	Signature feManCtor = Signature("48 89 4C 24 08 55 53 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 48 48 C7 45 E8 FE FF FF FF 48");
+	FeMan->_feManCtor = (uintptr_t)feManCtor.Scan(&EldenRingData);
+
+	Signature updateUIBarStructs = Signature("40 55 56 57 41 54 41 55 41 56 41 57 48 83 EC 60 48 C7 44 24 30 FE FF FF FF 48 89 9C 24 B0 00 00 00 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 44 24 58 48");
+	FeMan->_updateUIBarStructs = (uintptr_t)updateUIBarStructs.Scan(&EldenRingData);
+
 	return EventMan && EventMan->SetEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->SoloParamRepository && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
 		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->_disableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
-		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy&& FeMan->_actionButtonParamImp;
+		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy&& FeMan->_actionButtonParamImp && FeMan->_feManCtor && FeMan->_updateUIBarStructs;
 }
 
 void ErdHook::debugPrint() {

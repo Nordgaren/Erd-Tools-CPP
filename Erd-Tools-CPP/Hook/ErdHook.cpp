@@ -3,7 +3,7 @@
 
 
 extern ErdToolsMain* main_mod;
-extern ModuleData EldenRingData;
+ModuleData EldenRingData("eldenring.exe");
 
 bool ErdHook::CreateMemoryEdits() {
 
@@ -41,74 +41,74 @@ bool ErdHook::FindNeededSignatures() {
 	}
 
 	Signature event_man = Signature("48 8B 3D ?? ?? ?? ?? 48 85 FF ?? ?? 32 C0 E9");
-	EventHook::EventMan = (uint64_t*)GetRelativeOffset(event_man.Scan(), 0x3, 0x7);
+	EventHook::EventMan = (uint64_t*)GetRelativeOffset(event_man.Scan(&EldenRingData), 0x3, 0x7);
 
 	Signature set_event = Signature("?? ?? ?? ?? ?? 48 89 74 24 18 57 48 83 EC 30 48 8B DA 41 0F B6 F8 8B 12 48 8B F1 85 D2 0F 84 ?? ?? ?? ?? 45 84 C0");
-	EventMan->SetEventFlagAddress = (uint64_t)set_event.Scan();
+	EventMan->SetEventFlagAddress = (uint64_t)set_event.Scan(&EldenRingData);
 
 	Signature is_event = Signature("48 83 EC 28 8B 12 85 D2");
-	*(void**)&EventHook::IsEventFlag = is_event.Scan();
+	*(void**)&EventHook::IsEventFlag = is_event.Scan(&EldenRingData);
 
 	Signature disable_map = Signature("74 ?? C7 45 38 58 02 00 00 C7 45 3C 02 00 00 00 C7 45 40 01 00 00 00 48 ?? ?? ?? ?? ?? ?? 48 89 45 48 48 8D 4D 38 E8 ?? ?? ?? ?? E9");
-	DebugMan->DisableOpenMapInCombatLocation = (uint64_t)disable_map.Scan();
+	DebugMan->DisableOpenMapInCombatLocation = (uint64_t)disable_map.Scan(&EldenRingData);
 
 	Signature combat_map = Signature("E8 ?? ?? ?? ?? 84 C0 75 ?? 38 83 ?? ?? ?? ?? 75 ?? 83 E7 FE");
-	DebugMan->CloseMapInCombatLocation = (uint64_t)combat_map.Scan();
+	DebugMan->CloseMapInCombatLocation = (uint64_t)combat_map.Scan(&EldenRingData);
 
 	Signature disable_crafting = Signature("48 83 EC ?? 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 "
 		"4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 94 C0 48 83 C4 ?? C3", 62);
-	DebugMan->DisableCrafingInCombatLocation = (uint64_t)disable_crafting.Scan();
+	DebugMan->DisableCrafingInCombatLocation = (uint64_t)disable_crafting.Scan(&EldenRingData);
 
 	Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
-	ParamMan->SoloParamRepository = GetRelativeOffset((void*)soloParamRepositorySig.Scan(), 3, 7);
+	ParamMan->SoloParamRepository = GetRelativeOffset((void*)soloParamRepositorySig.Scan(&EldenRingData), 3, 7);
 
 	Signature find_equipparamweapon_signature = Signature("40 57 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 8B");
-	ParamMan->FindEquipParamWeaponFunc = (FindEquipParamWeaponEntry*)find_equipparamweapon_signature.Scan();
+	ParamMan->FindEquipParamWeaponFunc = (FindEquipParamWeaponEntry*)find_equipparamweapon_signature.Scan(&EldenRingData);
 
 	Signature find_equipparamprotector_signature = Signature("41 54 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 "
 		"48 89 7C 24 78 8B EA 4C 8B F1 33");
-	ParamMan->FindEquipParamProtectorFunc = (FindEquipParamProtectorEntry*)find_equipparamprotector_signature.Scan();
+	ParamMan->FindEquipParamProtectorFunc = (FindEquipParamProtectorEntry*)find_equipparamprotector_signature.Scan(&EldenRingData);
 
 	Signature find_equipparamgoods_signature = Signature("45 33 C0 41 8D 50 03 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 80 80 00 00 00 48 8B 90", 0x67);
-	ParamMan->FindEquipParamGoodsFunc = (FindEquipParamGoodsEntry*)find_equipparamgoods_signature.Scan();
+	ParamMan->FindEquipParamGoodsFunc = (FindEquipParamGoodsEntry*)find_equipparamgoods_signature.Scan(&EldenRingData);
 
 	Signature find_equipmtrlsetparam_signature = Signature("45 33 C0 41 8D 50 18 E8 ?? ?? ?? ?? 48 85 C0 0F 84", 0x67);
-	ParamMan->FindEquipMtrlSetParamFunc = (FindEquipMtrlSetParamEntry*)find_equipmtrlsetparam_signature.Scan();
+	ParamMan->FindEquipMtrlSetParamFunc = (FindEquipMtrlSetParamEntry*)find_equipmtrlsetparam_signature.Scan(&EldenRingData);
 
 	Signature get_menucommonparam_signature = Signature("40 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 8B F9 33 DB 48 89 19 48 8B 0D ?? ?? ?? ?? 48 "
 		"85 C9 0F 84 CA 00 00 00 45 33 C0 BA 8F 00 00 00");
-	ParamMan->GetMenuCommonParamEntry = (GetMenuCommonParamEntry*)get_menucommonparam_signature.Scan();
+	ParamMan->GetMenuCommonParamEntry = (GetMenuCommonParamEntry*)get_menucommonparam_signature.Scan(&EldenRingData);
 
 	Signature get_actionbuttonparam_signature = Signature("40 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 89 6C 24 58 48 89 74 24 60 8B FA 48 8B F1 "
 		"33 DB 85 D2 0F 88 21 01 00 00 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? "
 		"?? ?? ?? 48 8B 0D ?? ?? ?? ?? 45 33 C0 41 8D 50 24");
-	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)get_actionbuttonparam_signature.Scan();
+	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)get_actionbuttonparam_signature.Scan(&EldenRingData);
 
 	Signature enableBossBarSig = Signature("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");
-	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan();;
+	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan(&EldenRingData);;
 	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBarSig.ScanResult, 0x69, 0x6D);
 
 	Signature csFeManImp = Signature("48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 "
 		"8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 48 8B D8");
-	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(csFeManImp.Scan() , 0x3, 0x7);
+	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(csFeManImp.Scan(&EldenRingData), 0x3, 0x7);
 
 	Signature applyBossBarDmgSig = Signature("83 FA 02 77 ?? 48 63 C2 48 05 B9 02 00 00 48 C1 E0 05 48 03 C1 EB");
-	FeMan->_applyBossBarDmg = (uintptr_t)applyBossBarDmgSig.Scan();
+	FeMan->_applyBossBarDmg = (uintptr_t)applyBossBarDmgSig.Scan(&EldenRingData);
 
 	Signature handleDamage = Signature("48 8B C4 57 41 54 41 55 41 56 41 57 48 83 EC 60 48 C7 40 C8 FE FF FF FF 48 89 58 08");
-	FeMan->_handleDmg = (uintptr_t)handleDamage.Scan();
+	FeMan->_handleDmg = (uintptr_t)handleDamage.Scan(&EldenRingData);
 
 	Signature applyEntityBarDmgSig = Signature("48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 20 48 8B DA 45 33 F6 41 8B E9 41 8B F0 45 8B D6 44 8B C3 41 8B D6 48 8B F9 41 B9 FF FF FF FF");
-	FeMan->_applyEntityBarDmg = (uintptr_t)applyEntityBarDmgSig.Scan();
+	FeMan->_applyEntityBarDmg = (uintptr_t)applyEntityBarDmgSig.Scan(&EldenRingData);
 
 	Signature worldChrManSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 74 0F 48 39 88");
-	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(worldChrManSig.Scan(), 0x3, 0x7);
+	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(worldChrManSig.Scan(&EldenRingData), 0x3, 0x7);
 
 	Signature csSoundSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 ?? ?? 83 CD 02 83 B8 ?? ?? ?? ?? 00 89 6C 24 ?? 0F 95 C1");
-	SoundIns = (CSSound**)GetRelativeOffset(csSoundSig.Scan(), 0x3, 0x7);
+	SoundIns = (CSSound**)GetRelativeOffset(csSoundSig.Scan(&EldenRingData), 0x3, 0x7);
 
 	Signature executeActionButtonParamSig = Signature("48 89 5C 24 08 57 48 81 EC 90 00 00 00 48 8B 84 24 E0 00 00 00 41 0F B6 D9 48 8B 0D ?? ?? ?? ?? 8B FA 0F 29 B4 24 80 00 00 00");
-	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan();
+	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan(&EldenRingData);
 	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0x1C, 0x20);
 	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0xBD, 0xC1);
 

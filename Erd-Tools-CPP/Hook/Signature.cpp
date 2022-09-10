@@ -1,7 +1,5 @@
 #include "..\Include\Signature.h"
 
-ModuleData EldenRingData("eldenring.exe");
-
 ModuleData::ModuleData(std::string module) {
 
     ModuleHandle = GetModuleHandleA(module.c_str());
@@ -13,8 +11,14 @@ ModuleData::ModuleData(std::string module) {
             IMAGE_NT_HEADERS* hPe = (IMAGE_NT_HEADERS*)((ULONG64)memInfo.AllocationBase + (ULONG64)hDos->e_lfanew);
 
             if ((hDos->e_magic == IMAGE_DOS_SIGNATURE) && (hPe->Signature == IMAGE_NT_SIGNATURE)) {
-                BaseAddress = (void*)memInfo.AllocationBase;
+                BaseAddress = memInfo.AllocationBase;
                 ImageSize = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
+                IMAGE_SECTION_HEADER* sections = IMAGE_FIRST_SECTION(hPe);
+                for (int i = 0; i < hPe->FileHeader.NumberOfSections; ++i) {
+                    if (sections[i].Characteristics & IMAGE_SCN_MEM_EXECUTE) {
+                        ExecutableSections.emplace_back((char*)BaseAddress + sections[i].VirtualAddress, sections[i].Misc.VirtualSize);
+                    }
+                }
             }
         }
     }
@@ -45,30 +49,32 @@ Signature::Signature(char* sig, int offset) : _offset(offset) {
 
 }
 
-void* Signature::Scan() {
+void* Signature::Scan(ModuleData *moduleData) {
 
     if (ScanResult)
         return ScanResult;
     size_t len = _bytes.size();
-
-    char* pScan = (char*)EldenRingData.BaseAddress;
-    char* max_address = pScan + EldenRingData.ImageSize - len;
     unsigned char* aob = _bytes.data();
     unsigned char* m = _mask.data();
 
-    while (pScan < max_address) {
-        size_t szLength = 0;
-        for (size_t i = 0; i <= len; i+=8) {
-            szLength = i;
-            if ((*(uint64_t*)(pScan + i) ^ *(uint64_t*)(aob + i)) & *(uint64_t*)(m + i)) break;
-        }
+    for (int i = 0; i < moduleData->ExecutableSections.size(); ++i) {
+        char* pScan = (char*)moduleData->ExecutableSections[i].SectionPtr;
+        char* max_address = pScan + moduleData->ExecutableSections[i].SectionSize;
 
-        if (szLength == len) {
-            ScanResult = pScan + _offset;
-            return ScanResult;
-        }
+        while (pScan < max_address) {
+            size_t szLength = 0;
+            for (size_t i = 0; i <= len; i += 8) {
+                szLength = i;
+                if ((*(uint64_t*)(pScan + i) ^ *(uint64_t*)(aob + i)) & *(uint64_t*)(m + i)) break;
+            }
 
-        pScan++;
+            if (szLength == len) {
+                ScanResult = pScan + _offset;
+                return ScanResult;
+            }
+
+            pScan++;
+        }
     }
 
     return nullptr;

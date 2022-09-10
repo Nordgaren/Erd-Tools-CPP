@@ -129,10 +129,6 @@ void ErdToolsMain::InitPreferences() {
 		Hook.DebugMan->EnableCraftingInCombat();
 	}
 
-	if (Preferences & enable_auto_pickup) {
-		Hook.DebugMan->EnableAutoHarvest();
-	}
-
 	if (Preferences & enable_boss_poise_meter) {
 		Hook.FeMan->EnableBossPoiseMeter();
 	}

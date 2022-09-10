@@ -3,6 +3,7 @@
 
 
 extern ErdToolsMain* main_mod;
+extern ModuleData EldenRingData;
 
 bool ErdHook::CreateMemoryEdits() {
 
@@ -34,219 +35,137 @@ uint64_t ErdHook::GetRelativeOffset(void* pointer, int address_offset, int instr
 uint64_t* EventHook::EventMan = nullptr;
 
 bool ErdHook::FindNeededSignatures() {
-	if (!_signatureClass.GetImageInfo()) {
+	if (!EldenRingData.BaseAddress) {
 		//
 		return false;
 	}
 
-	Signature event_man = {
-		"\x48\x8B\x3D\xFF\xFF\xFF\xFF\x48\x85\xFF\xFF\xFF\x32\xC0\xE9",
-		"xxx????xxx??xxx",
-		0,
-	};
-	void* result = _signatureClass.FindSignature(event_man);
-	uint64_t relativeAddr = GetRelativeOffset(result, 0x3, 0x7);
-	EventHook::EventMan = (uint64_t*)relativeAddr;
+	Signature event_man = Signature("48 8B 3D ?? ?? ?? ?? 48 85 FF ?? ?? 32 C0 E9");
+	EventHook::EventMan = (uint64_t*)GetRelativeOffset(event_man.Scan(), 0x3, 0x7);
 
-	Signature set_event = {
-		"\xFF\xFF\xFF\xFF\xFF\x48\x89\x74\x24\x18\x57\x48\x83\xEC\x30\x48\x8B\xDA\x41\x0F\xB6\xF8\x8B\x12\x48\x8B\xF1\x85\xD2\x0F\x84\xFF\xFF\xFF\xFF\x45\x84\xC0",
-		"?????xxxxxxxxxxxxxxxxxxxxxxxxxx????xxx",
-		0,
-	};
-	EventMan->SetEventFlagAddress = (uint64_t)_signatureClass.FindSignature(set_event);
+	Signature set_event = Signature("?? ?? ?? ?? ?? 48 89 74 24 18 57 48 83 EC 30 48 8B DA 41 0F B6 F8 8B 12 48 8B F1 85 D2 0F 84 ?? ?? ?? ?? 45 84 C0");
+	EventMan->SetEventFlagAddress = (uint64_t)set_event.Scan();
 
-	Signature is_event = {
-		"\x48\x83\xEC\x28\x8B\x12\x85\xD2",
-		"xxxxxxxx",
-		0,
-	};
-	EventMan->IsEventFlagAddress = (uint64_t)_signatureClass.FindSignature(is_event);
-	*(void**)&EventHook::IsEventFlag = (void*)EventMan->IsEventFlagAddress;
+	Signature is_event = Signature("48 83 EC 28 8B 12 85 D2");
+	*(void**)&EventHook::IsEventFlag = is_event.Scan();
 
-	Signature disable_map = {
-		"\x74\xFF\xC7\x45\x38\x58\x02\x00\x00\xC7\x45\x3C\x02\x00\x00\x00\xC7\x45\x40\x01\x00\x00\x00\x48\xFF\xFF\xFF\xFF\xFF\xFF\x48\x89\x45\x48\x48\x8D\x4D\x38\xE8\xFF\xFF\xFF\xFF\xE9",
-		"x?xxxxxxxxxxxxxxxxxxxxxx??????xxxxxxxxx????x",
-		0,
-	};
-	DebugMan->DisableOpenMapInCombatLocation = (uint64_t)_signatureClass.FindSignature(disable_map);
+	Signature disable_map = Signature("74 ?? C7 45 38 58 02 00 00 C7 45 3C 02 00 00 00 C7 45 40 01 00 00 00 48 ?? ?? ?? ?? ?? ?? 48 89 45 48 48 8D 4D 38 E8 ?? ?? ?? ?? E9");
+	DebugMan->DisableOpenMapInCombatLocation = (uint64_t)disable_map.Scan();
 
-	Signature combat_map = {
-		"\xE8\xFF\xFF\xFF\xFF\x84\xC0\x75\xFF\x38\x83\xFF\xFF\xFF\xFF\x75\xFF\x83\xE7\xFE",
-		"x????xxx?xx????x?xxx",
-		0,
-	};
-	DebugMan->CloseMapInCombatLocation = (uint64_t)_signatureClass.FindSignature(combat_map);
+	Signature combat_map = Signature("E8 ?? ?? ?? ?? 84 C0 75 ?? 38 83 ?? ?? ?? ?? 75 ?? 83 E7 FE");
+	DebugMan->CloseMapInCombatLocation = (uint64_t)combat_map.Scan();
 
-	Signature disable_crafting = {
-	"\x48\x83\xEC\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\x48\x85\xC9\x75\xFF\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xC8\x4C\x8D\x05\xFF\xFF\xFF\xFF\xBA\xB4\x00\x00\x00\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x84\xC0\x0F\x94\xC0\x48\x83\xC4\xFF\xC3",
-	"xxx?xxx????xxxx?xxx????x????xxxxxx????xxxxxxxx????x????xxx????x????xxxxxxxx?x",
-	62,
-	};
+	Signature disable_crafting = Signature("48 83 EC ?? 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 "
+		"4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 94 C0 48 83 C4 ?? C3", 62);
+	DebugMan->DisableCrafingInCombatLocation = (uint64_t)disable_crafting.Scan();
 
-	DebugMan->DisableCrafingInCombatLocation = (uint64_t)_signatureClass.FindSignature(disable_crafting);
+	Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
+	ParamMan->SoloParamRepository = GetRelativeOffset((void*)soloParamRepositorySig.Scan(), 3, 7);
 
-	DebugMan->AutoHarvestLocation = _signatureClass.PtrFromOffset(0x6C947D);
+	Signature find_equipparamweapon_signature = Signature("40 57 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 8B");
+	ParamMan->FindEquipParamWeaponFunc = (FindEquipParamWeaponEntry*)find_equipparamweapon_signature.Scan();
 
-	Signature soloParamRepositorySig = {
-		"\x48\x8B\x0D\xFF\xFF\xFF\xFF\x48\x85\xC9\x0F\x84\xFF\xFF\xFF\xFF\x45\x33\xC0\xBA\x90",
-		"xxx????xxxxx????xxxxx",
-	};
-	ParamMan->_soloParamRepositoryAddr = (uint64_t)_signatureClass.FindSignature(soloParamRepositorySig);
-	ParamMan->SoloParamRepository = GetRelativeOffset((void*)ParamMan->_soloParamRepositoryAddr, 3, 7);
+	Signature find_equipparamprotector_signature = Signature("41 54 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 "
+		"48 89 7C 24 78 8B EA 4C 8B F1 33");
+	ParamMan->FindEquipParamProtectorFunc = (FindEquipParamProtectorEntry*)find_equipparamprotector_signature.Scan();
 
-	Signature find_equipparamweapon_signature = {
-			"\x40\x57\x41\x56\x41\x57\x48\x83\xEC\x40\x48\xC7\x44\x24\x20\xFE\xFF\xFF\xFF\x48\x89\x5C\x24\x60\x48\x89\x6C\x24\x68\x48\x89\x74\x24\x70\x8B",
-			"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	};
-	ParamMan->FindEquipParamWeaponFunc = (FindEquipParamWeaponEntry*)_signatureClass.FindSignature(
-		find_equipparamweapon_signature);
+	Signature find_equipparamgoods_signature = Signature("45 33 C0 41 8D 50 03 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 80 80 00 00 00 48 8B 90", 0x67);
+	ParamMan->FindEquipParamGoodsFunc = (FindEquipParamGoodsEntry*)find_equipparamgoods_signature.Scan();
 
-	Signature find_equipparamprotector_signature = {
-			"\x41\x54\x41\x56\x41\x57\x48\x83\xEC\x40\x48\xC7\x44\x24\x20\xFE\xFF\xFF\xFF\x48\x89\x5C\x24\x60\x48\x89\x6C\x24\x68\x48\x89\x74\x24\x70\x48\x89\x7C\x24\x78\x8B\xEA\x4C\x8B\xF1\x33",
-			"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	};
-	ParamMan->FindEquipParamProtectorFunc = (FindEquipParamProtectorEntry*)_signatureClass.FindSignature(
-		find_equipparamprotector_signature);
+	Signature find_equipmtrlsetparam_signature = Signature("45 33 C0 41 8D 50 18 E8 ?? ?? ?? ?? 48 85 C0 0F 84", 0x67);
+	ParamMan->FindEquipMtrlSetParamFunc = (FindEquipMtrlSetParamEntry*)find_equipmtrlsetparam_signature.Scan();
 
-	Signature find_equipparamgoods_signature = {
-			"\x45\x33\xC0\x41\x8D\x50\x03\xE8\xFF\xFF\xFF\xFF\x48\x85\xC0\x0F\x84\xFF\xFF\xFF\xFF\x48\x8B\x80\x80\x00\x00\x00\x48\x8B\x90",
-			"xxxxxxxx????xxxxx????xxxxxxxxxx",
-	};
-	ParamMan->FindEquipParamGoodsFunc = (FindEquipParamGoodsEntry*)(
-		(uint64_t)_signatureClass.FindSignature(find_equipparamgoods_signature) - 103);
+	Signature get_menucommonparam_signature = Signature("40 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 8B F9 33 DB 48 89 19 48 8B 0D ?? ?? ?? ?? 48 "
+		"85 C9 0F 84 CA 00 00 00 45 33 C0 BA 8F 00 00 00");
+	ParamMan->GetMenuCommonParamEntry = (GetMenuCommonParamEntry*)get_menucommonparam_signature.Scan();
 
-	Signature find_equipmtrlsetparam_signature = {
-			"\x45\x33\xC0\x41\x8D\x50\x18\xE8\xFF\xFF\xFF\xFF\x48\x85\xC0\x0F\x84",
-			"xxxxxxxx????xxxxx",
-	};
-	ParamMan->FindEquipMtrlSetParamFunc = (FindEquipMtrlSetParamEntry*)((uint64_t)_signatureClass.FindSignature(find_equipmtrlsetparam_signature) - 103);
+	Signature get_actionbuttonparam_signature = Signature("40 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 89 6C 24 58 48 89 74 24 60 8B FA 48 8B F1 "
+		"33 DB 85 D2 0F 88 21 01 00 00 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? "
+		"?? ?? ?? 48 8B 0D ?? ?? ?? ?? 45 33 C0 41 8D 50 24");
+	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)get_actionbuttonparam_signature.Scan();
 
-	Signature get_menucommonparam_signature = {
-			"\x40\x57\x48\x83\xEC\x40\x48\xC7\x44\x24\x20\xFE\xFF\xFF\xFF\x48\x89\x5C\x24\x50\x48\x8B\xF9\x33\xDB\x48\x89\x19\x48\x8B\x0D\xFF\xFF\xFF\xFF\x48\x85\xC9\x0F\x84\xCA\x00\x00\x00\x45\x33\xC0\xBA\x8F\x00\x00\x00",
-			"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxxxxxxx",
-	};
-	ParamMan->GetMenuCommonParamEntry = (GetMenuCommonParamEntry*)_signatureClass.FindSignature(get_menucommonparam_signature);
+	Signature enableBossBarSig = Signature("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");
+	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan();;
+	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBarSig.ScanResult, 0x69, 0x6D);
 
-	Signature get_actionbuttonparam_signature = {
-		"\x40\x57\x48\x83\xEC\x40\x48\xC7\x44\x24\x20\xFE\xFF\xFF\xFF\x48\x89\x5C\x24\x50\x48\x89\x6C\x24\x58\x48\x89\x74\x24\x60\x8B\xFA\x48\x8B\xF1\x33\xDB\x85\xD2\x0F\x88\x21\x01\x00\x00\x48\x8B\x0D\xFF\xFF\xFF\xFF\x48\x85\xC9\x75\xFF\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xC8\x4C\x8D\x05\xFF\xFF\xFF\xFF\xBA\xB4\x00\x00\x00\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\x45\x33\xC0\x41\x8D\x50\x24",
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxx?xxx????x????xxxxxx????xxxxxxxx????x????xxx????xxxxxxx",
-	};
-	ParamMan->FindActionButtonParamEntry = (FindActionButtonParamEntry*)_signatureClass.FindSignature(get_actionbuttonparam_signature);
+	Signature csFeManImp = Signature("48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 "
+		"8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 48 8B D8");
+	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(csFeManImp.Scan() , 0x3, 0x7);
 
-	Signature enableBossBarSig = {
-		"\x48\x89\x5C\x24\x08\x48\x89\x74\x24\x10\x57\x48\x83\xEC\x20\x48\x8B\xF9\x41\x8B\xF0\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xDA\x48\x85\xC9",
-		"xxxxxxxxxxxxxxxxxxxxxxxx????xxxxx",
-	};
-	void* enableBossBar = _signatureClass.FindSignature(enableBossBarSig);
-	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBar;
+	Signature applyBossBarDmgSig = Signature("83 FA 02 77 ?? 48 63 C2 48 05 B9 02 00 00 48 C1 E0 05 48 03 C1 EB");
+	FeMan->_applyBossBarDmg = (uintptr_t)applyBossBarDmgSig.Scan();
 
-	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)GetRelativeOffset(enableBossBar, 0x69, 0x6D);
+	Signature handleDamage = Signature("48 8B C4 57 41 54 41 55 41 56 41 57 48 83 EC 60 48 C7 40 C8 FE FF FF FF 48 89 58 08");
+	FeMan->_handleDmg = (uintptr_t)handleDamage.Scan();
 
-	Signature csFeManImp = {
-		"\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xDA\x48\x85\xC9\x75\xFF\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xC8\x4C\x8D\x05\xFF\xFF\xFF\xFF\xBA\xB4\x00\x00\x00\x48\x8D\x0D\xFF\xFF\xFF\xFF\xE8\xFF\xFF\xFF\xFF\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xD3\xE8\xFF\xFF\xFF\xFF\x48\x8B\xD8",
-		"xxx????xxxxxx?xxx????x????xxxxxx????xxxxxxxx????x????xxx????xxx????xxx",
-	};
+	Signature applyEntityBarDmgSig = Signature("48 89 5C 24 08 48 89 6C 24 10 48 89 74 24 18 48 89 7C 24 20 41 56 48 83 EC 20 48 8B DA 45 33 F6 41 8B E9 41 8B F0 45 8B D6 44 8B C3 41 8B D6 48 8B F9 41 B9 FF FF FF FF");
+	FeMan->_applyEntityBarDmg = (uintptr_t)applyEntityBarDmgSig.Scan();
 
-	void* res = _signatureClass.FindSignature(csFeManImp);
-	FeMan->CSFeMan = (CSFeManImp**)GetRelativeOffset(res, 0x3, 0x7);
+	Signature worldChrManSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 74 0F 48 39 88");
+	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(worldChrManSig.Scan(), 0x3, 0x7);
 
-	Signature applyBossBarDmgSig = {
-		"\x83\xFA\x02\x77\xFF\x48\x63\xC2\x48\x05\xB9\x02\x00\x00\x48\xC1\xE0\x05\x48\x03\xC1\xEB",
-		"xxxx?xxxxxxxxxxxxxxxxx",
-	};
+	Signature csSoundSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 ?? ?? 83 CD 02 83 B8 ?? ?? ?? ?? 00 89 6C 24 ?? 0F 95 C1");
+	SoundIns = (CSSound**)GetRelativeOffset(csSoundSig.Scan(), 0x3, 0x7);
 
-	FeMan->_applyBossBarDmg = (uintptr_t)_signatureClass.FindSignature(applyBossBarDmgSig);
+	Signature executeActionButtonParamSig = Signature("48 89 5C 24 08 57 48 81 EC 90 00 00 00 48 8B 84 24 E0 00 00 00 41 0F B6 D9 48 8B 0D ?? ?? ?? ?? 8B FA 0F 29 B4 24 80 00 00 00");
+	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan();
+	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0x1C, 0x20);
+	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParamSig.ScanResult, 0xBD, 0xC1);
 
-	Signature handleDamage = {
-		"\x48\x8B\xC4\x57\x41\x54\x41\x55\x41\x56\x41\x57\x48\x83\xEC\x60\x48\xC7\x40\xC8\xFE\xFF\xFF\xFF\x48\x89\x58\x08",
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	};
-
-	FeMan->_handleDmg = (uintptr_t)_signatureClass.FindSignature(handleDamage);
-
-	Signature applyEntityBarDmgSig = {
-	"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x48\x89\x74\x24\x18\x48\x89\x7C\x24\x20\x41\x56\x48\x83\xEC\x20\x48\x8B\xDA\x45\x33\xF6\x41\x8B\xE9\x41\x8B\xF0\x45\x8B\xD6\x44\x8B\xC3\x41\x8B\xD6\x48\x8B\xF9\x41\xB9\xFF\xFF\xFF\xFF",
-	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-	};
-	FeMan->_applyEntityBarDmg = (uintptr_t)_signatureClass.FindSignature(applyEntityBarDmgSig);
-
-
-	Signature worldChrManSig = {
-			"\x48\x8B\x05\xFF\xFF\xFF\xFF\x48\x85\xC0\x74\x0F\x48\x39\x88",
-			"xxx????xxxxxxxx",
-	};
-	WorldChrManIns = (WorldChrMan**)GetRelativeOffset(_signatureClass.FindSignature(worldChrManSig), 0x3, 0x7);
-
-
-	Signature csSoundSig = {
-			"\x48\x8B\x05\xFF\xFF\xFF\xFF\x48\x85\xC0\xFF\xFF\x83\xCD\x02\x83\xB8\xFF\xFF\xFF\xFF\x00\x89\x6C\x24\xFF\x0F\x95\xC1",
-			"xxx????xxx??xxxxx????xxxx?xxx",
-	};
-	SoundIns = (CSSound**)GetRelativeOffset(_signatureClass.FindSignature(csSoundSig), 0x3, 0x7);
-
-	Signature executeActionButtonParamSig = {
-		"\x48\x89\x5C\x24\x08\x57\x48\x81\xEC\x90\x00\x00\x00\x48\x8B\x84\x24\xE0\x00\x00\x00\x41\x0F\xB6\xD9\x48\x8B\x0D\xFF\xFF\xFF\xFF\x8B\xFA\x0F\x29\xB4\x24\x80\x00\x00\x00",
-		"xxxxxxxxxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxx",
-	};
-	void* executeActionButtonParam = _signatureClass.FindSignature(executeActionButtonParamSig);
-	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParam;
-	FeMan->_actionButtonParamImp = GetRelativeOffset(executeActionButtonParam, 0x1C, 0x20);
-	FeMan->executeActionButtonParam = (ExecActionButtonParam)GetRelativeOffset(executeActionButtonParam, 0xBD, 0xC1);
-
-	return EventMan && EventMan->SetEventFlagAddress && EventMan->IsEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
-		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->_soloParamRepositoryAddr && ParamMan->FindEquipParamWeaponFunc &&
+	return EventMan && EventMan->SetEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
+		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->SoloParamRepository && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
 		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
 		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy && FeMan->executeActionButtonParam && FeMan->_actionButtonParamImp;
 }
 
-bool SigScan::GetImageInfo() {
-
-	bool bSuccess = false;
-
-	_moduleHandle = GetModuleHandleA("eldenring.exe");
-	if (_moduleHandle) {
-		MEMORY_BASIC_INFORMATION memInfo;
-		if (VirtualQuery((void*)_moduleHandle, &memInfo, sizeof(memInfo)) != 0) {
-			IMAGE_DOS_HEADER* hDos = (IMAGE_DOS_HEADER*)_moduleHandle;
-			IMAGE_NT_HEADERS* hPe = (IMAGE_NT_HEADERS*)((ULONG64)memInfo.AllocationBase + (ULONG64)hDos->e_lfanew);
-
-			if ((hDos->e_magic == IMAGE_DOS_SIGNATURE) && (hPe->Signature == IMAGE_NT_SIGNATURE)) {
-				bSuccess = true;
-				_baseAddress = (void*)memInfo.AllocationBase;
-				_imageSize = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
-			}
-		}
-	}
-
-	return bSuccess;
-};
-
-void* SigScan::FindSignature(Signature& fnSig) {
-	size_t maskLen = strlen(fnSig.mask);
-
-	char* pScan = (char*)_baseAddress;
-	char* max_address = pScan + _imageSize - maskLen;
-	while (pScan < max_address) {
-		size_t szLength = 0;
-
-		for (size_t i = 0; i < maskLen; i++) {
-			if (!((pScan[i] == fnSig.signature[i]) || (fnSig.mask[i] == '?'))) break;
-			szLength++;
-		}
-
-		if (szLength == maskLen) return pScan + fnSig.offset;
-
-		pScan++;
-	}
-
-	return nullptr;
-};
-
-
-inline uint64_t SigScan::PtrFromOffset(uint64_t offset) {
-	return ((uint64_t)_baseAddress) + offset;
-}
+//bool SigScan::GetImageInfo() {
+//
+//	bool bSuccess = false;
+//
+//	_moduleHandle = GetModuleHandleA("eldenring.exe");
+//	if (_moduleHandle) {
+//		MEMORY_BASIC_INFORMATION memInfo;
+//		if (VirtualQuery((void*)_moduleHandle, &memInfo, sizeof(memInfo)) != 0) {
+//			IMAGE_DOS_HEADER* hDos = (IMAGE_DOS_HEADER*)_moduleHandle;
+//			IMAGE_NT_HEADERS* hPe = (IMAGE_NT_HEADERS*)((ULONG64)memInfo.AllocationBase + (ULONG64)hDos->e_lfanew);
+//
+//			if ((hDos->e_magic == IMAGE_DOS_SIGNATURE) && (hPe->Signature == IMAGE_NT_SIGNATURE)) {
+//				bSuccess = true;
+//				_baseAddress = (void*)memInfo.AllocationBase;
+//				_imageSize = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
+//			}
+//		}
+//	}
+//
+//	return bSuccess;
+//};
+//
+//void* SigScan::FindSignature(Signature& fnSig) {
+//	size_t maskLen = strlen(fnSig.mask);
+//
+//	char* pScan = (char*)_baseAddress;
+//	char* max_address = pScan + _imageSize - maskLen;
+//	while (pScan < max_address) {
+//		size_t szLength = 0;
+//
+//		for (size_t i = 0; i < maskLen; i++) {
+//			if (!((pScan[i] == fnSig.signature[i]) || (fnSig.mask[i] == '?'))) break;
+//			szLength++;
+//		}
+//
+//		if (szLength == maskLen) return pScan + fnSig.offset;
+//
+//		pScan++;
+//	}
+//
+//	return nullptr;
+//};
+//
+//
+//inline uint64_t SigScan::PtrFromOffset(uint64_t offset) {
+//	return ((uint64_t)_baseAddress) + offset;
+//}
 
 void ErdHook::debugPrint() {
 
@@ -256,14 +175,11 @@ void ErdHook::debugPrint() {
 	printf("\nEventMan\n");
 	printf("EventMan->EventMan: %p\n", EventMan->EventMan);
 	printf("EventMan->SetEventFlagAddress %p\n", EventMan->SetEventFlagAddress);
-	printf("EventMan->IsEventFlagAddress %p\n", EventMan->IsEventFlagAddress);
 	printf("\nDebugMan\n");
 	printf("DebugMan->DisableOpenMapInCombatLocation %p\n", DebugMan->DisableOpenMapInCombatLocation);
 	printf("DebugMan->CloseMapInCombatLocation %p\n", DebugMan->CloseMapInCombatLocation);
 	printf("DebugMan->DisableCrafingInCombatLocation %p\n", DebugMan->DisableCrafingInCombatLocation);
-	printf("DebugMan->AutoHarvestLocation %p\n", DebugMan->AutoHarvestLocation);
 	printf("\nParamMan\n");
-	printf("ParamMan->_soloParamRepositoryAddr %p\n", ParamMan->_soloParamRepositoryAddr);
 	printf("ParamMan->SoloParamRepository %p\n", ParamMan->SoloParamRepository);
 	printf("ParamMan->FindEquipParamWeaponFunc %p\n", ParamMan->FindEquipParamWeaponFunc);
 	printf("ParamMan->FindEquipParamProtectorFunc %p\n", ParamMan->FindEquipParamProtectorFunc);
@@ -273,7 +189,6 @@ void ErdHook::debugPrint() {
 	printf("ParamMan->FindActionButtonParamEntry %p\n", ParamMan->FindActionButtonParamEntry);
 	printf("\nFeMan:\n");
 	printf("FeMan->_enableBossBarAddr %p\n", FeMan->_enableBossBarAddr);
-	printf("FeMan->EnableBossBarOriginal %p\n", FeMan->EnableBossBarOriginal);
 	printf("FeMan->GetChrInsFromEntityIdFunc %p\n", FeMan->GetChrInsFromEntityIdFunc);
 	printf("FeMan->CSFeMan %p\n", FeMan->CSFeMan);
 	printf("FeMan->_applyBossBarDmg %p\n", FeMan->_applyBossBarDmg);

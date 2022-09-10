@@ -16,7 +16,6 @@ public:
 	FindEquipMtrlSetParamEntry* FindEquipMtrlSetParamFunc = nullptr;
 	GetMenuCommonParamEntry* GetMenuCommonParamEntry = nullptr;
 	FindActionButtonParamEntry* FindActionButtonParamEntry = nullptr;
-	uintptr_t _soloParamRepositoryAddr = 0;
 	float _autoHarvestMultiplier = 1.0;
 	float _mapSpeedMultiplier = 1.0;
 	ParamHook() {

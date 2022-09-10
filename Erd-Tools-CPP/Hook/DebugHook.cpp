@@ -39,18 +39,3 @@ void DebugHook::DisableCraftingInCombat() {
 	combat_map_patched = false;
 }
 
-void DebugHook::EnableAutoHarvest() {
-	/* backup original bytes */
-	memcpy(auto_harvest_original_bytes, (void*)AutoHarvestLocation, sizeof(auto_harvest_original_bytes));
-
-	memcpy((void*)AutoHarvestLocation, AUTO_HARVEST_PATCH_BYTES, sizeof(AUTO_HARVEST_PATCH_BYTES));
-	auto_harvest_patched = true;
-}
-
-void DebugHook::DisableAutoHarvest() {
-	if (!combat_crafting_patched)
-		return;
-
-	memcpy((void*)AutoHarvestLocation, auto_harvest_original_bytes, sizeof(auto_harvest_original_bytes));
-	auto_harvest_patched = false;
-}

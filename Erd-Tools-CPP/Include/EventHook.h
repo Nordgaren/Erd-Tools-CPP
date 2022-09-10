@@ -11,7 +11,6 @@ public:
 	static inline SetEventFlag SetEventFlagOriginal = nullptr;
 	static inline IsEventFlag IsEventFlag = nullptr;
 	uint64_t SetEventFlagAddress = 0;
-	uint64_t IsEventFlagAddress = 0;
 	static uint64_t* EventMan;
 	EventHook() {
 

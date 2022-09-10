@@ -84,7 +84,7 @@
     <ClInclude Include="Include\FeHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\SignatureScanner.h">
+    <ClInclude Include="Include\Signature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,8 +131,8 @@
     <ClCompile Include="Hook\FeHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
-    <ClCompile Include="Hook\SignatureScanner.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Hook\Signature.cpp">
+      <Filter>Source Files\Hook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

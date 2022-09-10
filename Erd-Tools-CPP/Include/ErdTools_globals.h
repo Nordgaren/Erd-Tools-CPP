@@ -198,7 +198,7 @@ struct ChrIns {
     uint8_t undefined[0x8];
     unsigned long long handle;
     uint8_t undefined2[0x180];
-    ChrModuleBag* chrModuleBase;
+    ChrModuleBag* chrModulelBag;
     uint8_t undefined3[0x508];
     unsigned long long targetHandle;
 };
@@ -278,6 +278,8 @@ typedef void GetMenuCommonParamEntry(MenuCommonParamParamContainer*);
 typedef void FindActionButtonParamEntry(ActionButtonParamParamContainer*, uint32_t);
 
 typedef void (*EnableBossBar)(int*, int, int);
+
+typedef void (*DisableBossBar)(int);
 
 typedef ChrIns* GetChrInsFromEntityId(int*, uint64_t, uint32_t*);
 

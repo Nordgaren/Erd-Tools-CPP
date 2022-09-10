@@ -14,6 +14,13 @@ bool FeHook::EnableBossPoiseMeter() {
 	}
 
 	MH_EnableHook((void*)_enableBossBarAddr);
+
+	if (MH_CreateHook((void*)_disableBossBarAddr, &disableBossBar, (void**)&FeHook::DisableBossBarOriginal) != MH_OK) {
+		return false;
+	}
+
+	MH_EnableHook((void*)_disableBossBarAddr);
+
 	*(int*)_applyBossBarDmg = 0x909090C3;
 
 	std::thread t(&FeHook::writePoiseToBossBar);
@@ -102,25 +109,24 @@ void FeHook::writePoiseToBossBar() {
 	using namespace std::chrono_literals;
 
 	while (true) {
-
-		std::this_thread::sleep_for(1ms);
-
-		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
-			CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
-
-			if (feMan == nullptr) {
-				for (int j = 0; j < BOSS_CHR_ARRAY_LEN; j++) {
-					bossChrInsArray[j] = nullptr;
-				}
-
-				std::this_thread::sleep_for(5s);
-				continue;
+		CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
+		if (feMan == nullptr) {
+			for (int j = 0; j < BOSS_CHR_ARRAY_LEN; j++) {
+				bossChrInsArray[j] = nullptr;
 			}
 
-			if (feMan->bossHpBars[i].bossHandle != -1 && bossChrInsArray[i] != nullptr) {
+			std::this_thread::sleep_for(5s);
+			continue;
+		}
 
-				float stagger = bossChrInsArray[i]->chrModuleBase->staggerModule->staggerMax - bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
-				int staggerInt = (int)bossChrInsArray[i]->chrModuleBase->staggerModule->stagger;
+		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
+
+			if (feMan->bossHpBars[i].bossHandle != -1 && bossChrInsArray[i] != nullptr 
+				&& bossChrInsArray[i]->chrModulelBag != nullptr 
+				&& bossChrInsArray[i]->chrModulelBag->staggerModule != nullptr) {
+
+				float stagger = bossChrInsArray[i]->chrModulelBag->staggerModule->staggerMax - bossChrInsArray[i]->chrModulelBag->staggerModule->stagger;
+				int staggerInt = (int)bossChrInsArray[i]->chrModulelBag->staggerModule->stagger;
 				if (stagger > 0) {
 					feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
 					feMan->bossHpBars[i].isHit = true;
@@ -130,6 +136,8 @@ void FeHook::writePoiseToBossBar() {
 				}
 			}
 		}
+
+		std::this_thread::sleep_for(1ms);
 	}
 
 }
@@ -140,8 +148,21 @@ void FeHook::enableBossBar(int* entityId, int bossBarIndex, int displayId) {
 	if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
 		return;
 
+	printf("enable: %d", bossBarIndex);
 	bossChrInsArray[bossBarIndex] = main_mod->Hook.FeMan->GetChrInsFromEntityIdFunc(entityId, 0, nullptr);
 	EnableBossBarOriginal(entityId, bossBarIndex, displayId);
+
+}
+
+void FeHook::disableBossBar(int bossBarIndex) {
+
+	//prevent an oops
+	printf("disable: %d", bossBarIndex);
+	if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
+		return;
+
+	bossChrInsArray[bossBarIndex] = nullptr;
+	DisableBossBarOriginal(bossBarIndex);
 
 }
 
@@ -152,9 +173,7 @@ void FeHook::writePoiseToEntityBar() {
 
 	while (true) {
 
-		std::this_thread::sleep_for(1ms);
 		CSFeManImp* feMan = *CSFeMan;
-
 		if (feMan == nullptr) {
 			for (int j = 0; j < ENTITY_CHR_ARRAY_LEN; j++) {
 				entityPoiseArray[j].handle = __UINT64_MAX__;
@@ -167,17 +186,17 @@ void FeHook::writePoiseToEntityBar() {
 
 		for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-			if (entityPoiseArray[i].handle != __UINT64_MAX__) {
+			if (entityPoiseArray[i].handle != __UINT64_MAX__ && entityPoiseArray[i].chrIns->chrModulelBag != nullptr) {
+				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModulelBag->staggerModule;
 				feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
-				StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModuleBase->staggerModule;
-				if (staggerModule->staggerMax == -1.0f) {
+				if (staggerModule == nullptr || staggerModule->staggerMax == -1.0f) {
 					entityPoiseArray[i].handle = -1ull;
 					entityPoiseArray[i].chrIns = nullptr;
 					continue;
 				}
 
 				float stagger = staggerModule->staggerMax - staggerModule->stagger;
-				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModuleBase->staggerModule->stagger;
+				int staggerInt = (int)entityPoiseArray[i].chrIns->chrModulelBag->staggerModule->stagger;
 				if (stagger > 0) {
 					feMan->entityHpBars[i].totalTimeDisplayed = 0.0f;
 					feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
@@ -190,6 +209,7 @@ void FeHook::writePoiseToEntityBar() {
 			}
 		}
 
+		std::this_thread::sleep_for(1ms);
 	}
 
 }
@@ -197,7 +217,7 @@ void FeHook::writePoiseToEntityBar() {
 
 void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6) {
 
-	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) {
+	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->chrModulelBag->staggerModule != nullptr &&  chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) { //
 		bool found = false;
 		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; ++i) {
 			if ((*main_mod->Hook.FeMan->CSFeMan)->bossHpBars[i].bossHandle == chrDamageModule->chrModuleBase.owningChrIns->handle) {

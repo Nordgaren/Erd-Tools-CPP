@@ -49,7 +49,7 @@ bool ErdHook::FindNeededSignatures() {
 	DebugMan->CloseMapInCombatLocation = (uint64_t)combat_map.Scan(&EldenRingData);
 
 	Signature disable_crafting = Signature("48 83 EC ?? 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 "
-		"4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 94 C0 48 83 C4 ?? C3", 62);
+		"4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 0F 94 C0 48 83 C4 ?? C3", 0x3E);
 	DebugMan->DisableCrafingInCombatLocation = (uint64_t)disable_crafting.Scan(&EldenRingData);
 
 	Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
@@ -63,10 +63,10 @@ bool ErdHook::FindNeededSignatures() {
 		"48 89 7C 24 78 8B EA 4C 8B F1 33");
 	ParamMan->FindEquipParamProtectorFunc = (FindEquipParamProtectorEntry*)find_equipparamprotector_signature.Scan(&EldenRingData);
 
-	Signature find_equipparamgoods_signature = Signature("45 33 C0 41 8D 50 03 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 80 80 00 00 00 48 8B 90", 0x67);
+	Signature find_equipparamgoods_signature = Signature("45 33 C0 41 8D 50 03 E8 ?? ?? ?? ?? 48 85 C0 0F 84 ?? ?? ?? ?? 48 8B 80 80 00 00 00 48 8B 90", -0x67);
 	ParamMan->FindEquipParamGoodsFunc = (FindEquipParamGoodsEntry*)find_equipparamgoods_signature.Scan(&EldenRingData);
 
-	Signature find_equipmtrlsetparam_signature = Signature("45 33 C0 41 8D 50 18 E8 ?? ?? ?? ?? 48 85 C0 0F 84", 0x67);
+	Signature find_equipmtrlsetparam_signature = Signature("45 33 C0 41 8D 50 18 E8 ?? ?? ?? ?? 48 85 C0 0F 84", -0x67);
 	ParamMan->FindEquipMtrlSetParamFunc = (FindEquipMtrlSetParamEntry*)find_equipmtrlsetparam_signature.Scan(&EldenRingData);
 
 	Signature get_menucommonparam_signature = Signature("40 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 50 48 8B F9 33 DB 48 89 19 48 8B 0D ?? ?? ?? ?? 48 "
@@ -81,6 +81,10 @@ bool ErdHook::FindNeededSignatures() {
 	Signature enableBossBarSig = Signature("48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");
 	FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan(&EldenRingData);
 	FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)enableBossBarSig.GetRelativeOffset( 0x69, 0x6D);
+
+	Signature disableBossBarSig = Signature("40 53 48 83 EC 20 8B D9 48 8B 0D ?? ?? ?? ?? 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? "
+		"BA B4 00 00 00 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 8B D3 E8");
+	FeMan->_disableBossBarAddr = (uintptr_t)disableBossBarSig.Scan(&EldenRingData);
 
 	Signature csFeManImp = Signature("48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9 75 ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 4C 8B C8 4C 8D 05 ?? ?? ?? ?? BA B4 00 00 00 48 "
 		"8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8B 0D ?? ?? ?? ?? 8B D3 E8 ?? ?? ?? ?? 48 8B D8");
@@ -111,57 +115,9 @@ bool ErdHook::FindNeededSignatures() {
 	return EventMan && EventMan->SetEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
 		&& DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->SoloParamRepository && ParamMan->FindEquipParamWeaponFunc &&
 		ParamMan->FindEquipParamProtectorFunc && ParamMan->FindEquipParamGoodsFunc && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry &&
-		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
+		ParamMan->FindActionButtonParamEntry && FeMan->_enableBossBarAddr && FeMan->_disableBossBarAddr && FeMan->GetChrInsFromEntityIdFunc && FeMan->CSFeMan && FeMan->_applyBossBarDmg && FeMan->_handleDmg && FeMan->_applyEntityBarDmg
 		&& WorldChrManIns && SoundIns && FeMan->_executeActionButtonParamProxy&& FeMan->_actionButtonParamImp;
 }
-
-//bool SigScan::GetImageInfo() {
-//
-//	bool bSuccess = false;
-//
-//	_moduleHandle = GetModuleHandleA("eldenring.exe");
-//	if (_moduleHandle) {
-//		MEMORY_BASIC_INFORMATION memInfo;
-//		if (VirtualQuery((void*)_moduleHandle, &memInfo, sizeof(memInfo)) != 0) {
-//			IMAGE_DOS_HEADER* hDos = (IMAGE_DOS_HEADER*)_moduleHandle;
-//			IMAGE_NT_HEADERS* hPe = (IMAGE_NT_HEADERS*)((ULONG64)memInfo.AllocationBase + (ULONG64)hDos->e_lfanew);
-//
-//			if ((hDos->e_magic == IMAGE_DOS_SIGNATURE) && (hPe->Signature == IMAGE_NT_SIGNATURE)) {
-//				bSuccess = true;
-//				_baseAddress = (void*)memInfo.AllocationBase;
-//				_imageSize = (SIZE_T)hPe->OptionalHeader.SizeOfImage;
-//			}
-//		}
-//	}
-//
-//	return bSuccess;
-//};
-//
-//void* SigScan::FindSignature(Signature& fnSig) {
-//	size_t maskLen = strlen(fnSig.mask);
-//
-//	char* pScan = (char*)_baseAddress;
-//	char* max_address = pScan + _imageSize - maskLen;
-//	while (pScan < max_address) {
-//		size_t szLength = 0;
-//
-//		for (size_t i = 0; i < maskLen; i++) {
-//			if (!((pScan[i] == fnSig.signature[i]) || (fnSig.mask[i] == '?'))) break;
-//			szLength++;
-//		}
-//
-//		if (szLength == maskLen) return pScan + fnSig.offset;
-//
-//		pScan++;
-//	}
-//
-//	return nullptr;
-//};
-//
-//
-//inline uint64_t SigScan::PtrFromOffset(uint64_t offset) {
-//	return ((uint64_t)_baseAddress) + offset;
-//}
 
 void ErdHook::debugPrint() {
 
@@ -186,6 +142,7 @@ void ErdHook::debugPrint() {
 	printf("ParamMan->FindActionButtonParamEntry %p\n", ParamMan->FindActionButtonParamEntry);
 	printf("\nFeMan:\n");
 	printf("FeMan->_enableBossBarAddr %p\n", FeMan->_enableBossBarAddr);
+	printf("FeMan->_disableBossBarAddr %p\n", FeMan->_disableBossBarAddr);
 	printf("FeMan->GetChrInsFromEntityIdFunc %p\n", FeMan->GetChrInsFromEntityIdFunc);
 	printf("FeMan->CSFeMan %p\n", FeMan->CSFeMan);
 	printf("FeMan->_applyBossBarDmg %p\n", FeMan->_applyBossBarDmg);

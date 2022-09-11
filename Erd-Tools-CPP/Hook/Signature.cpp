@@ -57,23 +57,38 @@ Signature::Signature(const char* sig, const int offset) : _offset(offset) {
         while (c[0] == ' ') c++;
 
         int len = 0;
-        while (c[len] != ' ' && c[len] != 0 && len < (sizeof(long long) * 2)) {
+        while (c[len] != ' ' && c[len] != 0) {
             len++;
         }
 
-        long long result = 0;
-        for (int i = len - 1; i >= 0; --i, c++) {
-            result |= (hex2num(c[0]) << i * 4);
+        //handle uneven strings over 9 bytes long
+        if (len % 2) {
+            long long result = hex2num(c++[0]);
+            _bytes.push_back((char)result);
+            _mask.push_back(result ? -1 : 0);
+            len--;
         }
 
-        char* resultPtr = (char*)&result;
-        int count = (len + 1) / 2;
-        for (int i = count - 1; i >= 0; --i) {
-            _bytes.push_back(resultPtr[i]);
-            _mask.push_back(resultPtr[i] ? -1 : 0);
+        while (len > 0) {
+
+            int segment = len > sizeof(len) * 2 ? sizeof(len) * 2 : len;
+            long long result = 0;
+            for (int i = segment - 1; i >= 0; --i) {
+                result |= (hex2num(c++[0]) << i * 4);
+            }
+
+            char* resultPtr = (char*)&result;
+            int count = (segment + 1) / 2;
+            for (int i = count - 1; i >= 0; --i) {
+                _bytes.push_back(resultPtr[i]);
+                _mask.push_back(resultPtr[i] ? -1 : 0);
+            }
+
+            len -= segment;
         }
 
     }
+
 
     while (_bytes.size() % 8) {
         _bytes.push_back(0);

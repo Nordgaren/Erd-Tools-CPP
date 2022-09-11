@@ -25,21 +25,54 @@ ModuleData::ModuleData(const char *module) {
 
 };
 
-Signature::Signature(const char* sig, int offset) : _offset(offset) {
+//Signature::Signature(const char* sig, int offset) : _offset(offset) {
+//
+//    for (char* c = (char*)sig; *c; c++) {
+//        if (c[0] == ' ') continue;
+//
+//        if (c[0] == '?') {
+//            _bytes.push_back(0);
+//            _mask.push_back(0);
+//            if (c[1] == '?')
+//                c++;
+//        } else {
+//            _bytes.push_back(hex2num(c[0]) << 4 | hex2num(c[1]));
+//            _mask.push_back(-1);
+//            c++;
+//        }
+//    }
+//
+//    while (_bytes.size() % 8) {
+//        _bytes.push_back(0);
+//        _mask.push_back(0);
+//    }
+//
+//}
 
-    for (char* c = (char*)sig; *c; c++) {
-        if (c[0] == ' ') continue;
+//An alternate implimentation of the Signature parsing that should parse any string that CE can parse  
+Signature::Signature(const char* sig, const int offset) : _offset(offset) {
 
-        if (c[0] == '?') {
-            _bytes.push_back(0);
-            _mask.push_back(0);
-            if (c[1] == '?')
-                c++;
-        } else {
-            _bytes.push_back(hex2num(c[0]) << 4 | hex2num(c[1]));
-            _mask.push_back(-1);
-            c++;
+    for (char* c = (char*)sig; *c;) {
+
+        while (c[0] == ' ') c++;
+
+        int len = 0;
+        while (c[len] != ' ' && c[len] != 0 && len < (sizeof(long long) * 2)) {
+            len++;
         }
+
+        long long result = 0;
+        for (int i = len - 1; i >= 0; --i, c++) {
+            result |= (hex2num(c[0]) << i * 4);
+        }
+
+        char* resultPtr = (char*)&result;
+        int count = (len + 1) / 2;
+        for (int i = count - 1; i >= 0; --i) {
+            _bytes.push_back(resultPtr[i]);
+            _mask.push_back(resultPtr[i] ? -1 : 0);
+        }
+
     }
 
     while (_bytes.size() % 8) {
@@ -48,6 +81,7 @@ Signature::Signature(const char* sig, int offset) : _offset(offset) {
     }
 
 }
+
 
 void* Signature::Scan(ModuleData *moduleData) {
 

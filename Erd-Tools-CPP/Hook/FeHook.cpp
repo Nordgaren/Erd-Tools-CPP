@@ -302,7 +302,7 @@ bool FeHook::enableUpdateHooks() {
 
 	MH_EnableHook((void*)_enemyInsDtor);
 
-	if (MH_CreateHook((void*)_feManCtor, &FeManCtor, (void**)&FeHook::FeManCtorOriginal) != MH_OK) {
+	if (MH_CreateHook((void*)_feManCtor, &feManCtor, (void**)&FeHook::FeManCtorOriginal) != MH_OK) {
 		return false;
 	}
 

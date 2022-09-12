@@ -131,9 +131,6 @@
     <ClCompile Include="Hook\FeHook.cpp">
       <Filter>Source Files\Hook</Filter>
     </ClCompile>
-    <ClCompile Include="Hook\Signature.cpp">
-      <Filter>Source Files\Hook</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Erd-Tools-CPP.rc">

@@ -23,6 +23,7 @@ struct ModuleData {
 
 enum ScanOffset {
     Default = 0x1,
+    Align4 = 0x4,
     Align8 = 0x8,
     Align16 = 0x10,
 };

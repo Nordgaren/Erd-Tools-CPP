@@ -6,7 +6,6 @@
 #include "DebugHook.h"
 #include "FeHook.h"
 #include "ParamHook.h"
-#include "Signature.h"
 
 class ErdHook {
 public:

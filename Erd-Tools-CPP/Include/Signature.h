@@ -31,6 +31,7 @@ enum ScanOffset {
 struct Signature {
     explicit Signature(const char* sig, int offset = 0);
     void* Scan(ModuleData *moduleData, int offset = Default);
+    void* Scan(ModuleData* moduleData, int address_offset, int instruction_size, ScanOffset offset = Default);
     uint64_t GetRelativeOffset(int address_offset, int instruction_size);
     void* ScanResult = nullptr;
 private:
@@ -63,7 +64,7 @@ ModuleData::ModuleData(const char* module) {
         }
     }
 
-};
+}
 
 //Alternate Constructor implementation that is simpler, but less forgiving. Uncomment and comment out other implimentation to swap.
 //Signature::Signature(const char* sig, int offset) : _offset(offset) {
@@ -169,7 +170,13 @@ void* Signature::Scan(ModuleData* moduleData, int offest) {
 
     return nullptr;
 
-};
+}
+
+inline void* Signature::Scan(ModuleData* moduleData, int address_offset, int instruction_size, ScanOffset offset)
+{
+    Scan(moduleData, offset);
+    return GetRelativeOffset(address_offset, instruction_size);
+}
 
 uint64_t Signature::GetRelativeOffset(int address_offset, int instruction_size) {
     if (!ScanResult) {

@@ -27,10 +27,10 @@ public:
 	~ErdHook() {
 		printf("ErdHook Destroy'd \n");
 
-		delete  EventMan;
-		delete  DebugMan;
-		delete  ParamMan;
-		delete  FeMan;
+		delete EventMan;
+		delete DebugMan;
+		delete ParamMan;
+		delete FeMan;
 	}
 
 private:

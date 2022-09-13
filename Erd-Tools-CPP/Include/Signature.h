@@ -1,5 +1,7 @@
 #pragma once
-#include "Common.h"
+#include <windows.h>
+#include <vector>
+#include <stdexcept>
 
 //Signature class that takes a CE style string and scans only the text section
 //Thank you to tremwil for the suggestion and walkthrough on how to scan the code with XOR + AND
@@ -13,7 +15,7 @@ struct ExecutableSection {
 };
 
 struct ModuleData {
-    ModuleData(const char *module);
+    ModuleData(const char* module);
     HMODULE ModuleHandle = nullptr;
     void* BaseAddress = nullptr;
     size_t ImageSize = 0;
@@ -30,9 +32,9 @@ enum ScanOffset {
 
 struct Signature {
     explicit Signature(const char* sig, int offset = 0);
-    void* Scan(ModuleData *moduleData, int offset = Default);
+    void* Scan(ModuleData* moduleData, ScanOffset offset = Default);
     void* Scan(ModuleData* moduleData, int address_offset, int instruction_size, ScanOffset offset = Default);
-    uint64_t GetRelativeOffset(int address_offset, int instruction_size);
+    void* GetRelativeOffset(int address_offset, int instruction_size);
     void* ScanResult = nullptr;
 private:
     std::vector<uint8_t> _bytes = {};
@@ -66,7 +68,7 @@ ModuleData::ModuleData(const char* module) {
 
 }
 
-//Alternate Constructor implementation that is simpler, but less forgiving. Uncomment and comment out other implimentation to swap.
+//Alternate Constructor implementation that is simpler, but less forgiving. Uncomment and comment out other implementation to swap.
 //Signature::Signature(const char* sig, int offset) : _offset(offset) {
 //
 //    for (char* c = (char*)sig; *c; c++) {
@@ -140,7 +142,7 @@ Signature::Signature(const char* sig, const int offset) : _offset(offset) {
 }
 
 
-void* Signature::Scan(ModuleData* moduleData, int offest) {
+void* Signature::Scan(ModuleData* moduleData, ScanOffset offset) {
 
     if (ScanResult)
         return ScanResult;
@@ -164,7 +166,7 @@ void* Signature::Scan(ModuleData* moduleData, int offest) {
                 return ScanResult;
             }
 
-            pScan += offest;
+            pScan += offset;
         }
     }
 
@@ -178,12 +180,12 @@ inline void* Signature::Scan(ModuleData* moduleData, int address_offset, int ins
     return GetRelativeOffset(address_offset, instruction_size);
 }
 
-uint64_t Signature::GetRelativeOffset(int address_offset, int instruction_size) {
+void* Signature::GetRelativeOffset(int address_offset, int instruction_size) {
     if (!ScanResult) {
         throw std::runtime_error("Cannot get Relative Addr before scan.");
     }
 
-    uint64_t relativeAddr = (uint64_t)ScanResult;
+    char* relativeAddr = (char*)ScanResult;
     int offset = *(int*)(relativeAddr + address_offset);
 
     relativeAddr += offset + instruction_size;

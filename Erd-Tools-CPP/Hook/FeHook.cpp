@@ -160,7 +160,8 @@ void FeHook::writePoiseToEntityBar() {
 
 	for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-		if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__ && entityPoiseArray[i].chrIns != nullptr) {
+		if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__ && entityPoiseArray[i].chrIns != nullptr
+			&& entityPoiseArray[i].chrIns->chrModulelBag != nullptr) {
 			StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModulelBag->staggerModule;
 			feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
 			if (staggerModule->staggerMax == -1.0f) {
@@ -262,7 +263,7 @@ void FeHook::feManCtor(CSFeManImp* feManImp, uintptr_t gameRend, uintptr_t menuM
 	FeManCtorOriginal(feManImp, gameRend, menuMan);
 }
 
-void FeHook::chrInsDtor(ChrIns* enemyIns, uintptr_t unk) {
+void FeHook::chrInsDtor(ChrIns* enemyIns) {
 
 	for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
 		if (bossChrInsArray[i] == enemyIns)
@@ -277,7 +278,7 @@ void FeHook::chrInsDtor(ChrIns* enemyIns, uintptr_t unk) {
 		}
 	}
 
-	EnemyInsDtorOriginal(enemyIns, unk);
+	ChrInsDtorOriginal(enemyIns);
 }
 
 void FeHook::updateUIBarStructs(uintptr_t moveMapStep, uintptr_t time) {
@@ -296,7 +297,7 @@ bool FeHook::enableUpdateHooks() {
 		return true;
 
 
-	if (MH_CreateHook((void*)_chrInsDtor, &chrInsDtor, (void**)&FeHook::EnemyInsDtorOriginal) != MH_OK) {
+	if (MH_CreateHook((void*)_chrInsDtor, &chrInsDtor, (void**)&FeHook::ChrInsDtorOriginal) != MH_OK) {
 		return false;
 	}
 

@@ -295,4 +295,6 @@ typedef bool(*FeManCtor)(CSFeManImp*, uintptr_t, uintptr_t);
 
 typedef bool(*EnemyInsDtor)(ChrIns*, uintptr_t);
 
+typedef void(*ChrInsDtor)(ChrIns*);
+
 typedef void (*UpdateUIBarStructs)(uintptr_t, uintptr_t);

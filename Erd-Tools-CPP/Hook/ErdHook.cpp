@@ -106,7 +106,9 @@ bool ErdHook::FindNeededSignatures() {
 
 	Signature enemyInsDtor = Signature("48 89 5C 24 08 57 48 83 EC 20 8B DA 48 8B F9 E8 ?? ?? ?? ?? F6 C3 01 74 ?? BA D0 05 00 00");
 	FeMan->_enemyInsDtor = (uintptr_t)enemyInsDtor.Scan(&EldenRingData, Align16);
-	FeMan->_chrInsDtor = (uintptr_t)enemyInsDtor.GetRelativeOffset(0x22, 0x26);
+
+	Signature chrInsDtorSig = Signature("48 89 4C 24 08 55 56 57 48 83 EC 30 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 8B F9 48 8D 05 ?? ?? ?? ?? 48 89 01 48 8B 81 90 01 00 00 48 8B 08");
+	FeMan->_chrInsDtor = (uintptr_t)chrInsDtorSig.Scan(&EldenRingData, Align16);
 
 	Signature feManCtor = Signature("48 89 4C 24 08 55 53 56 57 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 48 48 C7 45 E8 FE FF FF FF 48");
 	FeMan->_feManCtor = (uintptr_t)feManCtor.Scan(&EldenRingData, Align16);

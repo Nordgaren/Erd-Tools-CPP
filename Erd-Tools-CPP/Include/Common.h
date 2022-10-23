@@ -1,5 +1,5 @@
 #pragma once
-#define DEBUG_CONSOLE 1
+#define DEBUG_CONSOLE 0
 
 #include <cstdint>
 #include <string.h>

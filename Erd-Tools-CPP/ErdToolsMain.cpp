@@ -27,6 +27,7 @@ void ErdToolsMain::EnableDebugConsole() {
 	if (AllocConsole()) {
 		FILE* fpstdout = stdout;
 		freopen_s(&fpstdout,"CONOUT$", "w", stdout);
+		freopen_s(&fpstdout,"CONOUT$", "w", stderr);
 		SetWindowText(GetConsoleWindow(), L"Erd Tools");
 
 		_debugConsoleEnabled = true;

@@ -27,6 +27,8 @@ void ParamHook::InitParamTools() {
 
 	EditActionButtonParam();
 
+	//PrintParamResCapEnum(solo_param_repository_ld); 
+
 }
 
 void ParamHook::EditActionButtonParam() {
@@ -66,4 +68,25 @@ uint64_t ParamHook::GetParamResCapByName(uint64_t soloParamRepository, std::wstr
 		}
 	}
 	return 0;
+}
+
+void ParamHook::PrintParamResCapEnum(uint64_t soloParamRepository) {
+
+	printf("\nParamIndex {\n");
+	for (int i = 0; i < 186; i++) {
+		int paramOffset = i * 0x48;
+		int* param = (int*)(soloParamRepository + paramOffset + 0x80);
+		if (*param > 0) {
+			uint64_t paramContainer = *(uint64_t*)(soloParamRepository + paramOffset + 0x88);
+			wchar_t* containerName = (wchar_t*)(paramContainer + 0x18);
+			//small string optimization? fbstring?!?!
+			if (*(uint32_t*)(paramContainer + 0x28) >= 8) {
+				containerName = (wchar_t*)(*(uint64_t*)containerName);
+			}
+
+			printf("\t%ws = 0x%x,\n", containerName, i);
+		}
+	}
+	
+	printf("\n}\n");
 }

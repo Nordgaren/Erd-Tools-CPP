@@ -9,6 +9,7 @@ public:
 	void EditActionButtonParam();
 	void EditMenuCommonParam();
 	uint64_t GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName);
+	void PrintParamResCapEnum(uint64_t soloParamRepository);
 	uintptr_t SoloParamRepository = 0;
 	FindEquipParamWeaponEntry* FindEquipParamWeaponFunc = nullptr;
 	FindEquipParamProtectorEntry* FindEquipParamProtectorFunc = nullptr;

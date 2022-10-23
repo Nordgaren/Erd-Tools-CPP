@@ -239,7 +239,7 @@ struct EntityHpBar {
 static_assert(sizeof(EntityHpBar) == 0x40);
 
 struct CSFeManImp {
-    uint8_t undefines[0x5520];
+    uint8_t undefined[0x5520];
     EntityHpBar entityHpBars[8];
     BossHpBar bossHpBars[3];
 };
@@ -250,7 +250,7 @@ struct EntityHpBarSlots {
 };
 
 struct WorldChrMan {
-    char unk[0xB658];
+    char unk[0x10EF8];
     ChrIns** playerArray[0x4];
 };
 
@@ -260,7 +260,7 @@ struct SoundCombatStruct {
 };
 
 struct CSSound {
-    uint8_t undefined[0x2B8];
+    uint8_t undefined[0x2E8];
     SoundCombatStruct *soundCombatStruct;
 };
 

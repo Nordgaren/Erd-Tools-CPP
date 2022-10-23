@@ -160,7 +160,7 @@ void FeHook::writePoiseToEntityBar() {
 
 	for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-		if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__ && entityPoiseArray->handle != __UINT64_MAX__) {
+		if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__ && entityPoiseArray[i].chrIns != nullptr) {
 			StaggerModule* staggerModule = entityPoiseArray[i].chrIns->chrModulelBag->staggerModule;
 			feMan->entityHpBars[i].entityHandle = entityPoiseArray[i].handle;
 			if (staggerModule->staggerMax == -1.0f) {
@@ -188,7 +188,7 @@ void FeHook::writePoiseToEntityBar() {
 
 void FeHook::handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6) {
 
-	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF16600000) {
+	if (damage > 0 && chrDamageModule->chrModuleBase.owningChrIns != nullptr && chrDamageModule->chrModuleBase.owningChrIns->handle != 0xFFFFFFFF15700000) {
 		bool found = false;
 		for (int i = 0; i < BOSS_CHR_ARRAY_LEN; ++i) {
 			if ((*main_mod->Hook.FeMan->CSFeMan)->bossHpBars[i].bossHandle == chrDamageModule->chrModuleBase.owningChrIns->handle) {
@@ -262,7 +262,7 @@ void FeHook::feManCtor(CSFeManImp* feManImp, uintptr_t gameRend, uintptr_t menuM
 	FeManCtorOriginal(feManImp, gameRend, menuMan);
 }
 
-void FeHook::enemyInsDtor(ChrIns* enemyIns, uintptr_t unk) {
+void FeHook::chrInsDtor(ChrIns* enemyIns, uintptr_t unk) {
 
 	for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
 		if (bossChrInsArray[i] == enemyIns)
@@ -296,7 +296,7 @@ bool FeHook::enableUpdateHooks() {
 		return true;
 
 
-	if (MH_CreateHook((void*)_enemyInsDtor, &enemyInsDtor, (void**)&FeHook::EnemyInsDtorOriginal) != MH_OK) {
+	if (MH_CreateHook((void*)_chrInsDtor, &chrInsDtor, (void**)&FeHook::EnemyInsDtorOriginal) != MH_OK) {
 		return false;
 	}
 

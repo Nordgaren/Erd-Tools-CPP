@@ -189,6 +189,7 @@ void* Signature::GetRelativeOffset(int address_offset, int instruction_size) {
     int offset = *(int*)(relativeAddr + address_offset);
 
     relativeAddr += offset + instruction_size;
+    ScanResult = relativeAddr;
     return relativeAddr;
 }
 

@@ -41,6 +41,11 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.1
+* Updated for 1.07
+
+* Fixed some issues where the poise bars would cause random crashes.  
+
 ### Erd Tools dll 1
 * Release!  
 

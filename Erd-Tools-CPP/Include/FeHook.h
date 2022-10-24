@@ -12,6 +12,7 @@ public:
 	void EnableLootPrefs();
 	LootPreferences LootPrefs = no_loot_changes;
 	static inline EnableBossBar EnableBossBarOriginal = nullptr;
+	static inline bool EnableBossBar = false;
 	static inline DisableBossBar DisableBossBarOriginal = nullptr;
 	static inline HandleDamage HandleDamageOriginal = nullptr;
 	static inline ApplyEntityBarDamage ApplyEntityBarDamageOriginal = nullptr;

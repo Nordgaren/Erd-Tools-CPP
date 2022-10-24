@@ -41,6 +41,9 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.1.1
+* Address crashing from enemies that don't get cleaned up properly.  
+
 ### Erd Tools dll 1.1
 * Updated for 1.07
 

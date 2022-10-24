@@ -2,10 +2,10 @@
 #include <cstdint>
 
 enum UserPreferences {
-	none = 0,
-	log_flags_in_console = 1 << 0,
-	enable_map_in_combat = 1 << 1,
-	enable_crafting_in_combat = 1 << 2,
+    none = 0,
+    log_flags_in_console = 1 << 0,
+    enable_map_in_combat = 1 << 1,
+    enable_crafting_in_combat = 1 << 2,
     enable_auto_pickup = 1 << 3,
     enable_lock_pickup = 1 << 4,
     enable_boss_poise_meter = 1 << 5,
@@ -131,11 +131,12 @@ struct ShopLineupParam {
     uint32_t item_id;
     uint32_t item_cost;
     uint32_t equipmtrlsetparam_entryid; // Anything other than -1 means the item is an upgrade and needs materials
-    uint32_t remaining_leftinstock_id;  // Will remember what you've bought previously, and subtract it from the item quantity
-    uint32_t is_release_eventflag_id;   // If this event id specified is not complete, the item will not appear
+    uint32_t remaining_leftinstock_id;
+    // Will remember what you've bought previously, and subtract it from the item quantity
+    uint32_t is_release_eventflag_id; // If this event id specified is not complete, the item will not appear
     uint16_t item_quantity;
     uint8_t dummy_01;
-    uint8_t item_type;	   // 0 = MapItemWeapon | 1 = Armour | 2 = MapItemAccessory | 3 = MapItemGoods | 4 = MapItemGem
+    uint8_t item_type; // 0 = MapItemWeapon | 1 = Armour | 2 = MapItemAccessory | 3 = MapItemGoods | 4 = MapItemGem
     uint8_t currency_type; // 0 = Runes | 1 = Dragon hearts
     uint8_t dummy_02;
     uint16_t set_num;
@@ -219,9 +220,10 @@ struct BossHpBar {
     int currentDisplayDamage = 0;
     int unk0x14 = 0;
     bool isHit = 0;
-    uint8_t pad0x19[0x3] = { };
+    uint8_t pad0x19[0x3] = {};
     float displayTime = 0;
 };
+
 static_assert(sizeof(BossHpBar) == 0x20);
 
 struct EntityHpBar {
@@ -236,6 +238,7 @@ struct EntityHpBar {
     float totalTimeDisplayed;
     int uni2[3];
 };
+
 static_assert(sizeof(EntityHpBar) == 0x40);
 
 struct CSFeManImp {
@@ -261,7 +264,7 @@ struct SoundCombatStruct {
 
 struct CSSound {
     uint8_t undefined[0x2E8];
-    SoundCombatStruct *soundCombatStruct;
+    SoundCombatStruct* soundCombatStruct;
 };
 
 
@@ -285,16 +288,20 @@ typedef ChrIns* GetChrInsFromEntityId(int*, uint64_t, uint32_t*);
 
 typedef void (*SetEventFlag)(uint64_t, uint32_t*, bool);
 
-typedef bool (*IsEventFlag)(uint64_t, uint32_t* );
+typedef bool (*IsEventFlag)(uint64_t, uint32_t*);
 
 typedef void (*HandleDamage)(ChrDamageModule*, int, char, char, uint32_t, bool);
 
-typedef bool(*ExecActionButtonParamProxy)(uintptr_t actionButtonManImp, int entryId);
+typedef void (*ApplyEntityBarDamage)(EntityHpBar*, uint64_t, int32_t, uint32_t, bool);
+                                     
+typedef ChrIns* (*GetChrInsFromHandle)(WorldChrMan* worldChrMan, uint64_t* chrInsHandlePtr);
 
-typedef bool(*FeManCtor)(CSFeManImp*, uintptr_t, uintptr_t);
+typedef bool (*ExecActionButtonParamProxy)(uintptr_t actionButtonManImp, int entryId);
 
-typedef bool(*EnemyInsDtor)(ChrIns*, uintptr_t);
+typedef bool (*FeManCtor)(CSFeManImp*, uintptr_t, uintptr_t);
 
-typedef void(*ChrInsDtor)(ChrIns*);
+typedef bool (*EnemyInsDtor)(ChrIns*, uintptr_t);
+
+typedef void (*ChrInsDtor)(ChrIns*);
 
 typedef void (*UpdateUIBarStructs)(uintptr_t, uintptr_t);

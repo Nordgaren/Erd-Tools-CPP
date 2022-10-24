@@ -14,6 +14,7 @@ public:
 	static inline EnableBossBar EnableBossBarOriginal = nullptr;
 	static inline DisableBossBar DisableBossBarOriginal = nullptr;
 	static inline HandleDamage HandleDamageOriginal = nullptr;
+	static inline ApplyEntityBarDamage ApplyEntityBarDamageOriginal = nullptr;
 	static inline FeManCtor FeManCtorOriginal = nullptr;
 	static inline ChrInsDtor ChrInsDtorOriginal = nullptr;
 	static inline UpdateUIBarStructs UpdateUIBarStructsOriginal = nullptr;
@@ -40,9 +41,11 @@ private:
 	static void updateUIBarStructs(uintptr_t moveMapStep, uintptr_t time);
 	bool enableUpdateHooks();
 	bool _updateHooksEnabled = false;
-	static void enableBossBar(int* entityId, int bossBarIndex, int displayId);
-	static void disableBossBar(int bossBarIndex);
+	static void enableBossBarHook(int* entityId, int bossBarIndex, int displayId);
+	static void disableBossBarHook(int bossBarIndex);
 	static void handleDamage(ChrDamageModule* chrDamageModule, int damage, char param_3, char param_4, uint32_t param_5, bool param_6);
+	static void applyEntityBarDmgHook(EntityHpBar* entityHealthBarStruct, uint64_t chrInsHandle, int32_t damage, uint32_t unk,
+						   bool skipSetDamage);
 	static void writePoiseToBossBar();
 	static void writePoiseToEntityBar();
 };

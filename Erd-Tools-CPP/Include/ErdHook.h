@@ -17,6 +17,7 @@ public:
 	FeHook* FeMan;
 	WorldChrMan** WorldChrManIns = nullptr;
 	CSSound** SoundIns = nullptr;
+	GetChrInsFromHandle GetChrInsFromHandleFunc;
 
 	ErdHook() {
 		EventMan = new EventHook();
@@ -25,8 +26,6 @@ public:
 		FeMan = new FeHook();
 	}
 	~ErdHook() {
-		printf("ErdHook Destroy'd \n");
-
 		delete EventMan;
 		delete DebugMan;
 		delete ParamMan;

@@ -20,10 +20,8 @@ public:
 	float _autoHarvestMultiplier = 1.0;
 	float _mapSpeedMultiplier = 1.0;
 	ParamHook() {
-		
 	}
 	~ParamHook() {
-		printf("ParamHook Destroy'd \n");
 	}
 
 private:

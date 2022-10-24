@@ -18,8 +18,6 @@ public:
 
 	}
 	~DebugHook() {
-		printf("DebugHook Destroy'd \n");
-
 	}
 
 private:

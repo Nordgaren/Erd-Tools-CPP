@@ -100,6 +100,9 @@ bool ErdHook::FindNeededSignatures() {
 	Signature csSoundSig = Signature("48 8B 05 ?? ?? ?? ?? 48 85 C0 ?? ?? 83 CD 02 83 B8 ?? ?? ?? ?? 00 89 6C 24 ?? 0F 95 C1");
 	SoundIns = (CSSound**)csSoundSig.Scan(&EldenRingData, 0x3, 0x7);
 
+	Signature getChrInsFromHandle = Signature("48 83 EC 28 E8 17 FF FF FF 48 85 C0 74 08 48 8B 00 48 83 C4 28 C3");
+	GetChrInsFromHandleFunc = (GetChrInsFromHandle)getChrInsFromHandle.Scan(&EldenRingData, Align16);
+
 	Signature executeActionButtonParamSig = Signature("48 89 5C 24 08 57 48 81 EC 90 00 00 00 48 8B 84 24 E0 00 00 00 41 0F B6 D9 48 8B 0D ?? ?? ?? ?? 8B FA 0F 29 B4 24 80 00 00 00");
 	FeMan->_executeActionButtonParamProxy = (uintptr_t)executeActionButtonParamSig.Scan(&EldenRingData, Align16);
 	FeMan->_actionButtonParamImp = (uintptr_t)executeActionButtonParamSig.GetRelativeOffset(0x1C, 0x20);

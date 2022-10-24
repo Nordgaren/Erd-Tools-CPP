@@ -16,6 +16,5 @@ public:
 
 	}
 	~EventHook() {
-		printf("EventHook Destroy'd \n");
 	}
 };

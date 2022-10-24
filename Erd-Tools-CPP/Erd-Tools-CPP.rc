@@ -51,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 0,0,0,0
+ FILEVERSION 1,1,0,0
+ PRODUCTVERSION 1,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -67,14 +67,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "TODO: <Company name>"
-            VALUE "FileDescription", "TODO: <File description>"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "CompanyName", "Nordgaren"
+            VALUE "FileDescription", "A general purpose tool for adding game features to Elden Ring"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "Erd-Tool.dll"
             VALUE "LegalCopyright", "Copyright (C) 2022"
             VALUE "OriginalFilename", "Erd-Tool.dll"
-            VALUE "ProductName", "TODO: <Product name>"
-            VALUE "ProductVersion", "0.0.0.0"
+            VALUE "ProductName", "Erd Tools"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"

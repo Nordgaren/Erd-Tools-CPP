@@ -8,37 +8,15 @@ extern "C" int ExecActionButtonParamProxyWrapper();
 extern "C" uint64_t ExecuteActionButtonParamProxyReturn = 0;
 
 bool FeHook::EnableBossPoiseMeter() {
-    
-    // if (MH_CreateHook((void*)_enableBossBarAddr, &enableBossBarHook, (void**)&FeHook::EnableBossBarOriginal) != MH_OK) {
-    //     return false;
-    // }
-    //
-    // MH_EnableHook((void*)_enableBossBarAddr);
-    //
-    // if (MH_CreateHook((void*)_disableBossBarAddr, &disableBossBarHook, (void**)&FeHook::DisableBossBarOriginal) !=
-    //     MH_OK) {
-    //     return false;
-    // }
-    //
-    // MH_EnableHook((void*)_disableBossBarAddr);
-    EnableBossBar = true;
+    BossBarPoiseMeterEnabled = true;
     *(int*)_applyBossBarDmg = 0x909090C3;
 
     enableUpdateHooks();
-
-    //std::thread t(&FeHook::writePoiseToBossBar);
-    //t.detach();
 
     return true;
 }
 
 bool FeHook::EnableEntityPoiseMeter() {
-
-    // if (MH_CreateHook((void*)_handleDmg, &handleDamage, (void**)&FeHook::HandleDamageOriginal) != MH_OK) {
-    // 	return false;
-    // }
-    //
-    // MH_EnableHook((void*)_handleDmg);
 
     if (MH_CreateHook((void*)_applyEntityBarDmg, &applyEntityBarDmgHook,
                       (void**)&FeHook::ApplyEntityBarDamageOriginal) != MH_OK) {
@@ -47,10 +25,6 @@ bool FeHook::EnableEntityPoiseMeter() {
 
     MH_EnableHook((void*)_applyEntityBarDmg);
 
-    //*(int*)_applyEntityBarDmg = 0x909090C3;
-
-    //std::thread t(&FeHook::writePoiseToEntityBar);
-    //t.detach();
     enableUpdateHooks();
 
     return true;
@@ -140,15 +114,18 @@ void FeHook::writePoiseToBossBar() {
     CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
     for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
         if (feMan->bossHpBars[i].bossHandle != __UINT64_MAX__) {
-            ChrIns* chrIns = main_mod->Hook.GetChrInsFromHandleFunc(*main_mod->Hook.WorldChrManIns, &feMan->bossHpBars[i].bossHandle);
+            ChrIns* chrIns = main_mod->Hook.GetChrInsFromHandleFunc(*main_mod->Hook.WorldChrManIns,
+                                                                    &feMan->bossHpBars[i].bossHandle);
             if (chrIns == nullptr) continue;
-            float stagger = chrIns->chrModulelBag->staggerModule->staggerMax - chrIns->chrModulelBag->staggerModule->stagger;
+            float stagger = chrIns->chrModulelBag->staggerModule->staggerMax - chrIns->chrModulelBag->staggerModule->
+                stagger;
             int staggerInt = (int)chrIns->chrModulelBag->staggerModule->stagger;
             if (stagger > 0) {
                 feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
                 feMan->bossHpBars[i].isHit = true;
             }
-            else if (feMan->bossHpBars[i].currentDisplayDamage > 0 && feMan->bossHpBars[i].currentDisplayDamage != staggerInt) {
+            else if (feMan->bossHpBars[i].currentDisplayDamage > 0 && feMan->bossHpBars[i].currentDisplayDamage !=
+                staggerInt) {
                 feMan->bossHpBars[i].currentDisplayDamage = staggerInt;
                 feMan->bossHpBars[i].isHit = true;
             }
@@ -156,31 +133,15 @@ void FeHook::writePoiseToBossBar() {
     }
 }
 
-// void FeHook::enableBossBarHook(int* entityId, int bossBarIndex, int displayId) {
-//     //prevent an oops
-//     if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
-//         return;
-//
-//     EnableBossBarOriginal(entityId, bossBarIndex, displayId);
-// }
-
-// void FeHook::disableBossBarHook(int bossBarIndex) {
-//     //prevent an oops
-//     if (bossBarIndex >= BOSS_CHR_ARRAY_LEN)
-//         return;
-//
-//     DisableBossBarOriginal(bossBarIndex);
-// }
-
 void FeHook::writePoiseToEntityBar() {
     CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
     for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
 
-        if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__ ) {
-            ChrIns* chrIns = main_mod->Hook.GetChrInsFromHandleFunc(*main_mod->Hook.WorldChrManIns, &feMan->entityHpBars[i].entityHandle);
+        if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__) {
+            ChrIns* chrIns = main_mod->Hook.GetChrInsFromHandleFunc(*main_mod->Hook.WorldChrManIns,
+                                                                    &feMan->entityHpBars[i].entityHandle);
             if (chrIns == nullptr) continue;
             StaggerModule* staggerModule = chrIns->chrModulelBag->staggerModule;
-            //feMan->entityHpBars[i].entityHandle = chrIns->handle;
             if (staggerModule->staggerMax < 0) {
                 continue;
             }
@@ -192,12 +153,11 @@ void FeHook::writePoiseToEntityBar() {
                 feMan->entityHpBars[i].timeDisplayed = 0.0f;
                 feMan->entityHpBars[i].currentDisplayDamage = staggerInt;
             }
-            else if (feMan->entityHpBars[i].currentDisplayDamage > 0 && feMan->entityHpBars[i].currentDisplayDamage != staggerInt) {
+            else if (feMan->entityHpBars[i].currentDisplayDamage > 0 && feMan->entityHpBars[i].currentDisplayDamage !=
+                staggerInt) {
                 feMan->entityHpBars[i].totalTimeDisplayed = 0.0f;
                 feMan->entityHpBars[i].timeDisplayed = 0.0f;
                 feMan->entityHpBars[i].currentDisplayDamage = (int)staggerModule->staggerMax;
-                // entityPoiseArray[i].handle = __UINT64_MAX__;
-                // entityPoiseArray[i].chrIns = nullptr;
             }
         }
     }
@@ -219,30 +179,11 @@ extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSys
     return -1;
 }
 
-void FeHook::feManCtor(CSFeManImp* feManImp, uintptr_t gameRend, uintptr_t menuMan) {
-
-    // for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
-    //     bossChrInsArray[i] = nullptr;
-    // }
-
-    FeManCtorOriginal(feManImp, gameRend, menuMan);
-}
-
-void FeHook::chrInsDtor(ChrIns* enemyIns) {
-
-    // for (int i = 0; i < BOSS_CHR_ARRAY_LEN; i++) {
-    //     if (bossChrInsArray[i] == enemyIns)
-    //         bossChrInsArray[i] = nullptr;
-    // }
-
-    ChrInsDtorOriginal(enemyIns);
-}
-
 void FeHook::updateUIBarStructs(uintptr_t moveMapStep, uintptr_t time) {
 
     UpdateUIBarStructsOriginal(moveMapStep, time);
 
-    if (EnableBossBar)
+    if (BossBarPoiseMeterEnabled)
         writePoiseToBossBar();
     if (ApplyEntityBarDamageOriginal)
         writePoiseToEntityBar();
@@ -254,16 +195,6 @@ bool FeHook::enableUpdateHooks() {
     if (_updateHooksEnabled)
         return true;
 
-    if (MH_CreateHook((void*)_chrInsDtor, &chrInsDtor, (void**)&FeHook::ChrInsDtorOriginal) != MH_OK) {
-        return false;
-    }
-    MH_EnableHook((void*)_enemyInsDtor);
-
-    if (MH_CreateHook((void*)_feManCtor, &feManCtor, (void**)&FeHook::FeManCtorOriginal) != MH_OK) {
-        return false;
-    }
-    MH_EnableHook((void*)_enemyInsDtor);
-
     if (MH_CreateHook((void*)_updateUIBarStructs, &updateUIBarStructs,
                       (void**)&FeHook::UpdateUIBarStructsOriginal) != MH_OK) {
         return false;
@@ -271,6 +202,5 @@ bool FeHook::enableUpdateHooks() {
     MH_EnableHook((void*)_updateUIBarStructs);
 
     _updateHooksEnabled = true;
-
     return true;
 }

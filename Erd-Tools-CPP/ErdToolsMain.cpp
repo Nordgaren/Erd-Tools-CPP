@@ -57,6 +57,7 @@ void ErdToolsMain::Setup() {
 	}
 
 	Hook.ParamMan->InitParamTools();
+	
 	Hook.FeMan->EnableLootPrefs();
 
 }
@@ -111,7 +112,7 @@ bool ErdToolsMain::ReadINI() {
 	header_segment = "PARAM";
 	Hook.ParamMan->_autoHarvestMultiplier = option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
 	Hook.ParamMan->_mapSpeedMultiplier = option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
-
+	Hook.ParamMan->_removeWepStatRequirements = option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
 
 	return true;
 }

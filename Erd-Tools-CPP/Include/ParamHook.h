@@ -8,6 +8,7 @@ public:
 	void InitParamTools();
 	void EditActionButtonParam();
 	void EditMenuCommonParam();
+	void EditEquipParamWeapon();
 	uint64_t GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName);
 	void PrintParamResCapEnum(uint64_t soloParamRepository);
 	uintptr_t SoloParamRepository = 0;
@@ -19,6 +20,7 @@ public:
 	FindActionButtonParamEntry* FindActionButtonParamEntry = nullptr;
 	float _autoHarvestMultiplier = 1.0;
 	float _mapSpeedMultiplier = 1.0;
+	bool _removeWepStatRequirements = false;
 	ParamHook() {
 	}
 	~ParamHook() {

@@ -1,6 +1,8 @@
 #include "../Include/ParamHook.h"
 
 #include "../Include/ErdToolsMain.h"
+#include "../Util/ParamEditor.h"
+#include"../param/EquipParamWeapon.h"
 
 #define AQCUIRE_MATERIAL_START 7800
 #define AQCUIRE_MATERIAL_END 7879
@@ -27,8 +29,32 @@ void ParamHook::InitParamTools() {
 
 	EditActionButtonParam();
 
+	if (_removeWepStatRequirements)
+		EditEquipParamWeapon();
+
 	//PrintParamResCapEnum(solo_param_repository_ld); 
 
+}
+void ParamHook::EditEquipParamWeapon() {
+	
+	ParamEditor<EquipParamWeapon> pEditor(*(uint64_t*)SoloParamRepository);
+
+	ParamHeader *header = pEditor.GetParamHeader();
+	EquipParamWeapon *pParam = pEditor.GetParamDataPtr();
+
+	for (int i = 0; i < header->RowCount; i++) {
+		pParam[i].attainmentWepStatusStr = 0;
+		pParam[i].attainmentWepStatusDex = 0;
+		pParam[i].attainmentWepStatusMag = 0;
+		pParam[i].attainmentWepStatusFai = 0;
+		pParam[i].attainmentWepStatusLuc = 0;
+		pParam[i].properStrength = 0;
+		pParam[i].properAgility = 0;
+		pParam[i].properMagic = 0;
+		pParam[i].properFaith = 0;
+		pParam[i].properLuck = 0;
+	}
+	
 }
 
 void ParamHook::EditActionButtonParam() {

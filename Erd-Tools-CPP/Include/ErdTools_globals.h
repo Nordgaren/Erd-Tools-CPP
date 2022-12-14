@@ -245,7 +245,7 @@ struct EntityHpBar {
 static_assert(sizeof(EntityHpBar) == 0x40);
 
 struct CSFeManImp {
-    uint8_t undefined[0x5520];
+    uint8_t undefined[0x59F0];
     EntityHpBar entityHpBars[8];
     BossHpBar bossHpBars[3];
 };
@@ -266,7 +266,7 @@ struct SoundCombatStruct {
 };
 
 struct CSSound {
-    uint8_t undefined[0x2E8];
+    uint8_t undefined[0x328];
     SoundCombatStruct* soundCombatStruct;
 };
 

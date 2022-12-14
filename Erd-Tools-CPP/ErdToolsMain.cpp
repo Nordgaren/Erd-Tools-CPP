@@ -1,5 +1,7 @@
 #include "Include/ErdToolsMain.h"
 
+#include <codecvt>
+
 ErdToolsMain* main_mod = nullptr;
 
 void CreateHook() {
@@ -46,7 +48,6 @@ void ErdToolsMain::HookEldenRing() {
 	}
 
 	Setup();
-
 }
 
 void ErdToolsMain::Setup() {
@@ -56,10 +57,11 @@ void ErdToolsMain::Setup() {
 	//@TODO:Check if communication with debug tools is open and open if it is not and ini doesn't exist.
 	}
 
+	Hook.ChangeExtension();
+
 	Hook.ParamMan->InitParamTools();
 	
 	Hook.FeMan->EnableLootPrefs();
-
 }
 
 bool ErdToolsMain::ReadINI() {
@@ -113,6 +115,10 @@ bool ErdToolsMain::ReadINI() {
 	Hook.ParamMan->_autoHarvestMultiplier = option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
 	Hook.ParamMan->_mapSpeedMultiplier = option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
 	Hook.ParamMan->_removeWepStatRequirements = option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
+	
+	header_segment = "SAVE";
+	std::string ext = option_reader.Get(header_segment, "save_extension", "sl2");
+	Hook._newExtension = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(ext);
 
 	return true;
 }
@@ -138,5 +144,4 @@ void ErdToolsMain::InitPreferences() {
 	if (Preferences & enable_entity_poise_meter) {
 		Hook.FeMan->EnableEntityPoiseMeter();
 	}
-
 }

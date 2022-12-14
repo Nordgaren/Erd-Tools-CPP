@@ -11,6 +11,7 @@ class ErdHook {
 public:
 	bool CreateMemoryEdits();
 	bool FindNeededSignatures();
+	void ChangeExtension();
 	EventHook* EventMan;
 	DebugHook* DebugMan;
 	ParamHook* ParamMan;
@@ -18,6 +19,8 @@ public:
 	WorldChrMan** WorldChrManIns = nullptr;
 	CSSound** SoundIns = nullptr;
 	GetChrInsFromHandle GetChrInsFromHandleFunc;
+	wchar_t* _saveExtension = nullptr;
+	std::wstring _newExtension;
 
 	ErdHook() {
 		EventMan = new EventHook();

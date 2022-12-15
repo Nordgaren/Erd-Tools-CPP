@@ -44,7 +44,7 @@ If I missed your contribution, let me know!
 ### Erd Tools dll 1.1.2
 * ER 1.08.0 compatibility.  
 
-* added save_extension changing, since everyone else is adding this to their dll mod :fatcat:  
+* added save_extension changing, since everyone else is adding this to their dll mod :fatcat:  Must have ErdTools loaded first and highest priorty (no delay from game start)
 
 ### Erd Tools dll 1.1.1
 * Address crashing from enemies that don't get cleaned up properly.  

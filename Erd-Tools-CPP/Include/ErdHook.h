@@ -20,7 +20,7 @@ public:
 	CSSound** SoundIns = nullptr;
 	GetChrInsFromHandle GetChrInsFromHandleFunc;
 	wchar_t* _saveExtension = nullptr;
-	std::wstring _newExtension;
+	std::wstring _extension = std::wstring(L".sl2");
 
 	ErdHook() {
 		EventMan = new EventHook();

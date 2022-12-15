@@ -159,7 +159,7 @@ bool ErdHook::FindNeededSignatures() {
 
 void ErdHook::ChangeExtension() {
     if (_saveExtension) {
-        const wchar_t* newExt = (L"." + _newExtension).c_str();
+        const wchar_t* newExt = (L"." + _extension).c_str();
         memcpy(_saveExtension, newExt, 8);
     }
 }

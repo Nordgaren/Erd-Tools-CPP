@@ -41,6 +41,9 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.1.3
+* added range multiplier for loot, corpse loot and dropped runes.
+
 ### Erd Tools dll 1.1.2
 * ER 1.08.0 compatibility.  
 

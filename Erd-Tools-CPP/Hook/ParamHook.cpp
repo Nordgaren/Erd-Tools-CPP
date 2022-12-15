@@ -27,7 +27,10 @@ void ParamHook::InitParamTools() {
 
 	EditMenuCommonParam();
 
-	EditActionButtonParam();
+	ApplyABParamRangeMultiplier(materials_ABParam_list, _rangeAutoHarvestMultiplier);
+	ApplyABParamRangeMultiplier(items_ABParam_list, _rangeItemPickupMultiplier);
+	ApplyABParamRangeMultiplier(corpse_loot_ABParam_list, _rangeCorpseLootMultiplier);
+	ApplyABParamRangeMultiplier(lost_runes_ABParam_list, _rangeLostRunesRangeMultiplier);
 
 	if (_removeWepStatRequirements)
 		EditEquipParamWeapon();
@@ -57,15 +60,14 @@ void ParamHook::EditEquipParamWeapon() {
 	
 }
 
-void ParamHook::EditActionButtonParam() {
+void ParamHook::ApplyABParamRangeMultiplier(std::vector<int> paramIds, float multiplier) {
 
-	for (unsigned int i = AQCUIRE_MATERIAL_START; i < AQCUIRE_MATERIAL_END; i++) {
+	for (unsigned int i = 0; i < paramIds.size(); i++) {
 		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
-		std::invoke(FindActionButtonParamEntry, &buttonContainer, i);
+		std::invoke(FindActionButtonParamEntry, &buttonContainer, paramIds[i]);
 		ActionButtonParam* actionParam = buttonContainer.param_entry;
-
 		if (actionParam != nullptr)
-			actionParam->radius *= _autoHarvestMultiplier;
+			actionParam->radius *= multiplier;
 	}
 }
 

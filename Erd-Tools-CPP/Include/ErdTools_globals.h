@@ -349,3 +349,18 @@ typedef bool (*EnemyInsDtor)(ChrIns*, uintptr_t);
 typedef void (*ChrInsDtor)(ChrIns*);
 
 typedef void (*UpdateUIBarStructs)(uintptr_t, uintptr_t);
+
+static std::vector materials_ABParam_list = {
+    7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822,
+    7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
+    7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874,
+    7875, 7876, 7877, 7878
+};
+static std::vector items_ABParam_list = {
+    4000, 4110, 4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350,
+    6361, 9532
+};
+static std::vector corpse_loot_ABParam_list = {4100};
+static std::vector lost_runes_ABParam_list = {1000};
+static std::vector unlock_grace_ABParam_list = {6100};
+static std::vector grace_resting_ABParam_list = {6101};

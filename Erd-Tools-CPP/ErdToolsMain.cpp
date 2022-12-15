@@ -112,9 +112,12 @@ bool ErdToolsMain::ReadINI() {
 	Hook.FeMan->LootPrefs = lootPrefs;
 
 	header_segment = "PARAM";
-	Hook.ParamMan->_autoHarvestMultiplier		= option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
-	Hook.ParamMan->_mapSpeedMultiplier			= option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
-	Hook.ParamMan->_removeWepStatRequirements	= option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
+	Hook.ParamMan->_rangeAutoHarvestMultiplier		= option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
+	Hook.ParamMan->_rangeItemPickupMultiplier		= option_reader.GetFloat(header_segment, "item_range_multiplier", 1.0);
+	Hook.ParamMan->_rangeCorpseLootMultiplier		= option_reader.GetFloat(header_segment, "corpse_loot_multiplier", 1.0);
+	Hook.ParamMan->_rangeLostRunesRangeMultiplier	= option_reader.GetFloat(header_segment, "lost_runes_range_multiplier ", 1.0);
+	Hook.ParamMan->_mapSpeedMultiplier				= option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
+	Hook.ParamMan->_removeWepStatRequirements		= option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
 	
 	header_segment = "SAVE";
 	std::string ext	= option_reader.Get(header_segment, "save_extension", "sl2");

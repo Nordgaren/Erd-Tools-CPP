@@ -17,7 +17,6 @@ bool FeHook::EnableBossPoiseMeter() {
 }
 
 bool FeHook::EnableEntityPoiseMeter() {
-
     if (MH_CreateHook((void*)_applyEntityBarDmg, &applyEntityBarDmgHook,
                       (void**)&FeHook::ApplyEntityBarDamageOriginal) != MH_OK) {
         return false;
@@ -32,12 +31,10 @@ bool FeHook::EnableEntityPoiseMeter() {
 
 void FeHook::applyEntityBarDmgHook(EntityHpBar* entityHealthBarStruct, uint64_t chrInsHandle,
                                    int32_t damage, uint32_t unk, bool skipSetDamage) {
-
     ApplyEntityBarDamageOriginal(entityHealthBarStruct, chrInsHandle, 0, unk, true);
 }
 
 bool FeHook::EnableLootChangeHook() {
-
     if (MH_CreateHook((void*)_executeActionButtonParamProxy, &ExecActionButtonParamProxyWrapper,
                       (void**)&ExecuteActionButtonParamProxyReturn) != MH_OK) {
         return false;
@@ -48,60 +45,40 @@ bool FeHook::EnableLootChangeHook() {
     return true;
 }
 
-void FeHook::EnableLootPrefs() {
 
+
+void FeHook::EnableLootPrefs() {
     if (LootPrefs & pickup_materials) {
-        autoPickupList.insert(autoPickupList.end(),
-                              {
-                                  7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822,
-                                  7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
-                                  7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874,
-                                  7875, 7876, 7877, 7878
-                              });
+        autoPickupList.insert(autoPickupList.end(), materials_ABParam_list.begin(), materials_ABParam_list.end());
     }
     if (LootPrefs & pickup_items) {
-        autoPickupList.insert(autoPickupList.end(),
-                              {
-                                  4000, 4110, 4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350,
-                                  6361, 9532
-                              });
+        autoPickupList.insert(autoPickupList.end(), items_ABParam_list.begin(), items_ABParam_list.end());
     }
     if (LootPrefs & pickup_corpse_loot) {
-        autoPickupList.insert(autoPickupList.end(),
-                              {4100});
+        autoPickupList.insert(autoPickupList.end(), corpse_loot_ABParam_list.begin(), corpse_loot_ABParam_list.end());
     }
     if (LootPrefs & pickup_lost_runes) {
-        autoPickupList.push_back(1000);
+        autoPickupList.insert(autoPickupList.end(), lost_runes_ABParam_list.begin(), lost_runes_ABParam_list.end());
     }
     std::sort(autoPickupList.begin(), autoPickupList.end());
 
     if (LootPrefs & lock_materials) {
-        lockPickupList.insert(lockPickupList.end(),
-                              {
-                                  7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822,
-                                  7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
-                                  7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874,
-                                  7875, 7876, 7877, 7878
-                              });
+        lockPickupList.insert(lockPickupList.end(), materials_ABParam_list.begin(), materials_ABParam_list.end());
     }
     if (LootPrefs & lock_items) {
-        lockPickupList.insert(lockPickupList.end(),
-                              {
-                                  4000, 4110, 4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350,
-                                  6361, 9532
-                              });
+        lockPickupList.insert(lockPickupList.end(), items_ABParam_list.begin(), items_ABParam_list.end());
     }
     if (LootPrefs & lock_corpse_loot) {
-        lockPickupList.push_back(4100);
+        lockPickupList.insert(lockPickupList.end(), corpse_loot_ABParam_list.begin(), corpse_loot_ABParam_list.end());
     }
     if (LootPrefs & lock_lost_runes) {
-        lockPickupList.push_back(1000);
+        lockPickupList.insert(lockPickupList.end(), lost_runes_ABParam_list.begin(), lost_runes_ABParam_list.end());
     }
     if (LootPrefs & lock_grace_unlocks) {
-        lockPickupList.push_back(6100);
+        lockPickupList.insert(lockPickupList.end(), unlock_grace_ABParam_list.begin(), unlock_grace_ABParam_list.end());
     }
     if (LootPrefs & lock_grace_resting) {
-        lockPickupList.push_back(6101);
+        lockPickupList.insert(lockPickupList.end(), grace_resting_ABParam_list.begin(), grace_resting_ABParam_list.end());
     }
     std::sort(lockPickupList.begin(), lockPickupList.end());
 
@@ -136,7 +113,6 @@ void FeHook::writePoiseToBossBar() {
 void FeHook::writePoiseToEntityBar() {
     CSFeManImp* feMan = *main_mod->Hook.FeMan->CSFeMan;
     for (int i = 0; i < ENTITY_CHR_ARRAY_LEN; i++) {
-
         if (feMan->entityHpBars[i].entityHandle != __UINT64_MAX__) {
             ChrIns* chrIns = main_mod->Hook.GetChrInsFromHandleFunc(*main_mod->Hook.WorldChrManIns,
                                                                     &feMan->entityHpBars[i].entityHandle);
@@ -164,7 +140,6 @@ void FeHook::writePoiseToEntityBar() {
 }
 
 extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSystemImp, int entryId) {
-
     std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
     if (!lockList.empty() && (*main_mod->Hook.SoundIns)->soundCombatStruct->isInCombat && std::binary_search(
         lockList.begin(), lockList.end(), entryId)) {
@@ -180,18 +155,15 @@ extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSys
 }
 
 void FeHook::updateUIBarStructs(uintptr_t moveMapStep, uintptr_t time) {
-
     UpdateUIBarStructsOriginal(moveMapStep, time);
 
     if (BossBarPoiseMeterEnabled)
         writePoiseToBossBar();
     if (ApplyEntityBarDamageOriginal)
         writePoiseToEntityBar();
-
 }
 
 bool FeHook::enableUpdateHooks() {
-
     if (_updateHooksEnabled)
         return true;
 

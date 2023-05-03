@@ -34,13 +34,16 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 ## Thank You  
 **[LukeYui](https://github.com/LukeYui/)** - Author of [Elden Ring Item Randomiser](https://github.com/LukeYui/elden_ring_item_randomiser) and who's code helped me get this dll setup.  
 **Pav** - Author of one of the CE Tables I use. Talented reverse engineer who is incredibly helpful!   
-**[jamesq7](https://github.com/kh0nsu)** - For helping figure out the cheat for enabling the map during combat and helping with the enable crafting during combat function.  
+**[jamesq7](https://github.com/kh0nsu)** - For helping figure out the patch for enabling the map during combat and helping with the enable crafting during combat function.  
 **[Wasted](https://github.com/FrankvdStam)** - Rust nerd who gives me pointers for C++.  
 **[Tremwil](https://github.com/tremwil)** - Smart person who help me debug dumb mistakes.  
 **[TKGP](https://github.com/JKAnderson/)** - Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) [Property Hook](https://github.com/JKAnderson/PropertyHook) and [SoulsFormats](https://github.com/JKAnderson/SoulsFormats), which got me into this kind of modding.  
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.1.4
+* added height multiplier for harvest, loot, corpse loot and dropped runes.
+
 ### Erd Tools dll 1.1.3
 * added range multiplier for loot, corpse loot and dropped runes.
 

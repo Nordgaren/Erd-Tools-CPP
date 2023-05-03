@@ -1,6 +1,50 @@
 ﻿#pragma once
-#include "../Include/Common.h"
-#include "../Include/ErdTools_globals.h"
+
+#ifndef PARAM_STRUCTS
+#define PARAM_STRUCTS
+struct ParamTable {
+    uint32_t ParamID;
+    uint32_t Pad0x4;
+    uint32_t ParamOffset;
+    uint32_t Pad0xC;
+    uint32_t StringOffset;
+    uint32_t Pad0x14;
+};
+static_assert(sizeof(ParamTable) == 0x18);
+
+struct ParamHeader {
+    uint32_t StringOffset;
+    uint8_t undefined0x4[0x6];
+    uint16_t RowCount;
+    uint8_t undefined0xC[0x4];
+    uint64_t ParamTypeOffset;
+    uint8_t undefined0x18[0x18];
+    uint32_t DataOffset;
+    uint8_t undefined0x34[0xC];
+    ParamTable Table;
+};
+static_assert(sizeof(ParamHeader) == 0x58);
+
+struct ParamInfo {
+    uint8_t undefined0x0[0x18];
+    wchar_t* ParamName;
+    uint8_t undefined0x20[0x60];
+    ParamHeader* Param;
+};
+static_assert(sizeof(ParamInfo) == 0x88);
+
+struct ParamResCap {
+    uint8_t undefined0x0[0x18];
+    wchar_t* ParamName;
+    uint8_t undefined0x20[0x8];
+    uint32_t ParamNameLength;
+    uint8_t undefined0x2C[0x54];
+    ParamInfo* ParamInfo;
+};
+static_assert(sizeof(ParamResCap) == 0x88);
+#endif // !PARAMS
+
+
 template<typename T>
 class ParamEditor {
 public:

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <wchar.h>
 
 #ifndef PARAM_STRUCTS
 #define PARAM_STRUCTS
@@ -86,6 +87,7 @@ public:
     }
 
     void AddNewParams();
+
     T* GetParamDataPtr() {
         return (T*)(_paramPointer + _paramHeader->DataOffset);
     };
@@ -223,10 +225,11 @@ ParamResCap *ParamEditor<T>::getParamResCap() {
             if (paramResCap->ParamNameLength >= 8) {
                 containerName = paramResCap->ParamName;
             }
-            if (wcsncmp(T::param_namew, containerName, sizeof(T::param_namew)) == 0) {
+            if (wcsncmp(T::param_namew, containerName, wcslen(T::param_namew)) == 0) {
                 return paramResCap;
             }
         }
     }
     return nullptr;
 }
+

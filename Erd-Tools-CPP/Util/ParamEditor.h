@@ -213,7 +213,7 @@ void ParamEditor<T>::AddNewParams() {
 template<typename T>
 ParamResCap *ParamEditor<T>::getParamResCap() {
 
-    for (int i = 0; i < 185; i++) {
+    for (int i = 0; i < 186; i++) {
         int paramOffset = i * 0x48;
         int *param = (int *) (_soloParamRepository + paramOffset + 0x80);
         if (*param > 0) {

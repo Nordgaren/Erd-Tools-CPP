@@ -79,7 +79,7 @@ void ParamHook::EditMenuCommonParam() {
 }
 
 uint64_t ParamHook::GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName) {
-	for (int i = 0; i < 185; i++) {
+	for (int i = 0; i < 186; i++) {
 		int paramOffset = i * 0x48;
 		int* param = (int*)(soloParamRepository + paramOffset + 0x80);
 		if (*param > 0) {

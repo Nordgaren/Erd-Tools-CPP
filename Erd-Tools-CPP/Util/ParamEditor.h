@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <stdexcept>
+#include <string>
 #include <wchar.h>
 
 #ifndef PARAM_STRUCTS
@@ -43,13 +45,33 @@ struct ParamResCap {
     ParamInfo* ParamInfo;
 };
 static_assert(sizeof(ParamResCap) == 0x88);
+
+struct RepositoryEntry {
+    bool paramLoaded;
+    uint8_t undefined0x1[0x3];
+    uint32_t pad0x4;
+    ParamResCap *param;
+    uint8_t undefined0x10[0x38];
+};
+
+static_assert(sizeof(RepositoryEntry) == 0x48);
+
+struct SoloParamRepository {
+    uint8_t unknown0x0[0x80];
+    RepositoryEntry repositoryEntries[186];
+};
+
+static_assert(sizeof(SoloParamRepository) == 0x34D0);
+
 #endif // !PARAMS
 
 
 template<typename T>
 class ParamEditor {
 public:
-    explicit ParamEditor(uintptr_t soloParamRepository);
+    explicit ParamEditor();
+    explicit ParamEditor(SoloParamRepository** soloParamRepository);
+    explicit ParamEditor(SoloParamRepository* soloParamRepository);
 
     T *AddEntry(uint32_t rowId) {
         //Don't add anything that already has an ID.
@@ -93,6 +115,7 @@ public:
     };
 
 private:
+    void init(SoloParamRepository* soloParamRepository);
     ParamResCap* getParamResCap();
     T _defaultEntry;
     std::vector<uint32_t> _rowIDs;
@@ -101,34 +124,62 @@ private:
     ParamHeader *_paramHeader;
     ParamTable *_paramTable;
     uintptr_t _paramPointer;
-    uintptr_t _soloParamRepository;
+    SoloParamRepository* _soloParamRepository;
 };
 
+template <typename T>
+ParamEditor<T>::ParamEditor(): _paramResCap(nullptr), _paramHeader(nullptr), _paramTable(nullptr), _paramPointer(0),
+                               _soloParamRepository(nullptr) {
+}
+
 template<typename T>
-ParamEditor<T>::ParamEditor(uintptr_t soloParamRepository) {
-    _soloParamRepository = soloParamRepository;
+ParamEditor<T>::ParamEditor(SoloParamRepository** soloParamRepository): _paramResCap(nullptr), _paramHeader(nullptr), _paramTable(nullptr), _paramPointer(0),
+                               _soloParamRepository(nullptr) {
+    init(*soloParamRepository);
+}
+
+template<typename T>
+ParamEditor<T>::ParamEditor(SoloParamRepository* soloParamRepository): _paramResCap(nullptr), _paramHeader(nullptr), _paramTable(nullptr), _paramPointer(0),
+                               _soloParamRepository(nullptr) {
+    init(soloParamRepository);
+}
+
+
+template<typename T>
+void ParamEditor<T>::init(SoloParamRepository* soloParamRepository) {
+    _soloParamRepository = (SoloParamRepository*)soloParamRepository;
     _paramResCap = getParamResCap();
 
-    if (!_paramResCap)
+    if (!_paramResCap) {
+        printf(
+                "Param %s does not exist\n", T::param_name);
         throw std::runtime_error(
                 "Param " + std::string(T::param_name) + " does not exist\n");
+    }
+        
 
     _paramHeader = _paramResCap->ParamInfo->Param;
     _paramPointer = (uintptr_t) _paramHeader;
     _paramTable = &_paramHeader->Table;
 
-    std::string paramType = std::string((char *) (_paramPointer + _paramHeader->StringOffset));
-    if (strcmp(paramType.c_str(), T::param_type) != 0)
+    std::string paramType = std::string((char *) (_paramPointer + _paramHeader->ParamTypeOffset));
+    if (strcmp(paramType.c_str(), T::param_type) != 0) {
+        printf("Param %s def strings name did not match. game: %s header: %s\n", T::param_name, paramType, T::param_name);
         throw std::runtime_error(
                 "Param " + std::string(T::param_name) + " def strings name did not match. game: "
                 + paramType + " header: " + std::string(T::param_type) + "\n");
 
+    }
+        
     //Don't add params if the size of the param differs in game.
     size_t entrySize = _paramTable[1].ParamOffset - _paramTable[0].ParamOffset;
-    if (entrySize != sizeof(T))
+    if (entrySize != sizeof(T)) {
+        printf("Param %s new entries size and entry size in game did not match. In Game:%llu - %llu\n", T::param_name, entrySize, sizeof(T));
         throw std::runtime_error("Param " + std::string(T::param_name) +
                                  " new entries size and entry size in game did not match. In Game:" +
                                  std::to_string(entrySize) + " - " + std::to_string(sizeof(T)) + "\n");
+    }
+        
 
 
     for (int i = 0; i < _paramHeader->RowCount; ++i) {
@@ -214,22 +265,23 @@ void ParamEditor<T>::AddNewParams() {
 
 template<typename T>
 ParamResCap *ParamEditor<T>::getParamResCap() {
-
-    for (int i = 0; i < 186; i++) {
-        int paramOffset = i * 0x48;
-        int *param = (int *) (_soloParamRepository + paramOffset + 0x80);
-        if (*param > 0) {
-            ParamResCap *paramResCap = (ParamResCap *) *(uint64_t *) (_soloParamRepository + paramOffset + 0x88);
+    std::wstring paramName = std::wstring(T::param_namew);
+    for (int i = 0; i < sizeof(_soloParamRepository->repositoryEntries); ++i) {
+        if (_soloParamRepository->repositoryEntries[i].paramLoaded) {
+            ParamResCap *paramResCap = _soloParamRepository->repositoryEntries[i].param;
             wchar_t *containerName = (wchar_t *) &paramResCap->ParamName;
             //small string optimization? fsstring?!?!
             if (paramResCap->ParamNameLength >= 8) {
                 containerName = paramResCap->ParamName;
             }
-            if (wcsncmp(T::param_namew, containerName, wcslen(T::param_namew)) == 0) {
+            std::wstring containerParamName = std::wstring(containerName);
+            
+            if (paramName == containerParamName) {
                 return paramResCap;
             }
         }
     }
+
     return nullptr;
 }
 

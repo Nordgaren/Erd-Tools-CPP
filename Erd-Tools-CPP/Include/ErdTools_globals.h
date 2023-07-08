@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+struct ActionButtonParam;
 struct EquipParamWeapon;
 
 enum UserPreferences {
@@ -71,12 +72,12 @@ enum WeaponType : uint16_t {
     weapon_type_greatbolt = 86,
 };
 
-struct EquipParamGoods {
-    uint8_t filler_bytes[58];
-    uint16_t max_inventory;
-    uint16_t unk;
-    ItemType item_type;
-};
+// struct EquipParamGoods {
+//     uint8_t filler_bytes[58];
+//     uint16_t max_inventory;
+//     uint16_t unk;
+//     ItemType item_type;
+// };
 
 // struct EquipParamWeapon {
 //     uint8_t filler_bytes_01[92];
@@ -94,11 +95,6 @@ struct EquipParamProtector {
 
 struct EquipMtrlSetParam {
     uint32_t UpgradeMaterialId;
-};
-
-struct ActionButtonParam {
-    uint8_t filler_bytes[0xC];
-    float radius;
 };
 
 struct MenuCommonParam {
@@ -270,47 +266,48 @@ struct CSSound {
     SoundCombatStruct* soundCombatStruct;
 };
 
-struct ParamTable {
-    uint32_t ParamID;
-    uint32_t Pad0x4;
-    uint32_t ParamOffset;
-    uint32_t Pad0xC;
-    uint32_t StringOffset;
-    uint32_t Pad0x14;
-};
-static_assert(sizeof(ParamTable) == 0x18);
+// struct ParamTable {
+//     uint32_t ParamID;
+//     uint32_t Pad0x4;
+//     uint32_t ParamOffset;
+//     uint32_t Pad0xC;
+//     uint32_t StringOffset;
+//     uint32_t Pad0x14;
+// };
+// static_assert(sizeof(ParamTable) == 0x18);
+//
+// struct ParamHeader {
+//     uint32_t StringOffset;
+//     uint8_t undefined0x4[0x6];
+//     uint16_t RowCount;
+//     uint8_t undefined0xC[0x4];
+//     uint64_t ParamTypeOffset;
+//     uint8_t undefined0x18[0x18];
+//     uint32_t DataOffset;
+//     uint8_t undefined0x34[0xC];
+//     ParamTable Table;
+// };
+// static_assert(sizeof(ParamHeader) == 0x58);
+//
+// struct ParamInfo {
+//     uint8_t undefined0x0[0x18];
+//     wchar_t * ParamName;
+//     uint8_t undefined0x20[0x60];
+//     ParamHeader* Param;
+// };
+// static_assert(sizeof(ParamInfo) == 0x88);
+//
+// struct ParamResCap {
+//     uint8_t undefined0x0[0x18];
+//     wchar_t * ParamName;
+//     uint8_t undefined0x20[0x8];
+//     uint32_t ParamNameLength;
+//     uint8_t undefined0x2C[0x54];
+//     ParamInfo* ParamInfo;
+// };
+// static_assert(sizeof(ParamResCap) == 0x88);
 
-struct ParamHeader {
-    uint32_t StringOffset;
-    uint8_t undefined0x4[0x6];
-    uint16_t RowCount;
-    uint8_t undefined0xC[0x4];
-    uint64_t ParamTypeOffset;
-    uint8_t undefined0x18[0x18];
-    uint32_t DataOffset;
-    uint8_t undefined0x34[0xC];
-    ParamTable Table;
-};
-static_assert(sizeof(ParamHeader) == 0x58);
-
-struct ParamInfo {
-    uint8_t undefined0x0[0x18];
-    wchar_t * ParamName;
-    uint8_t undefined0x20[0x60];
-    ParamHeader* Param;
-};
-static_assert(sizeof(ParamInfo) == 0x88);
-
-struct ParamResCap {
-    uint8_t undefined0x0[0x18];
-    wchar_t * ParamName;
-    uint8_t undefined0x20[0x8];
-    uint32_t ParamNameLength;
-    uint8_t undefined0x2C[0x54];
-    ParamInfo* ParamInfo;
-};
-static_assert(sizeof(ParamResCap) == 0x88);
-
+//#define PARAM_STRUCTS
 
 typedef void FindEquipParamWeaponEntry(EquipParamWeaponParamContainer*, uint32_t);
 
@@ -350,17 +347,17 @@ typedef void (*ChrInsDtor)(ChrIns*);
 
 typedef void (*UpdateUIBarStructs)(uintptr_t, uintptr_t);
 
-static std::vector materials_ABParam_list = {
+static std::vector ABParam_list_materials = {
     7800, 7810, 7811, 7812, 7813, 7814, 7815, 7816, 7817, 7818, 7819, 7820, 7821, 7822,
     7823, 7824, 7825, 7826, 7827, 7828, 7850, 7860,
     7861, 7862, 7863, 7864, 7865, 7866, 7867, 7868, 7869, 7870, 7871, 7872, 7873, 7874,
     7875, 7876, 7877, 7878
 };
-static std::vector items_ABParam_list = {
+static std::vector ABParam_list_items = {
     4000, 4110, 4200, 4201, 4202, 4250, 4251, 4252, 4253, 4260, 4270, 4280, 4300, 4350,
     6361, 9532
 };
-static std::vector corpse_loot_ABParam_list = {4100};
-static std::vector lost_runes_ABParam_list = {1000};
+static std::vector ABParam_list_corpse_loot = {4100};
+static std::vector ABParam_list_lost_runes = {1000};
 static std::vector unlock_grace_ABParam_list = {6100};
 static std::vector grace_resting_ABParam_list = {6101};

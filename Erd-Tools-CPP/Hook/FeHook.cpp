@@ -49,30 +49,30 @@ bool FeHook::EnableLootChangeHook() {
 
 void FeHook::EnableLootPrefs() {
     if (LootPrefs & pickup_materials) {
-        autoPickupList.insert(autoPickupList.end(), materials_ABParam_list.begin(), materials_ABParam_list.end());
+        autoPickupList.insert(autoPickupList.end(), ABParam_list_materials.begin(), ABParam_list_materials.end());
     }
     if (LootPrefs & pickup_items) {
-        autoPickupList.insert(autoPickupList.end(), items_ABParam_list.begin(), items_ABParam_list.end());
+        autoPickupList.insert(autoPickupList.end(), ABParam_list_items.begin(), ABParam_list_items.end());
     }
     if (LootPrefs & pickup_corpse_loot) {
-        autoPickupList.insert(autoPickupList.end(), corpse_loot_ABParam_list.begin(), corpse_loot_ABParam_list.end());
+        autoPickupList.insert(autoPickupList.end(), ABParam_list_corpse_loot.begin(), ABParam_list_corpse_loot.end());
     }
     if (LootPrefs & pickup_lost_runes) {
-        autoPickupList.insert(autoPickupList.end(), lost_runes_ABParam_list.begin(), lost_runes_ABParam_list.end());
+        autoPickupList.insert(autoPickupList.end(), ABParam_list_lost_runes.begin(), ABParam_list_lost_runes.end());
     }
     std::sort(autoPickupList.begin(), autoPickupList.end());
 
     if (LootPrefs & lock_materials) {
-        lockPickupList.insert(lockPickupList.end(), materials_ABParam_list.begin(), materials_ABParam_list.end());
+        lockPickupList.insert(lockPickupList.end(), ABParam_list_materials.begin(), ABParam_list_materials.end());
     }
     if (LootPrefs & lock_items) {
-        lockPickupList.insert(lockPickupList.end(), items_ABParam_list.begin(), items_ABParam_list.end());
+        lockPickupList.insert(lockPickupList.end(), ABParam_list_items.begin(), ABParam_list_items.end());
     }
     if (LootPrefs & lock_corpse_loot) {
-        lockPickupList.insert(lockPickupList.end(), corpse_loot_ABParam_list.begin(), corpse_loot_ABParam_list.end());
+        lockPickupList.insert(lockPickupList.end(), ABParam_list_corpse_loot.begin(), ABParam_list_corpse_loot.end());
     }
     if (LootPrefs & lock_lost_runes) {
-        lockPickupList.insert(lockPickupList.end(), lost_runes_ABParam_list.begin(), lost_runes_ABParam_list.end());
+        lockPickupList.insert(lockPickupList.end(), ABParam_list_lost_runes.begin(), ABParam_list_lost_runes.end());
     }
     if (LootPrefs & lock_grace_unlocks) {
         lockPickupList.insert(lockPickupList.end(), unlock_grace_ABParam_list.begin(), unlock_grace_ABParam_list.end());

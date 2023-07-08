@@ -1,8 +1,10 @@
 #include "../Include/ParamHook.h"
 
 #include "../Include/ErdToolsMain.h"
+#include "../param/ActionButtonParam.h"
+#include "../param/EquipParamWeapon.h"
+#include "../param/EquipParamGoods.h"
 #include "../Util/ParamEditor.h"
-#include"../param/EquipParamWeapon.h"
 
 #define AQCUIRE_MATERIAL_START 7800
 #define AQCUIRE_MATERIAL_END 7879
@@ -27,10 +29,15 @@ void ParamHook::InitParamTools() {
 
 	EditMenuCommonParam();
 
-	ApplyABParamRangeMultiplier(materials_ABParam_list, _rangeAutoHarvestMultiplier);
-	ApplyABParamRangeMultiplier(items_ABParam_list, _rangeItemPickupMultiplier);
-	ApplyABParamRangeMultiplier(corpse_loot_ABParam_list, _rangeCorpseLootMultiplier);
-	ApplyABParamRangeMultiplier(lost_runes_ABParam_list, _rangeLostRunesRangeMultiplier);
+	ABParam_ApplyWidthMultiplier(ABParam_list_materials, _widthMultiplier_AutoHarvest);
+	ABParam_ApplyWidthMultiplier(ABParam_list_items, _widthMultiplier_ItemPickup);
+	ABParam_ApplyWidthMultiplier(ABParam_list_corpse_loot, _widthMultiplier_CorpseLoot);
+	ABParam_ApplyWidthMultiplier(ABParam_list_lost_runes, _widthMultiplier_LostRunesRange);
+
+	ABParam_ApplyHeightMultiplier(ABParam_list_materials, _heightMultiplier_AutoHarvest);
+	ABParam_ApplyHeightMultiplier(ABParam_list_items, _heightMultiplier_ItemPickup);
+	ABParam_ApplyHeightMultiplier(ABParam_list_corpse_loot, _heightMultiplier_CorpseLoot);
+	ABParam_ApplyHeightMultiplier(ABParam_list_lost_runes, _heightMultiplier_LostRunesRange);
 
 	if (_removeWepStatRequirements)
 		EditEquipParamWeapon();
@@ -40,7 +47,7 @@ void ParamHook::InitParamTools() {
 }
 void ParamHook::EditEquipParamWeapon() {
 	
-	ParamEditor<EquipParamWeapon> pEditor(*(uint64_t*)SoloParamRepository);
+	ParamEditor<EquipParamWeapon> pEditor(*SoloParamRepository);
 
 	ParamHeader *header = pEditor.GetParamHeader();
 	EquipParamWeapon *pParam = pEditor.GetParamDataPtr();
@@ -60,7 +67,7 @@ void ParamHook::EditEquipParamWeapon() {
 	
 }
 
-void ParamHook::ApplyABParamRangeMultiplier(std::vector<int> paramIds, float multiplier) {
+void ParamHook::ABParam_ApplyWidthMultiplier(std::vector<int> paramIds, float multiplier) {
 
 	for (unsigned int i = 0; i < paramIds.size(); i++) {
 		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
@@ -70,6 +77,19 @@ void ParamHook::ApplyABParamRangeMultiplier(std::vector<int> paramIds, float mul
 			actionParam->radius *= multiplier;
 	}
 }
+
+void ParamHook::ABParam_ApplyHeightMultiplier(std::vector<int> paramIds, float multiplier) {
+
+	for (unsigned int i = 0; i < paramIds.size(); i++) {
+		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
+		std::invoke(FindActionButtonParamEntry, &buttonContainer, paramIds[i]);
+		ActionButtonParam* actionParam = buttonContainer.param_entry;
+		if (actionParam != nullptr)
+			actionParam->height *= multiplier;
+			actionParam->baseHeightOffset *= multiplier;
+	}
+}
+
 
 void ParamHook::EditMenuCommonParam() {
 

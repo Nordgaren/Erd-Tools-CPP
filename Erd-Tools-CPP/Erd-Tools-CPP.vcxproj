@@ -573,6 +573,11 @@
   <ItemGroup>
     <MASM Include="ASM\ExecActionButtonParamWrapper.asm" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="erd_tools.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />

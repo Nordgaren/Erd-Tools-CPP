@@ -75,7 +75,7 @@ public:
 
     T *AddEntry(uint32_t rowId) {
         //Don't add anything that already has an ID.
-        if (find(_rowIDs.begin(), _rowIDs.end(), rowId) != _rowIDs.end())
+        if (std::find(_rowIDs.begin(), _rowIDs.end(), rowId) != _rowIDs.end())
             throw std::runtime_error(
                     "Trying to add a row that already exists in " + std::string(T::param_name) + "\n");
 
@@ -92,7 +92,7 @@ public:
 
     T *RetrieveEntry(uint32_t rowId) {
         //Return a pointer to the param row for editing. This will also allow editing of existing params.
-        std::vector<uint32_t>::iterator findRef = find(_rowIDs.begin(), _rowIDs.end(), rowId);
+        std::vector<uint32_t>::iterator findRef = std::find(_rowIDs.begin(), _rowIDs.end(), rowId);
         if (findRef == _rowIDs.end())
             throw std::runtime_error("Trying to retrieve a row that doesn't exist in" + std::string(T::param_name) + "\n");
 
@@ -147,7 +147,7 @@ ParamEditor<T>::ParamEditor(SoloParamRepository* soloParamRepository): _paramRes
 
 template<typename T>
 void ParamEditor<T>::init(SoloParamRepository* soloParamRepository) {
-    _soloParamRepository = (SoloParamRepository*)soloParamRepository;
+    _soloParamRepository = soloParamRepository;
     _paramResCap = getParamResCap();
 
     if (!_paramResCap) {
@@ -164,7 +164,7 @@ void ParamEditor<T>::init(SoloParamRepository* soloParamRepository) {
 
     std::string paramType = std::string((char *) (_paramPointer + _paramHeader->ParamTypeOffset));
     if (strcmp(paramType.c_str(), T::param_type) != 0) {
-        printf("Param %s def strings name did not match. game: %s header: %s\n", T::param_name, paramType, T::param_name);
+        printf("Param %s def strings name did not match. game: %s header: %s\n", T::param_name, paramType.c_str(), T::param_name);
         throw std::runtime_error(
                 "Param " + std::string(T::param_name) + " def strings name did not match. game: "
                 + paramType + " header: " + std::string(T::param_type) + "\n");
@@ -189,7 +189,7 @@ void ParamEditor<T>::init(SoloParamRepository* soloParamRepository) {
     _defaultEntry = T(*(T *) (_paramTable[0].ParamOffset + _paramPointer));
 }
 
-std::vector<uint8_t> Param;
+//std::vector<uint8_t> Param;
 
 template<typename T>
 void ParamEditor<T>::AddNewParams() {

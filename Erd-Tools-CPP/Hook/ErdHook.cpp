@@ -1,6 +1,7 @@
 #include "../Include/ErdHook.h"
 #include "../Include/ErdToolsMain.h"
 #include "../Include/Signature.h"
+#include "../Util/ParamEditor.h"
 
 
 extern ErdToolsMain* main_mod;
@@ -54,7 +55,7 @@ bool ErdHook::FindNeededSignatures() {
     DebugMan->DisableCrafingInCombatLocation = (uint64_t)disableCrafting.Scan(&EldenRingData);
 
     Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
-    ParamMan->SoloParamRepository = (uintptr_t)soloParamRepositorySig.Scan(&EldenRingData, 0x3, 0x7);
+    ParamMan->SoloParamRepository = (SoloParamRepository**)soloParamRepositorySig.Scan(&EldenRingData, 0x3, 0x7);
 
     Signature findEquipParamWeaponEntrySig = Signature(
         "40 57 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 8B");
@@ -84,7 +85,7 @@ bool ErdHook::FindNeededSignatures() {
         &EldenRingData, Align16);
 
     Signature getBossBarPtrSig = Signature("83 FA 02 77 ?? 48 63 C2 48 ?? ?? ?? ?? ?? ?? ?? ?? ?? 48 03 C1 C3");
-    FeMan->_getBossBarPtr = (uintptr_t)getBossBarPtrSig.Scan(&EldenRingData, Align16);
+    FeMan->_getBossBarPtr = reinterpret_cast<uintptr_t>(getBossBarPtrSig.Scan(&EldenRingData, Align16));
 
     Signature enableBossBarSig = Signature(
         "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");

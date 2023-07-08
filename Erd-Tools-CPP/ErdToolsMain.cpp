@@ -6,7 +6,6 @@ ErdToolsMain* main_mod = nullptr;
 
 void CreateHook() {
 	using namespace std::chrono_literals;
-
 	// Wait for Elden Ring
 	std::this_thread::sleep_for(5s);
 
@@ -28,8 +27,9 @@ void ErdToolsMain::EnableDebugConsole() {
 
 	if (AllocConsole()) {
 		FILE* fpstdout = stdout;
+		FILE* fpstderr = stderr;
 		freopen_s(&fpstdout,"CONOUT$", "w", stdout);
-		freopen_s(&fpstdout,"CONOUT$", "w", stderr);
+		freopen_s(&fpstderr,"CONOUT$", "w", stderr);
 		SetWindowText(GetConsoleWindow(), L"Erd Tools");
 
 		_debugConsoleEnabled = true;
@@ -112,10 +112,17 @@ bool ErdToolsMain::ReadINI() {
 	Hook.FeMan->LootPrefs = lootPrefs;
 
 	header_segment = "PARAM";
-	Hook.ParamMan->_rangeAutoHarvestMultiplier		= option_reader.GetFloat(header_segment, "harvest_range_multiplier", 1.0);
-	Hook.ParamMan->_rangeItemPickupMultiplier		= option_reader.GetFloat(header_segment, "item_range_multiplier", 1.0);
-	Hook.ParamMan->_rangeCorpseLootMultiplier		= option_reader.GetFloat(header_segment, "corpse_loot_multiplier", 1.0);
-	Hook.ParamMan->_rangeLostRunesRangeMultiplier	= option_reader.GetFloat(header_segment, "lost_runes_range_multiplier ", 1.0);
+	//range width
+	Hook.ParamMan->_widthMultiplier_AutoHarvest		= option_reader.GetFloat(header_segment, "harvest_width_multiplier", 1.0);
+	Hook.ParamMan->_widthMultiplier_ItemPickup		= option_reader.GetFloat(header_segment, "item_width_multiplier", 1.0);
+	Hook.ParamMan->_widthMultiplier_CorpseLoot		= option_reader.GetFloat(header_segment, "corpse_loot_width_multiplier", 1.0);
+	Hook.ParamMan->_widthMultiplier_LostRunesRange	= option_reader.GetFloat(header_segment, "lost_runes_width_multiplier", 1.0);
+	//range height
+	Hook.ParamMan->_heightMultiplier_AutoHarvest		= option_reader.GetFloat(header_segment, "harvest_height_multiplier", 1.0);
+	Hook.ParamMan->_heightMultiplier_ItemPickup		= option_reader.GetFloat(header_segment, "item_height_multiplier", 1.0);
+	Hook.ParamMan->_heightMultiplier_CorpseLoot		= option_reader.GetFloat(header_segment, "corpse_loot_height_multiplier", 1.0);
+	Hook.ParamMan->_heightMultiplier_LostRunesRange	= option_reader.GetFloat(header_segment, "lost_runes_height_multiplier", 1.0);
+	//other
 	Hook.ParamMan->_mapSpeedMultiplier				= option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
 	Hook.ParamMan->_removeWepStatRequirements		= option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
 	

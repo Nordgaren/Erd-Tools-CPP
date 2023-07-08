@@ -55,7 +55,7 @@ bool ErdHook::FindNeededSignatures() {
     DebugMan->DisableCrafingInCombatLocation = (uint64_t)disableCrafting.Scan(&EldenRingData);
 
     Signature soloParamRepositorySig = Signature("48 8B 0D ?? ?? ?? ?? 48 85 C9 0F 84 ?? ?? ?? ?? 45 33 C0 BA 90");
-    ParamMan->SoloParamRepository = (SoloParamRepository**)soloParamRepositorySig.Scan(&EldenRingData, 0x3, 0x7);
+    ParamMan->SoloParamRepositoryAddress = (SoloParamRepository**)soloParamRepositorySig.Scan(&EldenRingData, 0x3, 0x7);
 
     Signature findEquipParamWeaponEntrySig = Signature(
         "40 57 41 56 41 57 48 83 EC 40 48 C7 44 24 20 FE FF FF FF 48 89 5C 24 60 48 89 6C 24 68 48 89 74 24 70 8B");
@@ -147,7 +147,7 @@ bool ErdHook::FindNeededSignatures() {
 
     return EventMan && EventMan->SetEventFlagAddress && DebugMan->DisableOpenMapInCombatLocation
         && DebugMan->CloseMapInCombatLocation && DebugMan->DisableCrafingInCombatLocation && ParamMan->
-        SoloParamRepository
+        SoloParamRepositoryAddress
         && ParamMan->FindEquipParamWeaponFunc && ParamMan->FindEquipParamProtectorFunc && ParamMan->
         FindEquipParamGoodsFunc
         && ParamMan->FindEquipMtrlSetParamFunc && ParamMan->GetMenuCommonParamEntry && ParamMan->
@@ -178,7 +178,7 @@ void ErdHook::debugPrint() {
     printf("DebugMan->CloseMapInCombatLocation %p\n", DebugMan->CloseMapInCombatLocation);
     printf("DebugMan->DisableCrafingInCombatLocation %p\n", DebugMan->DisableCrafingInCombatLocation);
     printf("\nParamMan\n");
-    printf("ParamMan->SoloParamRepository %p\n", ParamMan->SoloParamRepository);
+    printf("ParamMan->SoloParamRepositoryAddress %p\n", ParamMan->SoloParamRepositoryAddress);
     printf("ParamMan->FindEquipParamWeaponFunc %p\n", ParamMan->FindEquipParamWeaponFunc);
     printf("ParamMan->FindEquipParamProtectorFunc %p\n", ParamMan->FindEquipParamProtectorFunc);
     printf("ParamMan->FindEquipParamGoodsFunc %p\n", ParamMan->FindEquipParamGoodsFunc);

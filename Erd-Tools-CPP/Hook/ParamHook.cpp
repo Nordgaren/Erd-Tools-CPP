@@ -15,17 +15,14 @@ void ParamHook::InitParamTools() {
 
 	using namespace std::chrono_literals;
 
-	uint64_t solo_param_repository_ld = *(uint64_t*)(SoloParamRepository);
-	while (!solo_param_repository_ld) {
-		solo_param_repository_ld = *(uint64_t*)(SoloParamRepository);
-		std::this_thread::sleep_for(1s);
+	while (!*SoloParamRepositoryAddress) {
+		std::this_thread::sleep_for(5s);
 	}
-	// As a standard, make sure this param is loaded already
-	uint64_t itemlotparam_map = *(uint64_t*)(solo_param_repository_ld + 0x3448);
-	while (!itemlotparam_map) {
-		itemlotparam_map = *(uint64_t*)(solo_param_repository_ld + 0x3448);
-		std::this_thread::sleep_for(1s);
-	}
+	
+    SoloParamRepository *soloParamRepository = *SoloParamRepositoryAddress;
+    while (!soloParamRepository->repositoryEntries[0xB9].paramLoaded) {
+        std::this_thread::sleep_for(5s);
+    }
 
 	EditMenuCommonParam();
 
@@ -47,7 +44,7 @@ void ParamHook::InitParamTools() {
 }
 void ParamHook::EditEquipParamWeapon() {
 	
-	ParamEditor<EquipParamWeapon> pEditor(*SoloParamRepository);
+	ParamEditor<EquipParamWeapon> pEditor(SoloParamRepositoryAddress);
 
 	ParamHeader *header = pEditor.GetParamHeader();
 	EquipParamWeapon *pParam = pEditor.GetParamDataPtr();

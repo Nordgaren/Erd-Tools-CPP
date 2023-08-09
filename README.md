@@ -43,8 +43,9 @@ If I missed your contribution, let me know!
 # Change Log 
 ### Erd Tools dll 1.1.5
 * Added `enable_auto_pickup_in_combat`. Turning this off will disable the auto harvest/loot/runes feature while in combat. This is an option for mods that interfere with this feature.  
-* Added `vanilla_pickup_animations` Turning this on will change pickup animations to be the vanilla animation. This is another option for mods that interfere with auto harvest/loot/runes. * Fixed ini to include `lock_harvest`, which was just not included previously.  
-  
+* Added `vanilla_pickup_animations` Turning this on will change pickup animations to be the vanilla animation. This is another option for mods that interfere with auto harvest/loot/runes.
+* Fixed ini to include `lock_harvest`, which was just not included previously.  
+
 ### Erd Tools dll 1.1.4
 * added height multiplier for harvest, loot, corpse loot and dropped runes.
 

@@ -14,6 +14,7 @@ enum UserPreferences {
     enable_boss_poise_meter = 1 << 5,
     enable_entity_poise_meter = 1 << 6,
     remove_stat_requirements = 1 << 7,
+    vanilla_pickup_animations = 1 << 8,
 };
 
 enum LootPreferences {
@@ -22,12 +23,13 @@ enum LootPreferences {
     pickup_items = 1 << 1,
     pickup_corpse_loot = 1 << 2,
     pickup_lost_runes = 1 << 3,
-    lock_materials = 1 << 4,
-    lock_items = 1 << 5,
-    lock_corpse_loot = 1 << 6,
-    lock_lost_runes = 1 << 7,
-    lock_grace_unlocks = 1 << 8,
-    lock_grace_resting = 1 << 9,
+    enable_auto_pickup_in_combat = 1 << 4,
+    lock_materials = 1 << 5,
+    lock_items = 1 << 6,
+    lock_corpse_loot = 1 << 7,
+    lock_lost_runes = 1 << 8,
+    lock_grace_unlocks = 1 << 9,
+    lock_grace_resting = 1 << 10,
 };
 
 struct ReinforceParamWeapon {

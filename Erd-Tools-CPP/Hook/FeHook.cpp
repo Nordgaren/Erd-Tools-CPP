@@ -141,11 +141,16 @@ void FeHook::writePoiseToEntityBar() {
 
 extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSystemImp, int entryId) {
     std::vector<int> lockList = main_mod->Hook.FeMan->lockPickupList;
-    if (!lockList.empty() && (*main_mod->Hook.SoundIns)->soundCombatStruct->isInCombat && std::binary_search(
+    const bool inCombat = (*main_mod->Hook.SoundIns)->soundCombatStruct->isInCombat;
+    if (!lockList.empty() && inCombat && std::binary_search(
         lockList.begin(), lockList.end(), entryId)) {
         return 0;
     }
 
+    if (!(main_mod->Hook.FeMan->LootPrefs & enable_auto_pickup_in_combat) && inCombat) {
+        return -1;
+    }
+    
     std::vector<int> pickupList = main_mod->Hook.FeMan->autoPickupList;
     if (!pickupList.empty() && std::binary_search(pickupList.begin(), pickupList.end(), entryId)) {
         return 1;

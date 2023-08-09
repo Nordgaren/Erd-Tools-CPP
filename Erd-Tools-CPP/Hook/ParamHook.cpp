@@ -4,12 +4,22 @@
 #include "../param/ActionButtonParam.h"
 #include "../param/EquipParamWeapon.h"
 #include "../param/EquipParamGoods.h"
+#include "../param/PlayerCommonParam.h"
 #include "../Util/ParamEditor.h"
 
-#define AQCUIRE_MATERIAL_START 7800
-#define AQCUIRE_MATERIAL_END 7879
+#define ACQUIRE_MATERIAL_START 7800
+#define ACQUIRE_MATERIAL_END 7879
 
 extern ErdToolsMain* main_mod;
+
+void ParamHook::EditPlayerCommonParam() const {
+	ParamEditor<PlayerCommonParam> pEditor(SoloParamRepositoryAddress);
+
+	PlayerCommonParam *pParam = pEditor.RetrieveEntry(0);
+	pParam->animeID_DropItemPick = 60070;
+	pParam->animeID_SleepCollectorItemPick = 50250;
+	pParam->animeID_MaterialItemPick = 999999;
+}
 
 void ParamHook::InitParamTools() {
 
@@ -25,6 +35,9 @@ void ParamHook::InitParamTools() {
     }
 
 	EditMenuCommonParam();
+	if (main_mod->Preferences & vanilla_pickup_animations) {
+		EditPlayerCommonParam();
+	}
 
 	ABParam_ApplyWidthMultiplier(ABParam_list_materials, _widthMultiplier_AutoHarvest);
 	ABParam_ApplyWidthMultiplier(ABParam_list_items, _widthMultiplier_ItemPickup);

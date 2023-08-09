@@ -96,12 +96,14 @@ bool ErdToolsMain::ReadINI() {
 	header_segment = "FRONTEND";
 	Preferences = option_reader.GetBoolean(header_segment, "boss_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_boss_poise_meter) : Preferences;
 	Preferences = option_reader.GetBoolean(header_segment, "entity_poise_meter", false) ? static_cast<UserPreferences>(Preferences | enable_entity_poise_meter) : Preferences;
+	Preferences = option_reader.GetBoolean(header_segment, "vanilla_pickup_animations", false) ? static_cast<UserPreferences>(Preferences | vanilla_pickup_animations) : Preferences;
 
 	LootPreferences lootPrefs = no_loot_changes;
 	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_materials", false) ? static_cast<LootPreferences>(lootPrefs | pickup_materials) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_items", false) ? static_cast<LootPreferences>(lootPrefs | pickup_items) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_corpse_loot", false) ? static_cast<LootPreferences>(lootPrefs | pickup_corpse_loot) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "pickup_lost_runes", false) ? static_cast<LootPreferences>(lootPrefs | pickup_lost_runes) : lootPrefs;
+	lootPrefs = option_reader.GetBoolean(header_segment, "enable_auto_pickup_in_combat", false) ? static_cast<LootPreferences>(lootPrefs | enable_auto_pickup_in_combat) : lootPrefs;
 
 	lootPrefs = option_reader.GetBoolean(header_segment, "lock_materials", false) ? static_cast<LootPreferences>(lootPrefs | lock_materials) : lootPrefs;
 	lootPrefs = option_reader.GetBoolean(header_segment, "lock_items", false) ? static_cast<LootPreferences>(lootPrefs | lock_items) : lootPrefs;

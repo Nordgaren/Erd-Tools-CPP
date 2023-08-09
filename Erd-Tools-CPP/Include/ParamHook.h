@@ -7,6 +7,7 @@ struct SoloParamRepository;
 class ParamHook
 {
 public:
+	void EditPlayerCommonParam() const;
 	void InitParamTools();
 	void ABParam_ApplyWidthMultiplier(std::vector<int> paramIds, float multiplier);
 	void ABParam_ApplyHeightMultiplier(std::vector<int> paramIds, float multiplier);

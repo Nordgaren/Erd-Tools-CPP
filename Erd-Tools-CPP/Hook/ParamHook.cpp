@@ -5,6 +5,7 @@
 #include "../param/EquipParamWeapon.h"
 #include "../param/EquipParamGoods.h"
 #include "../param/PlayerCommonParam.h"
+#include "../param/SpEffectParam.h"
 #include "../Util/ParamEditor.h"
 
 #define ACQUIRE_MATERIAL_START 7800
@@ -52,6 +53,8 @@ void ParamHook::InitParamTools() {
 	if (_removeWepStatRequirements)
 		EditEquipParamWeapon();
 
+	if (_permanentLantern)
+		EnablePermanentLantern();
 	//PrintParamResCapEnum(solo_param_repository_ld); 
 
 }
@@ -106,6 +109,13 @@ void ParamHook::EditMenuCommonParam() {
 	MenuCommonParamParamContainer menuContainer = MenuCommonParamParamContainer();
 	std::invoke(main_mod->Hook.ParamMan->GetMenuCommonParamEntry, &menuContainer);
 	menuContainer.param_entry->worldMapCursorSpeed *= _mapSpeedMultiplier;
+}
+
+void ParamHook::EnablePermanentLantern() {
+	ParamEditor<SpEffectParam> pEditor(SoloParamRepositoryAddress);
+	SpEffectParam *pParam = pEditor.RetrieveEntry(3245);
+
+	pParam->saveCategory = 0;
 }
 
 uint64_t ParamHook::GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName) {

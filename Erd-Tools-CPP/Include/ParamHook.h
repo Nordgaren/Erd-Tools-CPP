@@ -14,6 +14,7 @@ public:
 	void EditMenuCommonParam();
 	void EditEquipParamWeapon();
 	void EditEquipParamGoods();
+	void EnablePermanentLantern();
 	uint64_t GetParamResCapByName(uint64_t soloParamRepository, std::wstring paramName);
 	void PrintParamResCapEnum(uint64_t soloParamRepository);
 	SoloParamRepository** SoloParamRepositoryAddress = 0;
@@ -33,6 +34,7 @@ public:
 	float _widthMultiplier_LostRunesRange = 1.0;
 	float _heightMultiplier_LostRunesRange = 1.0;
 	bool _removeWepStatRequirements = false;
+	bool _permanentLantern = false;
 
 	ParamHook() {
 	}

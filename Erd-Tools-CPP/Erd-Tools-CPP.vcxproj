@@ -574,9 +574,13 @@
     <MASM Include="ASM\ExecActionButtonParamWrapper.asm" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Erd-Tools-CPP.rc" />
+    <Content Include="Erd-Tools-CPP.vcxproj.filters" />
     <Content Include="erd_tools.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="minhook\.gitkeep" />
+    <Content Include="minhook\LICENSE.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

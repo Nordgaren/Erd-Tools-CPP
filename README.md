@@ -38,6 +38,7 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 **[Wasted](https://github.com/FrankvdStam)** - Rust nerd who gives me pointers for C++.  
 **[Tremwil](https://github.com/tremwil)** - Smart person who help me debug dumb mistakes.  
 **[TKGP](https://github.com/JKAnderson/)** - Author of [DS Gadget](https://github.com/JKAnderson/DS-Gadget) [Property Hook](https://github.com/JKAnderson/PropertyHook) and [SoulsFormats](https://github.com/JKAnderson/SoulsFormats), which got me into this kind of modding.  
+**[Lucy](https://www.nexusmods.com/users/22058824?tab=about+me)** - Author of [Permanent Lantern](https://www.nexusmods.com/eldenring/mods/3187), which is now a feature of Erd Tools!  
 If I missed your contribution, let me know!  
 
 # Change Log 

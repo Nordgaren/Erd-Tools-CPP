@@ -3,7 +3,6 @@
 #include "../Include/ErdToolsMain.h"
 #include "../param/ActionButtonParam.h"
 #include "../param/EquipParamWeapon.h"
-#include "../param/EquipParamGoods.h"
 #include "../param/PlayerCommonParam.h"
 #include "../param/SpEffectParam.h"
 #include "../Util/ParamEditor.h"
@@ -53,8 +52,8 @@ void ParamHook::InitParamTools() {
 	if (_removeWepStatRequirements)
 		EditEquipParamWeapon();
 
-	if (_permanentLantern)
-		EnablePermanentLantern();
+	if (_persistentLantern)
+		EnablePersistentLantern();
 	//PrintParamResCapEnum(solo_param_repository_ld); 
 
 }
@@ -111,7 +110,7 @@ void ParamHook::EditMenuCommonParam() {
 	menuContainer.param_entry->worldMapCursorSpeed *= _mapSpeedMultiplier;
 }
 
-void ParamHook::EnablePermanentLantern() {
+void ParamHook::EnablePersistentLantern() {
 	ParamEditor<SpEffectParam> pEditor(SoloParamRepositoryAddress);
 	SpEffectParam *pParam = pEditor.RetrieveEntry(3245);
 

@@ -84,7 +84,6 @@ bool ErdToolsMain::ReadINI() {
 	INIReader option_reader = INIReader(ini_path);
 	int error = option_reader.ParseError();
 	if (error) {
-		//
 		return false;
 	}
 
@@ -128,7 +127,7 @@ bool ErdToolsMain::ReadINI() {
 	Hook.ParamMan->_mapSpeedMultiplier				= option_reader.GetFloat(header_segment, "map_scroll_multiplier", 1.0);
 	//options
 	Hook.ParamMan->_removeWepStatRequirements		= option_reader.GetBoolean(header_segment, "remove_weapon_stat_requirements", false);
-	Hook.ParamMan->_permanentLantern				= option_reader.GetBoolean(header_segment, "permanent_lantern", false);
+	Hook.ParamMan->_persistentLantern				= option_reader.GetBoolean(header_segment, "persistent_lantern", false);
 	
 	header_segment = "SAVE";
 	std::string ext	= option_reader.Get(header_segment, "save_extension", "sl2");

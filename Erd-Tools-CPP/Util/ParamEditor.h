@@ -5,6 +5,7 @@
 
 #ifndef PARAM_STRUCTS
 #define PARAM_STRUCTS
+
 struct ParamTable {
     uint32_t ParamID;
     uint32_t Pad0x4;
@@ -53,7 +54,6 @@ struct RepositoryEntry {
     ParamResCap* param;
     uint8_t undefined0x10[0x38];
 };
-
 static_assert(sizeof(RepositoryEntry) == 0x48);
 
 struct SoloParamRepository {
@@ -63,7 +63,7 @@ struct SoloParamRepository {
 
 static_assert(sizeof(SoloParamRepository) == 0x34D0);
 
-#endif // !PARAMS
+#endif // !PARAM_STRUCTS
 
 
 template <typename T>
@@ -130,8 +130,7 @@ private:
 
 template <typename T>
 ParamEditor<T>::ParamEditor(): _paramResCap(nullptr), _paramHeader(nullptr), _paramTable(nullptr), _paramPointer(0),
-                               _soloParamRepository(nullptr) {
-}
+                               _soloParamRepository(nullptr) {}
 
 template <typename T>
 ParamEditor<T>::ParamEditor(SoloParamRepository** soloParamRepository): _paramResCap(nullptr), _paramHeader(nullptr),
@@ -175,9 +174,9 @@ void ParamEditor<T>::init(SoloParamRepository* soloParamRepository) {
     }
 
     //Don't add params if the size of the param differs in game.
-    size_t entrySize = _paramHeader->ParamTypeOffset - _paramHeader->DataOffset;
+    size_t entrySize = _paramTable[1].ParamOffset - _paramTable[0].ParamOffset;
     if (_paramHeader->RowCount < 2) {
-        entrySize =  _paramTable[1].ParamOffset - _paramTable[0].ParamOffset;
+        entrySize = _paramHeader->ParamTypeOffset - _paramHeader->DataOffset;
     }
 
     if (entrySize != sizeof(T)) {

@@ -32,6 +32,12 @@ enum LootPreferences {
     lock_grace_resting = 1 << 10,
 };
 
+enum ParamOptions {
+    no_param_changes = 0,
+    remove_weapon_stat_requirements = 1 << 0,
+    permanent_lantern = 1 << 1,
+};
+
 struct ReinforceParamWeapon {
     uint8_t filler_bytes[87];
     uint8_t equip_reinforce_level;

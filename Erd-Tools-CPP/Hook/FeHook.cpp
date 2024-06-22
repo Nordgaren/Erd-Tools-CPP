@@ -8,6 +8,10 @@ extern "C" int ExecActionButtonParamProxyWrapper();
 extern "C" uint64_t ExecuteActionButtonParamProxyReturn = 0;
 
 bool FeHook::EnableBossPoiseMeter() {
+    if (BossBarPoiseMeterEnabled == true) {
+        return true;
+    }
+
     BossBarPoiseMeterEnabled = true;
     *(int*)_applyBossBarDmg = 0x909090C3;
 
@@ -17,6 +21,9 @@ bool FeHook::EnableBossPoiseMeter() {
 }
 
 bool FeHook::EnableEntityPoiseMeter() {
+    if (EntityPoiseMeterEnabled)
+        return true;
+
     if (MH_CreateHook((void*)_applyEntityBarDmg, &applyEntityBarDmgHook,
                       (void**)&FeHook::ApplyEntityBarDamageOriginal) != MH_OK) {
         return false;
@@ -26,6 +33,7 @@ bool FeHook::EnableEntityPoiseMeter() {
 
     enableUpdateHooks();
 
+    EntityPoiseMeterEnabled = true;
     return true;
 }
 
@@ -44,7 +52,6 @@ bool FeHook::EnableLootChangeHook() {
 
     return true;
 }
-
 
 
 void FeHook::EnableLootPrefs() {
@@ -78,7 +85,8 @@ void FeHook::EnableLootPrefs() {
         lockPickupList.insert(lockPickupList.end(), unlock_grace_ABParam_list.begin(), unlock_grace_ABParam_list.end());
     }
     if (LootPrefs & lock_grace_resting) {
-        lockPickupList.insert(lockPickupList.end(), grace_resting_ABParam_list.begin(), grace_resting_ABParam_list.end());
+        lockPickupList.insert(lockPickupList.end(), grace_resting_ABParam_list.begin(),
+                              grace_resting_ABParam_list.end());
     }
     std::sort(lockPickupList.begin(), lockPickupList.end());
 
@@ -150,7 +158,7 @@ extern "C" int CheckExecActionButtonParamFilters(uintptr_t actionButtonRegionSys
     if (!(main_mod->Hook.FeMan->LootPrefs & enable_auto_pickup_in_combat) && inCombat) {
         return -1;
     }
-    
+
     std::vector<int> pickupList = main_mod->Hook.FeMan->autoPickupList;
     if (!pickupList.empty() && std::binary_search(pickupList.begin(), pickupList.end(), entryId)) {
         return 1;

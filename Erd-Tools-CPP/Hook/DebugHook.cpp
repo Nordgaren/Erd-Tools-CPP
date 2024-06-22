@@ -4,6 +4,8 @@ uint64_t DisableOpenMap = 0;
 uint64_t CombatCloseMap = 0;
 
 void DebugHook::EnableMapInCombat() {
+	if (combat_map_patched)
+		return;
 	/* backup original bytes */
 	memcpy(close_map_original_bytes, (void*)CloseMapInCombatLocation, sizeof(close_map_original_bytes));
 
@@ -23,6 +25,9 @@ void DebugHook::DisableMapInCombat() {
 }
 
 void DebugHook::EnableCraftingInCombat() {
+	if (combat_crafting_patched)
+		return;
+	
 	/* backup original bytes */
 	memcpy(disable_crafting_original_bytes, (void*)DisableCrafingInCombatLocation, sizeof(disable_crafting_original_bytes));
 

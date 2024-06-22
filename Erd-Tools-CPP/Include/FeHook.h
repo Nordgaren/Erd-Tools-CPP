@@ -12,6 +12,7 @@ public:
 	void EnableLootPrefs();
 	LootPreferences LootPrefs = no_loot_changes;
 	static inline bool BossBarPoiseMeterEnabled = false;
+	static inline bool EntityPoiseMeterEnabled = false;
 	static inline ApplyEntityBarDamage ApplyEntityBarDamageOriginal = nullptr;
 	static inline UpdateUIBarStructs UpdateUIBarStructsOriginal = nullptr;
 	GetChrInsFromEntityId* GetChrInsFromEntityIdFunc = nullptr;

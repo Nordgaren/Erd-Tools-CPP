@@ -54,7 +54,7 @@ void ErdToolsMain::Setup() {
 	if (ReadINI()) {
 		InitPreferences();
 	} else {
-	//@TODO:Check if communication with debug tools is open and open if it is not and ini doesn't exist.
+		//@TODO:Check if communication with debug tools is open and open if it is not and ini doesn't exist.
 	}
 
 	Hook.ChangeExtension();

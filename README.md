@@ -42,6 +42,9 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.3.0
+* IDFK, it's probably still broken. Just use this version for bug reports, though.
+
 ### Erd Tools dll 1.2.0
 * Compatability for DLC update.  
 

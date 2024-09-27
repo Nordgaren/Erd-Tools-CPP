@@ -42,6 +42,15 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.3.1
+* DLC Mats again.
+
+### Erd Tools dll 1.3.0
+* IDFK, it's probably still broken. Just use this version for bug reports, though.
+
+### Erd Tools dll 1.2.0
+* Compatability for DLC update.  
+
 ### Erd Tools dll 1.1.5
 * Added `enable_auto_pickup_in_combat`. Turning this off will disable the auto harvest/loot/runes feature while in combat. This is an option for mods that interfere with this feature.  
 * Added `vanilla_pickup_animations` Turning this on will change pickup animations to be the vanilla animation. This is another option for mods that interfere with auto harvest/loot/runes.

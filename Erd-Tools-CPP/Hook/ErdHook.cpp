@@ -88,7 +88,8 @@ bool ErdHook::FindNeededSignatures() {
     FeMan->_getBossBarPtr = reinterpret_cast<uintptr_t>(getBossBarPtrSig.Scan(&EldenRingData, Align16));
 
     Signature enableBossBarSig = Signature(
-        "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9");
+        "?? ?? ?? ?? ?? 48 89 74 24 10 57 48 83 EC 20 48 8B F9 41 8B F0 48 8B 0D ?? ?? ?? ?? 8B DA 48 85 C9"
+        );
     FeMan->_enableBossBarAddr = (uintptr_t)enableBossBarSig.Scan(&EldenRingData, Align16);
     FeMan->GetChrInsFromEntityIdFunc = (GetChrInsFromEntityId*)enableBossBarSig.GetRelativeOffset(0x69, 0x6D);
 

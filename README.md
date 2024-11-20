@@ -42,6 +42,9 @@ Adjust the ini to your liking an launch the game. You must re-launch the game to
 If I missed your contribution, let me know!  
 
 # Change Log 
+### Erd Tools dll 1.4.0
+* Should work with seamless, again. 
+
 ### Erd Tools dll 1.3.1
 * DLC Mats again.
 

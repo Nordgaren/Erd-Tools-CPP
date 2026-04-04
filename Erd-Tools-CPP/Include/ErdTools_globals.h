@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <climits>
 
 #ifndef __UINT32_MAX__
 #define __UINT32_MAX__ UINT32_MAX

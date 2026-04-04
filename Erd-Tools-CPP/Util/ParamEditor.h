@@ -121,6 +121,7 @@ private:
     T _defaultEntry;
     std::vector<uint32_t> _rowIDs;
     std::vector<T> _rowData;
+    std::vector<uint8_t> Param;
     ParamResCap* _paramResCap;
     ParamHeader* _paramHeader;
     ParamTable* _paramTable;

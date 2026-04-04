@@ -1,6 +1,13 @@
 #pragma once
 #include <cstdint>
 
+#ifndef __UINT32_MAX__
+#define __UINT32_MAX__ UINT32_MAX
+#endif
+#ifndef __UINT64_MAX__
+#define __UINT64_MAX__ UINT64_MAX
+#endif
+
 struct ActionButtonParam;
 struct EquipParamWeapon;
 

@@ -96,9 +96,10 @@ void ParamHook::ABParam_ApplyHeightMultiplier(std::vector<int> paramIds, float m
 		ActionButtonParamParamContainer buttonContainer = ActionButtonParamParamContainer();
 		std::invoke(FindActionButtonParamEntry, &buttonContainer, paramIds[i]);
 		ActionButtonParam* actionParam = buttonContainer.param_entry;
-		if (actionParam != nullptr)
+		if (actionParam != nullptr) {
 			actionParam->height *= multiplier;
 			actionParam->baseHeightOffset *= multiplier;
+		}
 	}
 }
 
